@@ -20,15 +20,26 @@ public class FoodEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 50, unique = true)
     private String name;
-    private String description;
+
+    @Column(nullable = false, length = 255)
+    private String information;
+
+    @Column(nullable = false)
     private Integer quantity;
-    private Boolean isPrivate;
-    private Boolean isFavorite;
+
+    @Column(nullable = false)
+    private Boolean isPrivate = false;
+
+    @Column(nullable = false)
+    private Boolean isFavorite = false;
+
+    @ManyToOne
+    @JoinColumn(name = "category_food_id", nullable = false)
+    private CategoryFoodEntity category;
 
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CompositionEntity> compositions;
 
-
-    
 }

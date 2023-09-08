@@ -20,10 +20,16 @@ public class CategoryFoodEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    @Column(nullable = false, length = 50, unique = true)
     private String name;
-    private String description;
+
+    @Column(length = 255)
+    private String information;
+
+    @Column(length = 555)
     private String benefits;
+
+    @Column(length = 555)
     private String disadvantages;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
