@@ -2,6 +2,8 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 
 // Naydeline
 
-public class RoleEnum {
-    
+public enum RoleEnum {
+
+    ADMIN,
+    USER
 }
