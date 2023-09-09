@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "composition")
 public class CompositionEntity {
-
     @EmbeddedId
     private CompositionKey id;
 
@@ -39,7 +38,6 @@ public class CompositionEntity {
 @AllArgsConstructor
 @Embeddable
 class CompositionKey implements Serializable {
-    
     @Column(name = "food_id", nullable = false)
     private Long foodId;
 
