@@ -39,11 +39,14 @@ public class FoodEntity {
     @JoinColumn(name = "category_food_id", nullable = false)
     private CategoryFoodEntity category;
 
-    @ManyToOne
-    @JoinColumn(name="creator_user_id", nullable = false) 
-    private UserEntity creatorUser;
-
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CompositionEntity> compositions;
+
+    @ManyToOne
+    @JoinColumn(name = "creator_user_id")
+    private UserEntity creatorUser;
+
+    @ManyToMany(mappedBy = "foods")
+    private List<RecipeEntity> recipes;
 
 }

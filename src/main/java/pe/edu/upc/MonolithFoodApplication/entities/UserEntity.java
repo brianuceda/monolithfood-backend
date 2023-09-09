@@ -33,5 +33,11 @@ public class UserEntity {
     @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
     private List<FoodEntity> createdFoods;
 
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
+    private List<FoodEntity> foods;
+
+    @ManyToMany(mappedBy = "users")
+    private List<RecipeEntity> recipes;
+
 
 }

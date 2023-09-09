@@ -36,7 +36,15 @@ public class RecipeEntity {
   @JoinColumn(name = "creator_user_id")
   private UserEntity creatorUser;
 
-  @ManyToMany(mappedBy = "recipes")
+  @ManyToMany
+  @JoinTable(
+          name = "food_recipes",
+          joinColumns = @JoinColumn(name = "recipes_id"),
+          inverseJoinColumns = @JoinColumn(name = "food_id")
+  )
   private List<FoodEntity> foods;
+
+  @ManyToMany(mappedBy = "recipes")
+  private List<UserEntity> users;
   
 }
