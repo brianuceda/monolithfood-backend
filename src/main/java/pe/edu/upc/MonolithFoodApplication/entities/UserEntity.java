@@ -1,51 +1,44 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
+
+import java.util.List;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.Set;
-
 // Gabriela | Heather | Naydeline | Willy
 
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table (name = "users")
+@Table(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column (nullable = false, length = 120, unique = true)
-    @NotBlank
-    @Email
+    @Column(nullable = false, length = 50, unique = true)
     private String username;
 
-    @Column (nullable = false, length= 80)
-    @NotBlank
+    @Column(nullable = false, length = 80)
     private String password;
 
-    @Column (length = 100)
-    @NotBlank
+    @Column(nullable = false, length = 150, unique = true)
+    private String email;
+
+    @Column(nullable = false, length = 100)
     private String names;
 
-    @Column (length =100)
-    @NotBlank
+    @Column(nullable = false, length = 100)
     private String surnames;
 
-    @Column (length = 400)
-    private String profile_img;
+    @Column(nullable = false, length = 755)
+    private String profileImg;
 
-
-    @OneToOne (mappedBy = "userEntity", cascade = CascadeType.ALL)
-    private UserConfigEntity userConfigEntity;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserConfigEntity userConfig;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
