@@ -8,26 +8,38 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 // Gabriela | Heather | Naydeline | Willy
-@Entity
-@Table(name = "users")
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
-    private String password;
-    private String names;
-    private String surnames;
-    private String profile_img;
 
-     //relation from user to user_personal_info
+    @Column(nullable = false, length = 50, unique = true)
+    private String username;
+
+    @Column(nullable = false, length = 80)
+    private String password;
+
+    @Column(nullable = false, length = 150, unique = true)
+    private String email;
+
+    @Column(nullable = false, length = 100)
+    private String names;
+
+    @Column(nullable = false, length = 100)
+    private String surnames;
+
+    @Column(nullable = false, length = 755)
+    private String profileImg;
+
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;
 
-     //relation from user_personal_info to objectives 
     @ManyToMany(
         cascade = CascadeType.ALL,
         fetch = FetchType.EAGER
@@ -37,12 +49,12 @@ public class UserEntity {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "objectives_id"),
         uniqueConstraints = {
-            @UniqueConstraint
-                (
-                columnNames = { "user_id", "objectives_id" }
-                ) 
-            }
-        
-    )   
+            @UniqueConstraint(columnNames = {
+                "user_id",
+                "objectives_id"
+            })
+        }
+    )
     private List<ObjectivesEntity> objectives;
+
 }
