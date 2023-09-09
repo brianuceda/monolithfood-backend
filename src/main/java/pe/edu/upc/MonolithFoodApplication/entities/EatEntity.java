@@ -1,27 +1,28 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-// Gabriela
 import jakarta.persistence.*;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "eat")
+// Gabriela
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Entity
+@Table(name = "eat")
 public class EatEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    private String name;
-
+    @Column(nullable = true)
     @Temporal(TemporalType.DATE)
     private Date date;
+    
+    private Integer quantity;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,6 +32,4 @@ public class EatEntity {
     @JoinColumn(name = "food_id")
     private FoodEntity food;
 
-    private int quantity; 
-    private String mealType; 
 }
