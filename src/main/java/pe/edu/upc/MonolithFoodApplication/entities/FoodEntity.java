@@ -24,9 +24,6 @@ public class FoodEntity {
     private String information;
 
     @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
     private Boolean isPrivate = false;
 
     @Column(nullable = false)

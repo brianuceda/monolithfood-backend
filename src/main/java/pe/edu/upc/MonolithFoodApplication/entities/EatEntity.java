@@ -22,6 +22,7 @@ public class EatEntity {
     @Temporal(TemporalType.DATE)
     private Date date;
     
+    @Column(nullable = false)
     private Integer quantity;
 
     @ManyToOne
@@ -31,5 +32,4 @@ public class EatEntity {
     @ManyToOne
     @JoinColumn(name = "food_id")
     private FoodEntity food;
-
 }
