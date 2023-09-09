@@ -1,43 +1,43 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-// Gabriela | Heather | Naydeline | Willy
+import java.util.List;
 
 import jakarta.persistence.*;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// Gabriela | Heather | Naydeline | Willy
 
-@Entity
-@Table(name = "user")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
+    @Column(nullable = false, length = 50, unique = true)
     private String username;
+
+    @Column(nullable = false, length = 80)
     private String password;
+
+    @Column(nullable = false, length = 150, unique = true)
+    private String email;
+
+    @Column(nullable = false, length = 100)
     private String names;
+
+    @Column(nullable = false, length = 100)
     private String surnames;
+
+    @Column(nullable = false, length = 755)
     private String profileImg;
-    private Boolean isPrivate;
-    private Boolean isFavorite;
-
-     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EatEntity> eats;
-
+    
     @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
-    private List<FoodEntity> createdFoods;
-
-    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
-    private List<FoodEntity> foods;
-
-    @ManyToMany(mappedBy = "users")
-    private List<RecipeEntity> recipes;
-
+    private List<RecipeEntity> createdRecipes;
 
 }

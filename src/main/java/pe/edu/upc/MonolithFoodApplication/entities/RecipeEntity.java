@@ -1,50 +1,58 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-// Heather
+import java.util.List;
+
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor; 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+// Heather
 
 @Data
-@NoArgsConstructor 
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "recipes")
 public class RecipeEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String name;
-  
-  private String description;
+    @Column(nullable = false, length = 125)
+    private String name = "Receta sin nombre";
 
-  private String preparationGuide;
-  
-  private String benefits;
-  
-  private String disadvantages;
+    @Column(nullable = false, length = 255)
+    private String description;
 
-  private Boolean isPrivate;
+    @Column(nullable = false, length = 1000)
+    private String preparationGuide;
 
-  private Boolean isFavorite;
+    @Column(nullable = false, length = 555)
+    private String benefits;
 
-  @ManyToOne
-  @JoinColumn(name = "creator_user_id")
-  private UserEntity creatorUser;
+    @Column(nullable = false, length = 555)
+    private String disadvantages;
 
-  @ManyToMany
-  @JoinTable(
-          name = "food_recipes",
-          joinColumns = @JoinColumn(name = "recipes_id"),
-          inverseJoinColumns = @JoinColumn(name = "food_id")
-  )
-  private List<FoodEntity> foods;
+    @Column(nullable = false)
+    private Boolean isPrivate = false;
 
-  @ManyToMany(mappedBy = "recipes")
-  private List<UserEntity> users;
-  
+    @Column(nullable = false)
+    private Boolean isFavorite = false;
+
+    @ManyToOne
+    @JoinColumn(name = "creator_user_id")
+    private UserEntity creatorUser;
+
+    @ManyToMany(
+        fetch = FetchType.EAGER,
+        cascade = CascadeType.ALL
+    )
+	@JoinTable(
+		name = "foods_recipes",
+		joinColumns = @JoinColumn(name = "recipes_id"),
+		inverseJoinColumns = @JoinColumn(name = "food_id")
+	)
+	private List<FoodEntity> foods;
+
 }

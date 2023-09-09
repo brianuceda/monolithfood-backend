@@ -10,12 +10,11 @@ import lombok.NoArgsConstructor;
 // Brian | Gabriela | Heather
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "food")
 public class FoodEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,26 +26,12 @@ public class FoodEntity {
     private String information;
 
     @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
     private Boolean isPrivate = false;
 
     @Column(nullable = false)
     private Boolean isFavorite = false;
 
-    @ManyToOne
-    @JoinColumn(name = "category_food_id", nullable = false)
-    private CategoryFoodEntity category;
-
-    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<CompositionEntity> compositions;
-
-    @ManyToOne
-    @JoinColumn(name = "creator_user_id")
-    private UserEntity creatorUser;
-
     @ManyToMany(mappedBy = "foods")
     private List<RecipeEntity> recipes;
-
+    
 }
