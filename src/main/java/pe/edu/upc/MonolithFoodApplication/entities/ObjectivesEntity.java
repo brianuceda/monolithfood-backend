@@ -18,10 +18,13 @@ public class ObjectivesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 30)
     private String name;
+
+    @Column(nullable = false, length = 500)
     private String description;
 
-    //relation from user_personal_info to objectives
     @ManyToMany(mappedBy = "objectives")
     private List<UserEntity> users;
 }

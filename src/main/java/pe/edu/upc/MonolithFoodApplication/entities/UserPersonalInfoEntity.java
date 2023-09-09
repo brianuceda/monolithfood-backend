@@ -18,15 +18,30 @@ public class UserPersonalInfoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private Integer age;
-    private String gender;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 1)
+    private GenderEnum gender;
+
+    @Column(nullable = false, precision = 5, scale = 3)
     private Double height_cm;
+
+    @Column(nullable = false, precision = 5, scale = 3)
     private Double weight_kg;
+
+    @Column(nullable = false, length = 50)
     private String activity_level;
+
+    @Column(nullable = false, precision = 5, scale = 3)
     private Double target_weight_kg;
+    
+    @Column(nullable = false, precision = 5, scale = 3)
     private Double daily_caloric_intake;
-    //relation from user_personal_info to user
+    
     @OneToOne
     @JoinColumn(name="user_id")
-    private UserEntity user; 
+    private UserEntity user;
 }
