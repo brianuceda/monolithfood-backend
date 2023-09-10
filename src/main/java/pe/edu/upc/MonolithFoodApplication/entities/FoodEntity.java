@@ -1,5 +1,7 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,13 +26,23 @@ public class FoodEntity {
     private String information;
 
     @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(nullable = false)
     private Boolean isPrivate = false;
 
     @Column(nullable = false)
     private Boolean isFavorite = false;
 
     @ManyToOne
-    @JoinColumn(name = "creator_user_id")
+    @JoinColumn(name = "creator_user_id", nullable = true)
     private UserEntity creatorUser;
    
+    @ManyToOne
+    @JoinColumn(name = "category_food_id", nullable = true)
+    private CategoryFoodEntity category;
+
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<CompositionEntity> compositions;
+
 }
