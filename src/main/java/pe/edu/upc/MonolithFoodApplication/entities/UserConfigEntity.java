@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-// Naydeline
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +21,5 @@ public class UserConfigEntity {
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
-
 
 }

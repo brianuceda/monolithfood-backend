@@ -1,10 +1,12 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,21 +25,22 @@ public class UserPersonalInfoEntity {
     private GenderEnum gender;
 
     @Column(nullable = false)
-    private Double height_cm;
+    private Double heightCm;
 
     @Column(nullable = false)
-    private Double weight_kg;
+    private Double weightKg;
 
     @Column(nullable = false, length = 50)
-    private String activity_level;
+    private String activityLevel;
 
     @Column(nullable = false)
-    private Double target_weight_kg;
+    private Double targetWeightKg;
     
     @Column(nullable = false)
-    private Double daily_caloric_intake;
+    private Double daily_CaloricIntake;
     
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
+
 }

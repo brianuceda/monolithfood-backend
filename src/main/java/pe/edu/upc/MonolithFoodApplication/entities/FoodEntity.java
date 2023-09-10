@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "food")
+@Table(name = "foods")
 public class FoodEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +23,10 @@ public class FoodEntity {
     @Column(nullable = false, length = 255)
     private String information;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Boolean isPrivate = false;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Boolean isFavorite = false;
     
     @ManyToOne
@@ -37,7 +37,11 @@ public class FoodEntity {
     @JoinColumn(name = "category_food_id", nullable = true)
     private CategoryFoodEntity category;
 
-    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(
+        mappedBy = "food",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
     private List<CompositionEntity> compositions;
   
     @ManyToMany(mappedBy = "foods")

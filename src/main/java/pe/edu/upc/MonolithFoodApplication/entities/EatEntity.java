@@ -31,4 +31,5 @@ public class EatEntity {
     @ManyToOne
     @JoinColumn(name = "food_id")
     private FoodEntity food;
+    
 }

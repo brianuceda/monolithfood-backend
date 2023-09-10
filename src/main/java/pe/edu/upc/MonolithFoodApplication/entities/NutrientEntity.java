@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "nutrient")
+@Table(name = "nutrients")
 public class NutrientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,11 @@ public class NutrientEntity {
     @Column(nullable = true, length = 755)
     private String detailed_information;
 
-    @OneToMany(mappedBy = "nutrient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(
+        mappedBy = "nutrient",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
     private List<CompositionEntity> compositions;
 
 }
