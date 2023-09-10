@@ -35,7 +35,11 @@ public class FoodEntity {
     private Boolean isFavorite = false;
 
     @ManyToOne
-    @JoinColumn(name = "category_food_id", nullable = false)
+    @JoinColumn(name = "creator_user_id", nullable = true)
+    private UserEntity creatorUser;
+   
+    @ManyToOne
+    @JoinColumn(name = "category_food_id", nullable = true)
     private CategoryFoodEntity category;
 
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
