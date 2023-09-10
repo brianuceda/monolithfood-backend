@@ -36,6 +36,17 @@ public class UserEntity {
 
     @Column(nullable = false, length = 755)
     private String profileImg;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserConfigEntity userConfig;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name ="user_roles",
+            joinColumns = @JoinColumn (name = "user_id"),
+            inverseJoinColumns = @JoinColumn (name = "role_id")
+    )
+    private List<RoleEntity> roles;
     
     @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
     private List<RecipeEntity> createdRecipes;
