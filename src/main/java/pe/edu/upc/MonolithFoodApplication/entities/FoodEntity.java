@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 // Brian | Gabriela | Heather
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "food")
 public class FoodEntity {
@@ -30,8 +30,19 @@ public class FoodEntity {
 
     @Column(nullable = false)
     private Boolean isFavorite = false;
+    
+    @ManyToOne
+    @JoinColumn(name = "creator_user_id", nullable = true)
+    private UserEntity creatorUser;
+   
+    @ManyToOne
+    @JoinColumn(name = "category_food_id", nullable = true)
+    private CategoryFoodEntity category;
 
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<CompositionEntity> compositions;
+  
     @ManyToMany(mappedBy = "foods")
     private List<RecipeEntity> recipes;
-    
+
 }

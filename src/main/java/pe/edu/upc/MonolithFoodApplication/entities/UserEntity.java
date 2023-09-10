@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 // Gabriela | Heather | Naydeline | Willy
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -40,4 +40,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
     private List<RecipeEntity> createdRecipes;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EatEntity> eats;
+  
 }
