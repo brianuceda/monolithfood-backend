@@ -22,19 +22,19 @@ public class UserPersonalInfoEntity {
     @Column(nullable = false, length = 1)
     private GenderEnum gender;
 
-    @Column(nullable = false, precision = 5, scale = 3)
+    @Column(nullable = false)
     private Double height_cm;
 
-    @Column(nullable = false, precision = 5, scale = 3)
+    @Column(nullable = false)
     private Double weight_kg;
 
     @Column(nullable = false, length = 50)
     private String activity_level;
 
-    @Column(nullable = false, precision = 5, scale = 3)
+    @Column(nullable = false)
     private Double target_weight_kg;
     
-    @Column(nullable = false, precision = 5, scale = 3)
+    @Column(nullable = false)
     private Double daily_caloric_intake;
     
     @OneToOne

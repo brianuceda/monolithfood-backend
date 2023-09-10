@@ -69,7 +69,7 @@ public class UserEntity {
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {
                 "user_id",
-                "objectives_id"
+                "role_id"
             })
         }
     )
