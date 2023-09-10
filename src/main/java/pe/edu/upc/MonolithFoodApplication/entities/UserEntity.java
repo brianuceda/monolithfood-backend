@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 // Gabriela | Heather | Naydeline | Willy
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -37,6 +37,9 @@ public class UserEntity {
     @Column(nullable = false, length = 755)
     private String profileImg;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserConfigEntity userConfig;
+  
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;
 
@@ -57,4 +60,27 @@ public class UserEntity {
     )
     private List<ObjectivesEntity> objectives;
 
+    @ManyToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
+    @JoinTable(
+        name ="user_roles",
+        joinColumns = @JoinColumn (name = "user_id"),
+        inverseJoinColumns = @JoinColumn (name = "role_id"),
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {
+                "user_id",
+                "objectives_id"
+            })
+        }
+    )
+    private List<RoleEntity> roles;
+    
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
+    private List<RecipeEntity> createdRecipes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EatEntity> eats;
+  
 }
