@@ -1,12 +1,11 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import jakarta.persistence.*;
 import java.util.Date;
-import lombok.AllArgsConstructor;
+
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// Gabriela
+import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor

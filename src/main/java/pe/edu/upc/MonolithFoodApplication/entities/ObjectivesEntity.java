@@ -3,17 +3,15 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-// Willy
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "objectives")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-
 public class ObjectivesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

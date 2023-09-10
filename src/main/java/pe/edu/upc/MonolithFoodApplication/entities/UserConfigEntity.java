@@ -1,15 +1,15 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 // Naydeline
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table (name = "users_config")
 public class UserConfigEntity {

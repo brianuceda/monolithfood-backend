@@ -2,16 +2,14 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 
 import jakarta.persistence.*;
 import lombok.Builder;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// Naydeline
+import lombok.AllArgsConstructor;
 
 @Builder
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "roles")
 public class RoleEntity {

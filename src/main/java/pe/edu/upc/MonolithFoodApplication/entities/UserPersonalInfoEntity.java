@@ -1,19 +1,15 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users_personal_info")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-
-// Willy
-
 public class UserPersonalInfoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
