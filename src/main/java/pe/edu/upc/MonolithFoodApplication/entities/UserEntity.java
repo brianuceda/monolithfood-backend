@@ -39,12 +39,41 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserConfigEntity userConfig;
+  
+    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+    private UserPersonalInfoEntity userPersonalInfo;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
     @JoinTable(
-            name ="user_roles",
-            joinColumns = @JoinColumn (name = "user_id"),
-            inverseJoinColumns = @JoinColumn (name = "role_id")
+        name = "user_objectives",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "objectives_id"),
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {
+                "user_id",
+                "objectives_id"
+            })
+        }
+    )
+    private List<ObjectivesEntity> objectives;
+
+    @ManyToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
+    @JoinTable(
+        name ="user_roles",
+        joinColumns = @JoinColumn (name = "user_id"),
+        inverseJoinColumns = @JoinColumn (name = "role_id"),
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {
+                "user_id",
+                "objectives_id"
+            })
+        }
     )
     private List<RoleEntity> roles;
     
