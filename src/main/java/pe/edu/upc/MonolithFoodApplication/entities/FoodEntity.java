@@ -26,14 +26,11 @@ public class FoodEntity {
     private String information;
 
     @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
     private Boolean isPrivate = false;
 
     @Column(nullable = false)
     private Boolean isFavorite = false;
-
+    
     @ManyToOne
     @JoinColumn(name = "creator_user_id", nullable = true)
     private UserEntity creatorUser;
@@ -44,5 +41,8 @@ public class FoodEntity {
 
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CompositionEntity> compositions;
+  
+    @ManyToMany(mappedBy = "foods")
+    private List<RecipeEntity> recipes;
 
 }

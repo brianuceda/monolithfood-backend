@@ -36,11 +36,11 @@ public class UserEntity {
 
     @Column(nullable = false, length = 755)
     private String profileImg;
+    
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
+    private List<RecipeEntity> createdRecipes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EatEntity> eats;
-
-    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
-    private List<FoodEntity> createdFoods;
-
+  
 }
