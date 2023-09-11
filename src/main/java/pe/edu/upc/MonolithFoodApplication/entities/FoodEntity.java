@@ -3,17 +3,15 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// Brian | Gabriela | Heather
+import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "food")
+@Table(name = "foods")
 public class FoodEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,20 +23,28 @@ public class FoodEntity {
     @Column(nullable = false, length = 255)
     private String information;
 
-    @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Boolean isPrivate = false;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Boolean isFavorite = false;
-
+    
     @ManyToOne
-    @JoinColumn(name = "category_food_id", nullable = false)
+    @JoinColumn(name = "creator_user_id", nullable = true)
+    private UserEntity creatorUser;
+   
+    @ManyToOne
+    @JoinColumn(name = "category_food_id", nullable = true)
     private CategoryFoodEntity category;
 
-    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(
+        mappedBy = "food",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
     private List<CompositionEntity> compositions;
+  
+    @ManyToMany(mappedBy = "foods")
+    private List<RecipeEntity> recipes;
 
 }
