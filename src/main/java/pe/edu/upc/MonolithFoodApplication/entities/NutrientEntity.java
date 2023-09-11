@@ -3,15 +3,15 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "nutrient")
+@Table(name = "nutrients")
 public class NutrientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,11 @@ public class NutrientEntity {
     @Column(nullable = true, length = 755)
     private String detailed_information;
 
-    @OneToMany(mappedBy = "nutrient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(
+        mappedBy = "nutrient",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
     private List<CompositionEntity> compositions;
 
 }

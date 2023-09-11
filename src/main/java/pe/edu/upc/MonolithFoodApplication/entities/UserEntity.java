@@ -3,11 +3,9 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// Gabriela | Heather | Naydeline | Willy
+import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -37,10 +35,50 @@ public class UserEntity {
     @Column(nullable = false, length = 755)
     private String profileImg;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserConfigEntity userConfig;
+  
+    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+    private UserPersonalInfoEntity userPersonalInfo;
+
+    @ManyToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
+    @JoinTable(
+        name = "user_objectives",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "objectives_id"),
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {
+                "user_id",
+                "objectives_id"
+            })
+        }
+    )
+    private List<ObjectivesEntity> objectives;
+
+    @ManyToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER
+    )
+    @JoinTable(
+        name ="user_roles",
+        joinColumns = @JoinColumn (name = "user_id"),
+        inverseJoinColumns = @JoinColumn (name = "role_id"),
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {
+                "user_id",
+                "role_id"
+            })
+        }
+    )
+    private List<RoleEntity> roles;
+    
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
+    private List<RecipeEntity> createdRecipes;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EatEntity> eats;
-
-    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
-    private List<FoodEntity> createdFoods;
-
+  
 }
