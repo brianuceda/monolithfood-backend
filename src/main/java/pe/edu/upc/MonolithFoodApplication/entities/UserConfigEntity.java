@@ -1,15 +1,13 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// Naydeline
+import lombok.AllArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table (name = "users_config")
 public class UserConfigEntity {
@@ -23,6 +21,5 @@ public class UserConfigEntity {
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
-
 
 }

@@ -1,19 +1,17 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users_personal_info")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-
-// Willy
-
 public class UserPersonalInfoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,22 +24,23 @@ public class UserPersonalInfoEntity {
     @Column(nullable = false, length = 1)
     private GenderEnum gender;
 
-    @Column(nullable = false, precision = 5, scale = 3)
-    private Double height_cm;
+    @Column(nullable = false)
+    private Double heightCm;
 
-    @Column(nullable = false, precision = 5, scale = 3)
-    private Double weight_kg;
+    @Column(nullable = false)
+    private Double weightKg;
 
     @Column(nullable = false, length = 50)
-    private String activity_level;
+    private String activityLevel;
 
-    @Column(nullable = false, precision = 5, scale = 3)
-    private Double target_weight_kg;
+    @Column(nullable = false)
+    private Double targetWeightKg;
     
-    @Column(nullable = false, precision = 5, scale = 3)
-    private Double daily_caloric_intake;
+    @Column(nullable = false)
+    private Double daily_CaloricIntake;
     
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
+
 }

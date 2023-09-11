@@ -3,15 +3,13 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// Heather
+import lombok.AllArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "recipes")
 public class RecipeEntity {
@@ -28,16 +26,16 @@ public class RecipeEntity {
     @Column(nullable = false, length = 1000)
     private String preparationGuide;
 
-    @Column(nullable = false, length = 555)
+    @Column(nullable = true, length = 555)
     private String benefits;
 
-    @Column(nullable = false, length = 555)
+    @Column(nullable = true, length = 555)
     private String disadvantages;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Boolean isPrivate = false;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Boolean isFavorite = false;
 
     @ManyToOne
@@ -50,7 +48,7 @@ public class RecipeEntity {
     )
 	@JoinTable(
 		name = "foods_recipes",
-		joinColumns = @JoinColumn(name = "recipes_id"),
+		joinColumns = @JoinColumn(name = "recipe_id"),
 		inverseJoinColumns = @JoinColumn(name = "food_id")
 	)
 	private List<FoodEntity> foods;

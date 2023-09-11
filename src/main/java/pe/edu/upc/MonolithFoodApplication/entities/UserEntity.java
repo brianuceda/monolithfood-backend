@@ -3,11 +3,9 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// Gabriela | Heather | Naydeline | Willy
+import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -71,7 +69,7 @@ public class UserEntity {
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {
                 "user_id",
-                "objectives_id"
+                "role_id"
             })
         }
     )
