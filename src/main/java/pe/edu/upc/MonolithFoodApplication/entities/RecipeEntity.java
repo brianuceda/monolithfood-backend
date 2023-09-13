@@ -17,19 +17,19 @@ public class RecipeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 125)
+    @Column(nullable = false, length = 128)
     private String name = "Receta sin nombre";
 
-    @Column(nullable = false, length = 255)
-    private String description;
+    @Column(nullable = false, length = 256)
+    private String information;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String preparationGuide;
 
-    @Column(nullable = true, length = 555)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String benefits;
 
-    @Column(nullable = true, length = 555)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String disadvantages;
 
     @Column(nullable = true)
@@ -47,7 +47,7 @@ public class RecipeEntity {
         cascade = CascadeType.ALL
     )
 	@JoinTable(
-		name = "foods_recipes",
+		name = "food_recipe",
 		joinColumns = @JoinColumn(name = "recipe_id"),
 		inverseJoinColumns = @JoinColumn(name = "food_id")
 	)

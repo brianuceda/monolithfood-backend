@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table (name = "users_config")
+@Table (name = "user_config")
 public class UserConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +17,9 @@ public class UserConfigEntity {
 
     @Column(nullable = false)
     private Boolean notifications = false;
+
+    @Column(nullable = false)
+    private Boolean darkMode = true;
 
     @OneToOne
     @JoinColumn(name="user_id")

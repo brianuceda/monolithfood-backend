@@ -11,8 +11,8 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "nutrients")
-public class NutrientEntity {
+@Table(name = "activity_level") // Factor de actividad física (Harris-Benedict)
+public class ActivityLevelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,17 +20,15 @@ public class NutrientEntity {
     @Column(nullable = false, length = 80, unique = true)
     private String name;
 
-    @Column(nullable = false, length = 256)
+    @Column(nullable = false)
+    private Double quotient;
+
+    @Column(length = 20)
+    private String days;
+
+    @Column(length = 512)
     private String information;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
-    private String detailed_information;
-
-    @OneToMany(
-        mappedBy = "nutrient",
-        cascade = CascadeType.ALL,
-        fetch = FetchType.EAGER
-    )
-    private List<CompositionEntity> compositions;
-
+    @OneToMany(mappedBy = "activityLevel", cascade = CascadeType.ALL)
+    private List<UserPersonalInfoEntity> users;
 }

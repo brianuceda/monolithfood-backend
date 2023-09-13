@@ -11,17 +11,17 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "objectives")
-public class ObjectivesEntity {
+@Table(name = "objective")
+public class ObjectiveEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 80)
     private String name;
 
-    @Column(nullable = false, length = 500)
-    private String description;
+    @Column(nullable = false, length = 512)
+    private String information;
 
     @ManyToMany(mappedBy = "objectives")
     private List<UserEntity> users;

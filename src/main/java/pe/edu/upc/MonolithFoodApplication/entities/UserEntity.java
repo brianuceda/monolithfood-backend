@@ -17,7 +17,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 40, unique = true)
     private String username;
 
     @Column(nullable = false, length = 80)
@@ -26,13 +26,13 @@ public class UserEntity {
     @Column(nullable = false, length = 150, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 128)
     private String names;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 128)
     private String surnames;
 
-    @Column(nullable = false, length = 755)
+    @Column(nullable = false, length = 512)
     private String profileImg;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -46,24 +46,24 @@ public class UserEntity {
         fetch = FetchType.EAGER
     )
     @JoinTable(
-        name = "user_objectives",
+        name = "user_objective",
         joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "objectives_id"),
+        inverseJoinColumns = @JoinColumn(name = "objective_id"),
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {
                 "user_id",
-                "objectives_id"
+                "objective_id"
             })
         }
     )
-    private List<ObjectivesEntity> objectives;
+    private List<ObjectiveEntity> objectives;
 
     @ManyToMany(
         cascade = CascadeType.ALL,
         fetch = FetchType.EAGER
     )
     @JoinTable(
-        name ="user_roles",
+        name ="user_role",
         joinColumns = @JoinColumn (name = "user_id"),
         inverseJoinColumns = @JoinColumn (name = "role_id"),
         uniqueConstraints = {
