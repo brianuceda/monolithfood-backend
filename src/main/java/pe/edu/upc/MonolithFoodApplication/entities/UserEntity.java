@@ -35,8 +35,14 @@ public class UserEntity {
     @Column(nullable = false, length = 512)
     private String profileImg;
 
+    @Column(nullable = false)
+    private Boolean is_account_blocked = false;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserConfigEntity userConfig;
+  
+    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+    private IpLoginAttemptEntity ipLoginAttempt;
   
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;

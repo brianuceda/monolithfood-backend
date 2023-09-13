@@ -3,12 +3,10 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.util.Date;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,7 +18,7 @@ public class UserPersonalInfoEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 1)
+    @Column(nullable = false)
     private GenderEnum gender;
 
     @Column(nullable = false)

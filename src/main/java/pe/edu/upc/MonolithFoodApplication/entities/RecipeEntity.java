@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "recipes")
+@Table(name = "recipe")
 public class RecipeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +31,10 @@ public class RecipeEntity {
 
     @Column(nullable = true, columnDefinition = "TEXT")
     private String disadvantages;
-
-    @Column(nullable = true)
-    private Boolean isPrivate = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PrivacityEnum privacity = PrivacityEnum.PRIVATE;
 
     @Column(nullable = true)
     private Boolean isFavorite = false;
