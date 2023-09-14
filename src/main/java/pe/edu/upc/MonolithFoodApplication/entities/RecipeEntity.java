@@ -31,6 +31,9 @@ public class RecipeEntity {
 
     @Column(nullable = true, columnDefinition = "TEXT")
     private String disadvantages;
+
+    @Column(nullable = true)
+    private Integer review_stars;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

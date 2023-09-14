@@ -46,6 +46,9 @@ public class UserEntity {
   
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;
+  
+    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+    private UserFitnessInfoEntity userFitnessInfo;
 
     @ManyToMany(
         cascade = CascadeType.ALL,

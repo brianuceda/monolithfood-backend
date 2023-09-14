@@ -29,12 +29,6 @@ public class UserPersonalInfoEntity {
 
     @Column(nullable = false)
     private Double weightKg;
-
-    @Column(nullable = false)
-    private Double targetWeightKg;
-    
-    @Column(nullable = false)
-    private Double dailyCaloricIntake;
    
     @ManyToOne
     @JoinColumn(name = "activity_level_id", nullable = false)

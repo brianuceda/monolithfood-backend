@@ -1,6 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,8 +22,8 @@ public class IpLoginAttemptEntity {
 
     private Boolean isAccountBlocked = false;
     private Integer attemptsCount;
-    private Date lastAttemptDate;
-    private Date blockedDate;
+    private Timestamp lastAttemptDate;
+    private Timestamp blockedDate;
     
     @OneToOne
     @JoinColumn(name="user_id")
