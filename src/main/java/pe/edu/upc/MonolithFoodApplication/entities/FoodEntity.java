@@ -11,23 +11,27 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "foods")
+@Table(name = "food")
 public class FoodEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 80, unique = true)
     private String name;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 256)
     private String information;
-
-    @Column(nullable = true)
-    private Boolean isPrivate = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PrivacityEnum privacity = PrivacityEnum.PRIVATE;
 
     @Column(nullable = true)
     private Boolean isFavorite = false;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String sourceOfOrigin;
     
     @ManyToOne
     @JoinColumn(name = "creator_user_id", nullable = true)
