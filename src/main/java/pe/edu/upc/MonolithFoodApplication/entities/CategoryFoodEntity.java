@@ -17,16 +17,16 @@ public class CategoryFoodEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 80, unique = true)
     private String name;
 
-    @Column(length = 255)
+    @Column(nullable = true, length = 256)
     private String information;
 
-    @Column(length = 555)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String benefits;
 
-    @Column(length = 555)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String disadvantages;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
