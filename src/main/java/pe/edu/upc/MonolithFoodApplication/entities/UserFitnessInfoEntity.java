@@ -1,6 +1,5 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,26 +10,32 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table (name = "user_config")
-public class UserConfigEntity {
+@Table(name = "user_fitness_info")
+public class UserFitnessInfoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private Boolean notifications_enabled = true;
-
+    private Double targetWeightKg;
+    
     @Column(nullable = false)
-    private Timestamp last_food_entry;
-
+    private Double imc;
+    
     @Column(nullable = false)
-    private Timestamp last_weight_update;
-
+    private Double dailyCaloricIntake;
+    
     @Column(nullable = false)
-    private Boolean darkMode = true;
-
+    private Double dailyProteinIntake;
+    
+    @Column(nullable = false)
+    private Double dailyCarbohydrateIntake;
+    
+    @Column(nullable = false)
+    private Double dailyFatIntake;
+    
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
-
+    
 }
