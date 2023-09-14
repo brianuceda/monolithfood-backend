@@ -11,26 +11,22 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table (name = "user_config")
-public class UserConfigEntity {
+@Table(name = "ip_login_attempt")
+public class IpLoginAttemptEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean notifications_enabled = true;
+    @Column(nullable = false, length = 45)
+    private String ipAddress;
 
-    @Column(nullable = false)
-    private Timestamp last_food_entry;
-
-    @Column(nullable = false)
-    private Timestamp last_weight_update;
-
-    @Column(nullable = false)
-    private Boolean darkMode = true;
-
+    private Boolean isAccountBlocked = false;
+    private Integer attemptsCount;
+    private Timestamp lastAttemptDate;
+    private Timestamp blockedDate;
+    
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
-
+    
 }
