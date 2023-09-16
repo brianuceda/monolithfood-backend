@@ -29,7 +29,7 @@ public class UserPersonalInfoEntity {
 
     @Column(nullable = false)
     private Double weightKg;
-   
+    
     @ManyToOne
     @JoinColumn(name = "activity_level_id", nullable = false)
     private ActivityLevelEntity activityLevel;
