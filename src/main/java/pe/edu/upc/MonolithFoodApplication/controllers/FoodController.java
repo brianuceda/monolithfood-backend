@@ -1,7 +1,8 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
 
-import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
+import pe.edu.upc.MonolithFoodApplication.dto.FoodNutrientDTO;
+import pe.edu.upc.MonolithFoodApplication.dto.SearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.services.FoodService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,32 +23,32 @@ public class FoodController {
     @Autowired
     private FoodService foodService;
 
-    @GetMapping("/foods")
-    public List<FoodEntity> searchFoodByName(@RequestParam String name) {
-        return foodService.searchFoodByName(name);
+    @GetMapping("/searchByName")
+    public ResponseEntity<List<SearchFoodDTO>> searchFoodsByName(@RequestParam String foodName) {
+        return new ResponseEntity<List<SearchFoodDTO>>(foodService.searchFoodsByName(foodName), HttpStatus.OK);
     }
 
-    @GetMapping("/foods/byCategory")
-    public List<FoodEntity> searchFoodByCategory(@RequestParam String category) {
-        return foodService.searchFoodByCategory(category);
+    @GetMapping("/searchByCategory")
+    public ResponseEntity<List<SearchFoodDTO>> searchFoodsByCategory(@RequestParam String categoryName) {
+        return new ResponseEntity<List<SearchFoodDTO>>(foodService.searchFoodsByCategory(categoryName), HttpStatus.OK);
     }
 
-    @GetMapping("/foods/byNutrient")
-    public List<FoodEntity> searchFoodByNutrient(@RequestParam String nutrient) {
-        return foodService.searchFoodByNutrient(nutrient);
+    @GetMapping("/searchByNutrient")
+    public ResponseEntity<List<FoodNutrientDTO>> searchFoodsByNutrient(@RequestParam String nutrientName) {
+        return new ResponseEntity<List<FoodNutrientDTO>>(foodService.searchFoodsByNutrient(nutrientName), HttpStatus.OK);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<String> searchFood(
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "category", required = false) String category,
-            @RequestParam(name = "nutrient", required = false) String nutrient) {
+    // @GetMapping("/search")
+    // public ResponseEntity<String> searchFood(
+    //         @RequestParam(name = "name", required = false) String name,
+    //         @RequestParam(name = "category", required = false) String category,
+    //         @RequestParam(name = "nutrient", required = false) String nutrient) {
 
-        // Call the service to search for foods
-        String searchResultMessage = foodService.searchFoods(name, category, nutrient);
+    //     // Call the service to search for foods
+    //     String searchResultMessage = foodService.searchFoods(name, category, nutrient);
 
-        return new ResponseEntity<>(searchResultMessage, HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>(searchResultMessage, HttpStatus.OK);
+    // }
     
    
 }
