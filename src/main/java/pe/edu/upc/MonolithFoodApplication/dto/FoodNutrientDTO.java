@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FoodNutrientDTO {
     private String foodName;
-    private String nutrientName;
     private Double nutrientQuantity;
 
 }

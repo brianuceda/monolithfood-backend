@@ -66,7 +66,7 @@ public class FoodService {
     private FoodNutrientDTO convertToFoodNutrientDTO(FoodEntity foodEntity, String nutrientName) {
         return foodEntity.getCompositions().stream()
             .filter(c -> c.getNutrient().getName().equals(nutrientName))
-            .map(c -> new FoodNutrientDTO(foodEntity.getName(), c.getNutrient().getName(), c.getNutrientQuantity()))
+            .map(c -> new FoodNutrientDTO(foodEntity.getName(), c.getNutrientQuantity()))
             .findFirst()
             .orElse(null); // o lanzar una excepción si es apropiado
     }
