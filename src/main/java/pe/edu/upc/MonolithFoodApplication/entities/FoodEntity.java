@@ -51,4 +51,8 @@ public class FoodEntity {
     @ManyToMany(mappedBy = "foods")
     private List<RecipeEntity> recipes;
 
+    @Column(nullable = true)
+    private String nutrient;
+
+
 }
