@@ -11,21 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.CompositionEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.CompositionKey;
-import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.NutrientEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.PrivacityEnum;
-import pe.edu.upc.MonolithFoodApplication.entities.RecipeEntity;
-import pe.edu.upc.MonolithFoodApplication.repositories.ActivityLevelRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.CategoryRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.CompositionRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.NutrientRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
+import pe.edu.upc.MonolithFoodApplication.entities.*;
+import pe.edu.upc.MonolithFoodApplication.repositories.*;
 
 @SpringBootApplication
 public class MonolithFoodApplication {
@@ -42,7 +29,15 @@ public class MonolithFoodApplication {
         NutrientRepository nutrientRepository,
         CategoryRepository categoryFoodRepository,
         FoodRepository foodRepository,
-        CompositionRepository compositionRepository
+        RecipeRepository recipeRepository,
+        RoleRepository roleRepository,
+        UserRepository userRepository,
+        UserPersonalInfoRepository userPersonalInfoRepository,
+        UserFitnessInfoRepository userFitnessInfoRepository,
+        UserConfigRepository userConfigRepository,
+        IpLoginAttemptRepository ipLoginAttemptRepository,
+        CompositionRepository compositionRepository,
+        EatRepository eatRepository
     ){
         return args -> {
 
@@ -52,7 +47,14 @@ public class MonolithFoodApplication {
             List<NutrientEntity> nutrients = new ArrayList<>();
             List<FoodEntity> foods = new ArrayList<>();
             List<RecipeEntity> recipes = new ArrayList<>();
+            List<RoleEntity> roles = new ArrayList<>();
+            List<UserEntity> users = new ArrayList<>();
+            List<UserPersonalInfoEntity> usersPersonalsInfos = new ArrayList<>();
+            List<UserFitnessInfoEntity> usersFitnessInfos = new ArrayList<>();
+            List<UserConfigEntity> userConfig = new ArrayList<>();
+            List<IpLoginAttemptEntity> ipsLoginsAttempts = new ArrayList<>();
             List<CompositionEntity> compositions = new ArrayList<>();
+            List<EatEntity> eats = new ArrayList<>();
 
             if(activityLevelRepository.count() == 0) {
                 activityLevels = Arrays.asList(
@@ -87,7 +89,6 @@ public class MonolithFoodApplication {
                 );
                 objectiveRepository.saveAll(objectives);
             }
-
             if(nutrientRepository.count() == 0) {
                 nutrients = Arrays.asList(
                     new NutrientEntity(null, "Proteína", "Macronutriente esencial para la construcción de masa muscular.", "...", null),
@@ -130,6 +131,44 @@ public class MonolithFoodApplication {
                 );
                 foodRepository.saveAll(foods);
             }
+            // CAMBIAR POR EL NOMBRE DE PERSONAS REALES
+            if(recipeRepository.count() == 0) {
+                recipes = Arrays.asList(
+                    new RecipeEntity(null, "Arroz con pollo", "Delicioso arroz con pollo y verduras", "1. Cocinar el pollo.\n2. Cocinar el arroz y mezclar con el pollo.\n3. Añadir brócoli al gusto.", "Rico en proteínas y carbohidratos", "Puede ser alto en calorías", 4, PrivacityEnum.PUBLIC, false, getUserByName(users, "usernameEjemplo"), Arrays.asList(getFoodByName(foods, "Pollo"), getFoodByName(foods, "Arroz"), getFoodByName(foods, "Brocoli"))),
+                    new RecipeEntity(null, "Ensalada de salmón", "Ensalada fresca con salmón a la parrilla", "1. Asar el salmón.\n2. Servir sobre lechuga y añadir rodajas de plátano.", "Rico en omega 3 y potasio", "Cuidado con el consumo excesivo de sal", 5, PrivacityEnum.PUBLIC, false, getUserByName(users, "usernameEjemplo"), Arrays.asList(getFoodByName(foods, "Salmón"), getFoodByName(foods, "Plátano"))),
+                    new RecipeEntity(null, "Crema de brócoli", "Sopa cremosa de brócoli", "1. Cocer el brócoli.\n2. Licuar con un poco de leche y sazonar al gusto.", "Bajo en calorías y rico en vitamina C", "Puede ser bajo en proteínas", 4, PrivacityEnum.PUBLIC, false, getUserByName(users, "usernameEjemplo"), Arrays.asList(getFoodByName(foods, "Brocoli"), getFoodByName(foods, "Leche"))),
+                    new RecipeEntity(null, "Batido de plátano", "Batido refrescante de plátano", "1. Pelar y picar el plátano.\n2. Licuar con leche y servir frío.", "Rico en potasio y calcio", "Alto en azúcares naturales", 5, PrivacityEnum.PUBLIC, false, getUserByName(users, "usernameEjemplo"), Arrays.asList(getFoodByName(foods, "Plátano"), getFoodByName(foods, "Leche")))
+                );
+                recipeRepository.saveAll(recipes);
+            }
+            if(roleRepository.count() == 0) {
+                roles = Arrays.asList(
+                    new RoleEntity(null, RoleEnum.ADMIN),
+                    new RoleEntity(null, RoleEnum.USER)
+                );
+                roleRepository.saveAll(roles);
+            }
+            if(userRepository.count() == 0) {
+                RoleEntity USER = roleRepository.findByName(RoleEnum.USER);
+                RoleEntity ADMIN = roleRepository.findByName(RoleEnum.ADMIN);
+                List<RoleEntity> rolesUser = Arrays.asList(USER);
+                List<RoleEntity> rolesAdmin = Arrays.asList(USER, ADMIN);
+
+                users = Arrays.asList(
+                    new UserEntity(null, "kiridepapel", "password123", "john@example.com", "John", "Doe", "linkImagenJohn", false, null, null, null, null, null, rolesAdmin, null, null),
+                    new UserEntity(null, "heatherxvalencia", "password456", "jane@example.com", "Jane", "Doe", "linkImagenJane", false, null, null, null, null, null, rolesUser, null, null),
+                    new UserEntity(null, "adminUser", "adminPass", "admin@example.com", "Admin", "User", "linkImagenAdmin", false, null, null, null, null, null, rolesUser, null, null),
+                    new UserEntity(null, "editorUser", "editorPass", "editor@example.com", "Editor", "User", "linkImagenEditor", false, null, null, null, null, null, rolesUser, null, null),
+                    new UserEntity(null, "viewerUser", "viewerPass", "viewer@example.com", "Viewer", "User", "linkImagenViewer", false, null, null, null, null, null, rolesUser, null, null),
+                    new UserEntity(null, "contributorUser", "contributorPass", "contributor@example.com", "Contributor", "User", "linkImagenContributor", false, null, null, null, null, null, rolesUser, null, null)
+                );
+                userRepository.saveAll(users);
+            }
+            
+
+
+
+
 
 
             //
@@ -217,6 +256,15 @@ public class MonolithFoodApplication {
         };
     }
 
+    // Métodos auxiliares
+    // User
+    public UserEntity getUserByName(List<UserEntity> users, String userName) {
+        return users.stream().filter(user -> user.getUsername().equalsIgnoreCase(userName)).findFirst().orElse(null);
+    }
+    // ActivityLevel
+    public ActivityLevelEntity getActivityLevelByName(List<ActivityLevelEntity> activityLevels, String activityLevelName) {
+        return activityLevels.stream().filter(activityLevel -> activityLevel.getName().equalsIgnoreCase(activityLevelName)).findFirst().orElse(null);
+    }    
     // Composition
     private FoodEntity getFoodByName(List<FoodEntity> foods, String name) {
         return foods.stream().filter(food -> food.getName().equals(name)).findFirst().orElse(null);

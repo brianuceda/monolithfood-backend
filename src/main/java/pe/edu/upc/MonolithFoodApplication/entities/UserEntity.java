@@ -68,7 +68,7 @@ public class UserEntity {
     private List<ObjectiveEntity> objectives;
 
     @ManyToMany(
-        cascade = CascadeType.ALL,
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE},
         fetch = FetchType.EAGER
     )
     @JoinTable(
