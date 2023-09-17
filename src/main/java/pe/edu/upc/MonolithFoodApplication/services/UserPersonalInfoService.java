@@ -47,6 +47,5 @@ public class UserPersonalInfoService {
                 personalInfoEntity.getHeightCm(), personalInfoEntity.getWeightKg(), personalInfoEntity.getActivityLevel(),
                 personalInfoEntity.getUser());
 
-
     }
 }
