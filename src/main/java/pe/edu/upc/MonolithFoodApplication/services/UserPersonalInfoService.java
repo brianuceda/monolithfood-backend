@@ -14,6 +14,6 @@ public class UserPersonalInfoService {
         this.userPersonaIInfoRepository = userPersonaIInfoRepository;
     }
 
-    public UserPersonalInfoEntity
+    //public UserPersonalInfoEntity
 
 }
