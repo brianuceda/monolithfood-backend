@@ -12,6 +12,8 @@ import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.ActivityLevelRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @SpringBootApplication
 public class MonolithFoodApplication {
@@ -24,7 +26,10 @@ public class MonolithFoodApplication {
     @Bean
     public CommandLineRunner initData(
         ActivityLevelRepository activityLevelRepository,
-        ObjectiveRepository objectiveRepository
+        ObjectiveRepository objectiveRepository,
+        UserRepository userRepository,
+        UserFitnessInfoRepository userFitnessRepository,
+        UserFitnessInfoRepository userPersonalInfoRepository
     ){
         return args -> {
             // Inserta los niveles de actividad física si no existen
@@ -55,6 +60,14 @@ public class MonolithFoodApplication {
             }
 
             // Otras actividades de inicialización;
+            //insertar datos a user fitnes info 
+
+            if(userFitnessRepository.count()==0)
+            {
+    
+            }
+
+
         };
     }
 }

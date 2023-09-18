@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.IMCDTO;
@@ -17,13 +18,13 @@ public class UserPersonalInfoController {
     private UserPersonalInfoService userPersonalInfoService;
 
     @PutMapping("/updateWeight")
-    public ResponseEntity<IMCDTO> updateWeightAndGetIMC(String username, Double weight) {
+    public ResponseEntity<IMCDTO> updateWeightAndGetIMC(@RequestParam String username, @RequestParam Double weight) {
         IMCDTO imcDTO = userPersonalInfoService.updateWeightAndGetIMC(username, weight);
         return new ResponseEntity<>(imcDTO, HttpStatus.OK);
     }
 
     @PutMapping("/updateHeight")
-    public ResponseEntity<IMCDTO> updateHeightAndGetIMC(String username, Double height) {
+    public ResponseEntity<IMCDTO> updateHeightAndGetIMC(@RequestParam String username,@RequestParam Double height) {
         IMCDTO imcDTO = userPersonalInfoService.updateHeightAndGetIMC(username, height);
         return new ResponseEntity<>(imcDTO, HttpStatus.OK);
     }
