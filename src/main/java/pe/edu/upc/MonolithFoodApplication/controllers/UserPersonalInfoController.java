@@ -21,4 +21,10 @@ public class UserPersonalInfoController {
         IMCDTO imcDTO = userPersonalInfoService.updateWeightAndGetIMC(username, weight);
         return new ResponseEntity<>(imcDTO, HttpStatus.OK);
     }
+
+    @PutMapping("/updateHeight")
+    public ResponseEntity<IMCDTO> updateHeightAndGetIMC(String username, Double height) {
+        IMCDTO imcDTO = userPersonalInfoService.updateHeightAndGetIMC(username, height);
+        return new ResponseEntity<>(imcDTO, HttpStatus.OK);
+    }
 }
