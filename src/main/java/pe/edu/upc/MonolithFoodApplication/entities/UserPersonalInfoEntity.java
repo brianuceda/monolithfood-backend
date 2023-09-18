@@ -1,6 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class UserPersonalInfoEntity {
     private GenderEnum gender;
 
     @Column(nullable = false)
-    private Date birthdate;
+    private Timestamp birthdate;
 
     @Column(nullable = false)
     private Double heightCm;

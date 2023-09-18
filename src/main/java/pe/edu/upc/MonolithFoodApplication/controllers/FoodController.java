@@ -24,8 +24,12 @@ public class FoodController {
     private FoodService foodService;
 
     @GetMapping("/searchByName")
-    public ResponseEntity<List<SearchFoodDTO>> searchFoodsByName(@RequestParam String foodName) {
-        return new ResponseEntity<List<SearchFoodDTO>>(foodService.searchFoodsByName(foodName), HttpStatus.OK);
+    public ResponseEntity<?> searchFoodsByName(@RequestParam String foodName) {
+        try {
+            return new ResponseEntity<List<SearchFoodDTO>>(foodService.searchFoodsByName(foodName), HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity<String>("Error", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/searchByCategory")

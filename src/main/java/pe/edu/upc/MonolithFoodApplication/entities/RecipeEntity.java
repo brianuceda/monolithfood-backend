@@ -46,15 +46,11 @@ public class RecipeEntity {
     @JoinColumn(name = "creator_user_id")
     private UserEntity creatorUser;
 
-    @ManyToMany(
-        fetch = FetchType.EAGER,
-        cascade = CascadeType.ALL
+    @OneToMany(
+        mappedBy = "recipe",
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
+        fetch = FetchType.EAGER
     )
-	@JoinTable(
-		name = "food_recipe",
-		joinColumns = @JoinColumn(name = "recipe_id"),
-		inverseJoinColumns = @JoinColumn(name = "food_id")
-	)
-	private List<FoodEntity> foods;
+    private List<IngredientEntity> ingredients;
 
 }

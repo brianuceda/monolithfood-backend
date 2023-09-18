@@ -28,7 +28,7 @@ public class NutrientEntity {
 
     @OneToMany(
         mappedBy = "nutrient",
-        cascade = CascadeType.ALL,
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     private List<CompositionEntity> compositions;
