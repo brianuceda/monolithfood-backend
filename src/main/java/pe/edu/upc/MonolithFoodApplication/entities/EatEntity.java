@@ -23,7 +23,7 @@ public class EatEntity {
     private Timestamp date;
     
     @Column(nullable = false)
-    private Integer quantity;
+    private Double eatQuantity;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
