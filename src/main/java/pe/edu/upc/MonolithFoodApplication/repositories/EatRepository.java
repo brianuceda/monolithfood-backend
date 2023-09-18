@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 
 @Repository
-public interface EatRepository extends JpaRepository<EatEntity, Integer> {
+public interface EatRepository extends JpaRepository<EatEntity, Long> {
     
 }

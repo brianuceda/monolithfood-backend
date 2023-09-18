@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import pe.edu.upc.MonolithFoodApplication.entities.IpLoginAttemptEntity;
 
 @Repository
-public interface IpLoginAttemptRepository extends JpaRepository<IpLoginAttemptEntity, Integer> {
+public interface IpLoginAttemptRepository extends JpaRepository<IpLoginAttemptEntity, Long> {
     
 }
