@@ -59,6 +59,7 @@ public class UserEntity implements UserDetails {
     private String profileImg;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean is_account_blocked = false;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
