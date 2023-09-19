@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pe.edu.upc.MonolithFoodApplication.dtos.UserPersonallnfoDto;
-import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.dtos.UserPersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 
 @RestController
@@ -22,7 +21,7 @@ public class UserPersonalInfoController {
     }
 
     @PutMapping
-    public ResponseEntity<UserPersonallnfoDto> updatePersonalInfo (@RequestBody UserPersonallnfoDto userPersonallnfoDto){
+    public ResponseEntity<UserPersonalInfoDTO>updatePersonalInfo(@RequestBody UserPersonalInfoDTO userPersonallnfoDto){
         return new ResponseEntity<>(userPersonalInfoService.updateUserPeronalInfo(userPersonallnfoDto), HttpStatus.OK);
     }
 

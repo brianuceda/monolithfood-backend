@@ -7,18 +7,14 @@ import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 
-import java.util.Date;
+import java.security.Timestamp;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserPersonallnfoDto {
-
-    private Long id;
+public class UserPersonalInfoDTO {
     private GenderEnum gender;
-    private Date birthdate;
+    private Timestamp birthdate;
     private Double heightCm;
     private Double weightKg;
-    private ActivityLevelEntity activityLevel;
-    private UserEntity user;
-
 }

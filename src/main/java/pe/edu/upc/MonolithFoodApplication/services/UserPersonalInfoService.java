@@ -2,50 +2,39 @@ package pe.edu.upc.MonolithFoodApplication.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pe.edu.upc.MonolithFoodApplication.dtos.UserPersonallnfoDto;
+import pe.edu.upc.MonolithFoodApplication.dtos.UserPersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
-import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonaIInfoRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonalInfoRepository;
 
 @Service
 public class UserPersonalInfoService {
 
     @Autowired
-    private final UserPersonaIInfoRepository userPersonaIInfoRepository;
+    private UserPersonalInfoRepository userPersonalInfoRepository;
 
-    public UserPersonalInfoService(UserPersonaIInfoRepository userPersonaIInfoRepository) {
-        this.userPersonaIInfoRepository = userPersonaIInfoRepository;
-    }
-
-    public UserPersonallnfoDto updateUserPeronalInfo(UserPersonallnfoDto userPersonallnfoDto) {
-        UserPersonalInfoEntity personal = userPersonaIInfoRepository.findById(userPersonallnfoDto.getId())
-                .orElseThrow(() -> new RuntimeException("User personal not found"));
-        UserPersonalInfoEntity personalInfoEntity;
+    public UserPersonalInfoDTO updateUserPeronalInfo(String username, UserPersonalInfoDTO personalInfoDTO) {
+        UserPersonalInfoDTO getRepoPersonalInfo = userPersonalInfoRepository.findByUsername(username);
 
         //se valida para la actulización
-        if (userPersonallnfoDto.getGender() != null) {
-            personal.setGender(userPersonallnfoDto.getGender());
+        if (personalInfoDTO.getGender() != null) {
+            getRepoPersonalInfo.setGender(personalInfoDTO.getGender());
         }
-        if (userPersonallnfoDto.getBirthdate() != null) {
-            personal.setBirthdate(userPersonallnfoDto.getBirthdate());
+        if (personalInfoDTO.getBirthdate() != null) {
+            getRepoPersonalInfo.setBirthdate(personalInfoDTO.getBirthdate());
         }
-        if (userPersonallnfoDto.getHeightCm() != null) {
-            personal.setHeightCm(userPersonallnfoDto.getHeightCm());
+        if (personalInfoDTO.getHeightCm() != null) {
+            getRepoPersonalInfo.setHeightCm(personalInfoDTO.getHeightCm());
         }
-        if (userPersonallnfoDto.getWeightKg() != null) {
-            personal.setWeightKg(userPersonallnfoDto.getWeightKg());
-        }
-        if (userPersonallnfoDto.getActivityLevel() != null) {
-            personal.setActivityLevel(userPersonallnfoDto.getActivityLevel());
-        }
-        if (userPersonallnfoDto.getUser() != null) {
-            personal.setUser(userPersonallnfoDto.getUser());
+        if (personalInfoDTO.getWeightKg() != null) {
+            getRepoPersonalInfo.setWeightKg(personalInfoDTO.getWeightKg());
         }
 
-        personalInfoEntity = userPersonaIInfoRepository.save(personal);
+        
+        UserPersonalInfoEntity returnData = new UserPersonalInfoEntity(null, null, null, null, null, null, null)
 
-        return new UserPersonallnfoDto(personalInfoEntity.getId(), personalInfoEntity.getGender(), personalInfoEntity.getBirthdate(),
-                personalInfoEntity.getHeightCm(), personalInfoEntity.getWeightKg(), personalInfoEntity.getActivityLevel(),
-                personalInfoEntity.getUser());
+        userPersonalInfoRepository.save(getRepoPersonalInfo);
+        return getRepoPersonalInfo;
+        
 
     }
 

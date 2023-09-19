@@ -1,6 +1,7 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.util.Date;
+
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,10 +20,10 @@ public class EatEntity {
 
     @Column(nullable = true)
     @Temporal(TemporalType.DATE)
-    private Date date;
+    private Timestamp date;
     
     @Column(nullable = false)
-    private Integer quantity;
+    private Double eatQuantity;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

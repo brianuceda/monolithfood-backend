@@ -25,8 +25,8 @@ public class IpLoginAttemptEntity {
     private Timestamp lastAttemptDate;
     private Timestamp blockedDate;
     
-    @OneToOne
-    @JoinColumn(name="user_id")
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
     
 }

@@ -40,9 +40,9 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserConfigEntity userConfig;
-  
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
-    private IpLoginAttemptEntity ipLoginAttempt;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<IpLoginAttemptEntity> ipLoginAttempt;
   
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;
@@ -51,7 +51,7 @@ public class UserEntity {
     private UserFitnessInfoEntity userFitnessInfo;
 
     @ManyToMany(
-        cascade = CascadeType.ALL,
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -68,7 +68,7 @@ public class UserEntity {
     private List<ObjectiveEntity> objectives;
 
     @ManyToMany(
-        cascade = CascadeType.ALL,
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(

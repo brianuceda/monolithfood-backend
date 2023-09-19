@@ -1,15 +1,15 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Entity
 @Table(name = "user_personal_info")
 public class UserPersonalInfoEntity {
@@ -22,7 +22,7 @@ public class UserPersonalInfoEntity {
     private GenderEnum gender;
 
     @Column(nullable = false)
-    private Date birthdate;
+    private Timestamp birthdate;
 
     @Column(nullable = false)
     private Double heightCm;
