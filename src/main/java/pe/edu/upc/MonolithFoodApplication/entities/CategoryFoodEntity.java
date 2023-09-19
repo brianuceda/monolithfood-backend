@@ -31,7 +31,10 @@ public class CategoryFoodEntity {
 
     @OneToMany(
         mappedBy = "category",
-        cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE }
+        cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+        }
     )
     private List<FoodEntity> foods;
 

@@ -75,7 +75,6 @@ public class UserEntity implements UserDetails {
     private UserFitnessInfoEntity userFitnessInfo;
 
     @ManyToMany(
-        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -98,7 +97,6 @@ public class UserEntity implements UserDetails {
     private List<EatEntity> eats;
 
     @ManyToMany(
-        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(

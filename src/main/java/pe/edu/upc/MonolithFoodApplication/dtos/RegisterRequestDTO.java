@@ -4,8 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 import lombok.AllArgsConstructor;
 
 @Builder
@@ -19,6 +17,5 @@ public class RegisterRequestDTO {
     private String names;
     private String surnames;
     private String profileImg;
-    Set<String> roles;
     
 }

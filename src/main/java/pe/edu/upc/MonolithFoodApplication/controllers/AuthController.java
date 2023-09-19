@@ -1,5 +1,8 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,18 +31,30 @@ public class AuthController {
 
     // Methods
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        return new ResponseEntity<AuthResponseDTO>(authService.login(request), HttpStatus.OK);
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
+        try {
+            return new ResponseEntity<AuthResponseDTO>(authService.login(request), HttpStatus.OK);
+        } catch(Exception e) {
+            Map<String, String> respuesta = new HashMap<>();
+            respuesta.put("error", "Invalid username/password supplied");
+            return new ResponseEntity<>(respuesta, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterRequestDTO request) {
-        return new ResponseEntity<AuthResponseDTO>(authService.register(request), HttpStatus.OK);
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
+        try {
+            return new ResponseEntity<AuthResponseDTO>(authService.register(request), HttpStatus.OK);
+        } catch(Exception e) {
+            Map<String, String> respuesta = new HashMap<>();
+            respuesta.put("error", "This username/email has been used");
+            return new ResponseEntity<>(respuesta, HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "Test";
+    @GetMapping("/showEncondePasswords")
+    public ResponseEntity<String> showEncondePasswords() {
+        return new ResponseEntity<String>(authService.showEncondePasswords(), HttpStatus.OK);
     }
 
 }
