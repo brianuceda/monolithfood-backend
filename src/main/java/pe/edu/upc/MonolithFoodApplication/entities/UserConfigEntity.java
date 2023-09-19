@@ -18,13 +18,13 @@ public class UserConfigEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Boolean notifications_enabled = true;
+    private Boolean notificationsEnabled = true;
 
     @Column(nullable = false)
-    private Timestamp last_food_entry;
+    private Timestamp lastFoodEntry;
 
     @Column(nullable = false)
-    private Timestamp last_weight_update;
+    private Timestamp lastWeightUpdate;
 
     @Column(nullable = false)
     private Boolean darkMode = true;

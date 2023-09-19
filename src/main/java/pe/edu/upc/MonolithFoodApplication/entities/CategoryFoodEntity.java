@@ -29,7 +29,10 @@ public class CategoryFoodEntity {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String disadvantages;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(
+        mappedBy = "category",
+        cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE }
+    )
     private List<FoodEntity> foods;
 
 }

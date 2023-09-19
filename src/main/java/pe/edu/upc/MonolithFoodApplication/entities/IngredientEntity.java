@@ -9,10 +9,10 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "composition")
-public class CompositionEntity {
+@Table(name = "ingredient")
+public class IngredientEntity {
     @EmbeddedId
-    private CompositionKey id;
+    private IngredientKey id;
 
     @ManyToOne
     @MapsId("foodId")
@@ -20,11 +20,11 @@ public class CompositionEntity {
     private FoodEntity food;
 
     @ManyToOne
-    @MapsId("nutrientId")
-    @JoinColumn(name = "nutrient_id", nullable = false)
-    private NutrientEntity nutrient;
+    @MapsId("recipeId")
+    @JoinColumn(name = "recipe_id", nullable = false)
+    private RecipeEntity recipe;
 
     @Column(nullable = false)
-    private Double nutrientQuantity;
+    private Double ingredientQuantity;
 
 }

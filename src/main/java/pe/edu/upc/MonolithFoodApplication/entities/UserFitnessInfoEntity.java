@@ -1,5 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,22 +17,25 @@ public class UserFitnessInfoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double targetWeightKg;
+
+    @Column(nullable = true)
+    private Timestamp targetDate;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double imc;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double dailyCaloricIntake;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double dailyProteinIntake;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double dailyCarbohydrateIntake;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double dailyFatIntake;
     
     @OneToOne

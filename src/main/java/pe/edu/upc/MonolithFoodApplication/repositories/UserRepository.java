@@ -10,5 +10,4 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByUsername(String username);
-    
 }

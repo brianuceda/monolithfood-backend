@@ -10,15 +10,32 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity implements UserDetails {
+
+    // public UserEntity(Long id, String username, String password, String email, String names, String surnames, String profileImg, Boolean is_account_blocked, UserConfigEntity userConfig, List<ObjectiveEntity> objectives, Set<RoleEntity> roles) {
+    //     this.id = id;
+    //     this.username = username;
+    //     this.password = password;
+    //     this.email = email;
+    //     this.names = names;
+    //     this.surnames = surnames;
+    //     this.profileImg = profileImg;
+    //     this.is_account_blocked = is_account_blocked;
+    //     this.objectives = objectives;
+    //     this.roles = roles;
+    // }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,14 +59,13 @@ public class UserEntity implements UserDetails {
     private String profileImg;
 
     @Column(nullable = false)
-    @Builder.Default
     private Boolean is_account_blocked = false;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserConfigEntity userConfig;
-  
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
-    private IpLoginAttemptEntity ipLoginAttempt;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<IpLoginAttemptEntity> ipLoginAttempt;
   
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;
@@ -58,7 +74,7 @@ public class UserEntity implements UserDetails {
     private UserFitnessInfoEntity userFitnessInfo;
 
     @ManyToMany(
-        cascade = CascadeType.ALL,
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -81,7 +97,7 @@ public class UserEntity implements UserDetails {
     private List<EatEntity> eats;
 
     @ManyToMany(
-        cascade = CascadeType.ALL,
+        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -123,5 +139,5 @@ public class UserEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-  
+
 }
