@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class CompositionKey implements Serializable {
+public class CompositionFoodKey implements Serializable {
     @Column(name = "food_id", nullable = false)
     private Long foodId;
 

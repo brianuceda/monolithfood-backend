@@ -29,6 +29,11 @@ public class ActivityLevelEntity {
     @Column(length = 512)
     private String information;
 
-    @OneToMany(mappedBy = "activityLevel", cascade = CascadeType.ALL)
+    @OneToMany(
+        mappedBy = "activityLevel",
+        cascade = {
+            CascadeType.MERGE
+        }
+    )
     private List<UserPersonalInfoEntity> users;
 }

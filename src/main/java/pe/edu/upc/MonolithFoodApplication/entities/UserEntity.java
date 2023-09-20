@@ -1,18 +1,41 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements UserDetails {
+
+    // public UserEntity(Long id, String username, String password, String email, String names, String surnames, String profileImg, Boolean is_account_blocked, UserConfigEntity userConfig, List<ObjectiveEntity> objectives, Set<RoleEntity> roles) {
+    //     this.id = id;
+    //     this.username = username;
+    //     this.password = password;
+    //     this.email = email;
+    //     this.names = names;
+    //     this.surnames = surnames;
+    //     this.profileImg = profileImg;
+    //     this.is_account_blocked = is_account_blocked;
+    //     this.objectives = objectives;
+    //     this.roles = roles;
+    // }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,6 +59,7 @@ public class UserEntity {
     private String profileImg;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean is_account_blocked = false;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -51,7 +75,6 @@ public class UserEntity {
     private UserFitnessInfoEntity userFitnessInfo;
 
     @ManyToMany(
-        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -66,9 +89,14 @@ public class UserEntity {
         }
     )
     private List<ObjectiveEntity> objectives;
+    
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
+    private List<RecipeEntity> createdRecipes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EatEntity> eats;
 
     @ManyToMany(
-        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -82,12 +110,33 @@ public class UserEntity {
             })
         }
     )
-    private List<RoleEntity> roles;
+    private Set<RoleEntity> roles;
     
-    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
-    private List<RecipeEntity> createdRecipes;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
+            .collect(Collectors.toSet());
+    }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EatEntity> eats;
-  
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }
