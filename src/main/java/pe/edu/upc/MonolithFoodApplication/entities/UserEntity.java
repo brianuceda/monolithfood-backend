@@ -1,18 +1,22 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,22 +40,22 @@ public class UserEntity {
     private String profileImg;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean is_account_blocked = false;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserConfigEntity userConfig;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<IpLoginAttemptEntity> ipLoginAttempt;
   
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
-    private IpLoginAttemptEntity ipLoginAttempt;
-  
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy="user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserPersonalInfoEntity userPersonalInfo;
   
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
     private UserFitnessInfoEntity userFitnessInfo;
 
     @ManyToMany(
-        cascade = CascadeType.ALL,
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -66,9 +70,14 @@ public class UserEntity {
         }
     )
     private List<ObjectiveEntity> objectives;
+    
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
+    private List<RecipeEntity> createdRecipes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EatEntity> eats;
 
     @ManyToMany(
-        cascade = CascadeType.ALL,
         fetch = FetchType.EAGER
     )
     @JoinTable(
@@ -82,12 +91,6 @@ public class UserEntity {
             })
         }
     )
-    private List<RoleEntity> roles;
-    
-    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
-    private List<RecipeEntity> createdRecipes;
+    private Set<RoleEntity> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EatEntity> eats;
-  
 }

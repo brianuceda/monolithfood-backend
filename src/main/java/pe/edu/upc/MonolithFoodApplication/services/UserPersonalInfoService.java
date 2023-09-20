@@ -10,103 +10,60 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonalInfoRespository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonalInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 public class UserPersonalInfoService {
-    @Autowired
-    private UserPersonalInfoRespository imcRepository;
-    @Autowired
-    private UserFitnessInfoRepository fitnessRepository;
     @Autowired
     private UserRepository userRepository;
 
     public IMCDTO updateWeightAndGetIMC(String username, Double weight) {
 
         //temporal, hasta implementar el JWT
-        String user= username;
-        Optional<UserEntity> userEntity = userRepository.findByUsername(user);
+        String user= username;//
+        Optional<UserEntity> userEntity = userRepository.findByUsername(user);//
+        //actualizar el peso en la tabla user personal info
 
-        //con esto se optiene todos los datos de la tabla user personal info
-        Optional<UserPersonalInfoEntity> userPersonalInfoEntityOptional = imcRepository.findById(userEntity.get().getId());
-        UserPersonalInfoEntity userPersonalInfoEntity = userPersonalInfoEntityOptional
-            .orElseThrow(()-> new RuntimeException("User not found"));
+        Double imc= calculateIMC(weight, userEntity.get().getUserPersonalInfo().getHeightCm());//
 
-        Optional<UserFitnessInfoEntity> userFitnessInfoEntityOptional = fitnessRepository.findById(userEntity.get().getId());
-        UserFitnessInfoEntity  fitnessEntity= userFitnessInfoEntityOptional
-            .orElseThrow(()-> new RuntimeException("User not found"));
-    
-        userPersonalInfoEntity.setWeightKg(weight);
-        imcRepository.save(userPersonalInfoEntity);
-
-        //calculo del imc
-        if(userPersonalInfoEntityOptional.isPresent())
-        {
-            Double imc= calculateIMC(weight, userPersonalInfoEntity.getHeightCm());
-            String clasification= getClasification(imc);
-
-            IMCDTO imcDTO= new IMCDTO();
-            imcDTO.setImc(imc);
-            imcDTO.setClasification(clasification);
-
-            //se asigna el imc a la tabla user fitness info
-            fitnessEntity.setImc(imc);
-            fitnessRepository.save(fitnessEntity);
-
-            return imcDTO;
-        }
-        else
-        {
-            throw new RuntimeException("User not found");
-        }
-
+        userEntity.get().getUserFitnessInfo().setImc(imc);//
         
+
+        userEntity.get().getUserPersonalInfo().setWeightKg(weight);
+        userRepository.save(userEntity.get());
+
+
+        IMCDTO imcDTO= new IMCDTO();
+        imcDTO.setImc(imc);
+        imcDTO.setClasification(getClasification(imc));
+
+
+        return imcDTO;
     }
 
     public IMCDTO updateHeightAndGetIMC (String username, Double height)
     {
-        //temporal, hasta implementar el JWT
         String user= username;
         Optional<UserEntity> userEntity = userRepository.findByUsername(user);
 
-        //con esto se optiene todos los datos de la tabla user personal info
-        Optional<UserPersonalInfoEntity> userPersonalInfoEntityOptional = imcRepository.findById(userEntity.get().getId());
-        UserPersonalInfoEntity userPersonalInfoEntity = userPersonalInfoEntityOptional
-            .orElseThrow(()-> new RuntimeException("User not found"));
+        Double imc= calculateIMC(userEntity.get().getUserPersonalInfo().getWeightKg(), height);
+        userEntity.get().getUserFitnessInfo().setImc(imc);
+        userEntity.get().getUserPersonalInfo().setHeightCm(height);
+        userRepository.save(userEntity.get());
 
-        Optional<UserFitnessInfoEntity> userFitnessInfoEntityOptional = fitnessRepository.findById(userEntity.get().getId());
-        UserFitnessInfoEntity  fitnessEntity= userFitnessInfoEntityOptional
-            .orElseThrow(()-> new RuntimeException("User not found"));
-    
-        userPersonalInfoEntity.setHeightCm(height);
-        imcRepository.save(userPersonalInfoEntity);
+        IMCDTO imcDTO= new IMCDTO();
+        imcDTO.setImc(imc);
+        imcDTO.setClasification(getClasification(imc));
 
-        //calculo del imc
-        if(userPersonalInfoEntityOptional.isPresent())
-        {
-            Double imc= calculateIMC(userPersonalInfoEntity.getWeightKg(), height);
-            String clasification= getClasification(imc);
-
-            IMCDTO imcDTO= new IMCDTO();
-            imcDTO.setImc(imc);
-            imcDTO.setClasification(clasification);
-
-            //se asigna el imc a la tabla user fitness info
-            fitnessEntity.setImc(imc);
-            fitnessRepository.save(fitnessEntity);
-
-            return imcDTO;
-        }
-        else
-        {
-            throw new RuntimeException("User not found");
-        }
+        return imcDTO;
     }
 
     public Double calculateIMC(Double weight, Double height)
     {
-        Double imc= weight/(height*height);
+
+        Double newHeight= height/100;
+        Double imc= weight/(newHeight*newHeight);
         return imc;
     }
 

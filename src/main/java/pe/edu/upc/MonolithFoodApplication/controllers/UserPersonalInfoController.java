@@ -17,6 +17,7 @@ public class UserPersonalInfoController {
     @Autowired
     private UserPersonalInfoService userPersonalInfoService;
 
+    
     @PutMapping("/updateWeight")
     public ResponseEntity<IMCDTO> updateWeightAndGetIMC(@RequestParam String username, @RequestParam Double weight) {
         IMCDTO imcDTO = userPersonalInfoService.updateWeightAndGetIMC(username, weight);

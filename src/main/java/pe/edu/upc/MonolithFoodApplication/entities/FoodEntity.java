@@ -43,12 +43,17 @@ public class FoodEntity {
 
     @OneToMany(
         mappedBy = "food",
-        cascade = CascadeType.ALL,
         fetch = FetchType.EAGER
     )
-    private List<CompositionEntity> compositions;
-  
-    @ManyToMany(mappedBy = "foods")
-    private List<RecipeEntity> recipes;
+    private List<CompositionFoodEntity> compositions;
+
+    @OneToMany(
+        mappedBy = "food",
+        fetch = FetchType.LAZY
+    )
+    private List<IngredientEntity> ingredients;
+
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
+    private List<EatEntity> eats;
 
 }
