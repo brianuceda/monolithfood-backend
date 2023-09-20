@@ -43,16 +43,17 @@ public class FoodEntity {
 
     @OneToMany(
         mappedBy = "food",
-        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
-    private List<CompositionEntity> compositions;
+    private List<CompositionFoodEntity> compositions;
 
     @OneToMany(
         mappedBy = "food",
-        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
-        fetch = FetchType.EAGER
+        fetch = FetchType.LAZY
     )
     private List<IngredientEntity> ingredients;
+
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
+    private List<EatEntity> eats;
 
 }

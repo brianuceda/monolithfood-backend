@@ -1,6 +1,5 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-
 import java.sql.Timestamp;
 
 import jakarta.persistence.*;
@@ -19,11 +18,14 @@ public class EatEntity {
     private Long id;
 
     @Column(nullable = true)
-    @Temporal(TemporalType.DATE)
     private Timestamp date;
     
     @Column(nullable = false)
     private Double eatQuantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private UnitOfMeasurementEnum unitOfMeasurement;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -32,5 +34,9 @@ public class EatEntity {
     @ManyToOne
     @JoinColumn(name = "food_id")
     private FoodEntity food;
+    
+    @ManyToOne
+    @JoinColumn(name = "recipe_id", nullable = true)
+    private RecipeEntity recipe;
     
 }

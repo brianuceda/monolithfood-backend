@@ -3,13 +3,13 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import java.sql.Timestamp;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Entity
 @Table(name = "user_personal_info")
 public class UserPersonalInfoEntity {

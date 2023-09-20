@@ -33,7 +33,7 @@ public class RecipeEntity {
     private String disadvantages;
 
     @Column(nullable = true)
-    private Integer review_stars;
+    private Double review_stars;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -48,9 +48,19 @@ public class RecipeEntity {
 
     @OneToMany(
         mappedBy = "recipe",
-        cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE},
         fetch = FetchType.EAGER
     )
     private List<IngredientEntity> ingredients;
 
+    @OneToMany(
+        mappedBy = "recipe",
+        fetch = FetchType.LAZY
+    )
+    private List<EatEntity> eats;
+
+    @OneToMany(
+        mappedBy = "recipe",
+        fetch = FetchType.EAGER
+    )
+    private List<CompositionRecipeEntity> compositions;
 }

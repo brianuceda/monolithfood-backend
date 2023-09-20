@@ -9,15 +9,15 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "composition")
-public class CompositionEntity {
+@Table(name = "composition_recipe")
+public class CompositionRecipeEntity {
     @EmbeddedId
-    private CompositionKey id;
+    private CompositionRecipeKey id;
 
     @ManyToOne
-    @MapsId("foodId")
-    @JoinColumn(name = "food_id", nullable = false)
-    private FoodEntity food;
+    @MapsId("recipeId")
+    @JoinColumn(name = "recipe_id", nullable = false)
+    private RecipeEntity recipe;
 
     @ManyToOne
     @MapsId("nutrientId")
@@ -26,5 +26,9 @@ public class CompositionEntity {
 
     @Column(nullable = false)
     private Double nutrientQuantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private UnitOfMeasurementEnum unitOfMeasurement;
 
 }

@@ -1,5 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,6 +19,9 @@ public class UserFitnessInfoEntity {
 
     @Column(nullable = true)
     private Double targetWeightKg;
+
+    @Column(nullable = true)
+    private Timestamp targetDate;
     
     @Column(nullable = true)
     private Double imc;

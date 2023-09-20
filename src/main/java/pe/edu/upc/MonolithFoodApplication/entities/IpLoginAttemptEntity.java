@@ -21,7 +21,6 @@ public class IpLoginAttemptEntity {
     private String ipAddress;
 
     private Boolean isAccountBlocked = false;
-    private Integer attemptsCount;
     private Timestamp lastAttemptDate;
     private Timestamp blockedDate;
     
