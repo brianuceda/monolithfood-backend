@@ -1,0 +1,7 @@
+00:38:25.265 [http-nio-8080-exec-2] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.security.SignatureException
+00:38:45.972 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.security.SignatureException
+00:38:51.855 [http-nio-8080-exec-4] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.MalformedJwtException
+00:39:23.779 [http-nio-8080-exec-6] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.BlacklistedTokenException
+00:41:10.142 [http-nio-8080-exec-10] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.BlacklistedTokenException
+00:41:25.086 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.security.SignatureException
+00:41:56.791 [http-nio-8080-exec-5] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.BlacklistedTokenException

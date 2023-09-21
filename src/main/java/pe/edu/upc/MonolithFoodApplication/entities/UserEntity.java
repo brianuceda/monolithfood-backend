@@ -21,21 +21,7 @@ import lombok.Builder;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class UserEntity implements UserDetails {
-
-    // public UserEntity(Long id, String username, String password, String email, String names, String surnames, String profileImg, Boolean is_account_blocked, UserConfigEntity userConfig, List<ObjectiveEntity> objectives, Set<RoleEntity> roles) {
-    //     this.id = id;
-    //     this.username = username;
-    //     this.password = password;
-    //     this.email = email;
-    //     this.names = names;
-    //     this.surnames = surnames;
-    //     this.profileImg = profileImg;
-    //     this.is_account_blocked = is_account_blocked;
-    //     this.objectives = objectives;
-    //     this.roles = roles;
-    // }
-    
+public class UserEntity implements UserDetails {    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -3,9 +3,13 @@ package pe.edu.upc.MonolithFoodApplication.services;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.LoginRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.RegisterRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
@@ -29,43 +34,68 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     
-    public AuthResponseDTO login(LoginRequestDTO request){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        String token = jwtService.genToken(user);
-        return AuthResponseDTO.builder().token(token).build();
+    public ResponseDTO login(LoginRequestDTO request){
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Username no encontrado"));
+            return AuthResponseDTO.builder()
+                .token(jwtService.genToken(user))
+                .message("Inicio de sesion realizado correctamente.")
+                .statusCode(HttpStatus.OK.value())
+                .build();
+        } catch (AuthenticationException e) {
+            return new ResponseDTO("Username o password invalidos", HttpStatus.UNAUTHORIZED.value());
+        }
     }
 
-    public AuthResponseDTO register(RegisterRequestDTO request) {
-        UserEntity user = UserEntity.builder()
-            .username(request.getUsername())
-            .password(passwordEncoder.encode(request.getPassword()))
-            .email(request.getEmail())
-            .names(request.getNames())
-            .surnames(request.getSurnames())
-            .profileImg(request.getProfileImg())
-            .roles(setRoleUser())
-            .build();
-        userRepository.save(user);
-        return AuthResponseDTO.builder()
-            .token(jwtService.genToken(user))
-            .build();
-    }
-    
-    public String showEncondePasswords() {
-        System.out.println("kiridepapel: " + passwordEncoder.encode("40se02j7"));
-        System.out.println("heatherxvalencia: " + passwordEncoder.encode("mongolita123"));
-        System.out.println("whoami: " + passwordEncoder.encode("godgod"));
-        System.out.println("nayde: " + passwordEncoder.encode("gatitobello123"));
-        System.out.println("gabi: " + passwordEncoder.encode("prolenvalorant"));
-        System.out.println("impresora: " + passwordEncoder.encode("lenovo"));
-        return "Ok";
+    public ResponseDTO register(RegisterRequestDTO request) {
+        try {
+            // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
+            if(userRepository.findByUsername(request.getUsername()).isPresent()) {
+                System.out.println("1");
+                return new ResponseDTO("El username ya esta en uso.", HttpStatus.BAD_REQUEST.value());
+            }
+            if(userRepository.findByEmail(request.getEmail()).isPresent()) {
+                System.out.println("2");
+                return new ResponseDTO("El email ya esta en uso.", HttpStatus.BAD_REQUEST.value());
+            }
+            // Crear el usuario con los datos de la petición y el rol de usuario por defecto (USER)
+            UserEntity user = UserEntity.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .names(request.getNames())
+                .surnames(request.getSurnames())
+                .profileImg(request.getProfileImg())
+                .roles(setRoleUser())
+                .build();
+            // Guardar el usuario en la base de datos
+            userRepository.save(user);
+            // Devolver el token generado junto con el mensaje de éxito y el código de estado
+            return AuthResponseDTO.builder()
+                .token(jwtService.genToken(user))
+                .message("Registro realizado correctamente.")
+                .statusCode(HttpStatus.OK.value())
+                .build();
+        } catch(DataIntegrityViolationException e) {
+            return new ResponseDTO("El username o el email ya se encuentran en uso.", HttpStatus.CONFLICT.value());
+        } catch (Exception e) {
+            return new ResponseDTO("Error al registrarse. Por favor, intenta de nuevo.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
     }
 
     // ? Logout ? //
-    public void logoutToken(String realToken) {
-        if(!jwtService.isTokenBlacklisted(realToken)) {
-            jwtService.addTokenToBlacklist(realToken);
+    public ResponseDTO logoutToken(String realToken) {
+        try {
+            if(!jwtService.isTokenBlacklisted(realToken)) {
+                jwtService.addTokenToBlacklist(realToken);
+                return new ResponseDTO("Desconectado con exito.", HttpStatus.OK.value());
+            }
+            else {
+                return new ResponseDTO("El token ya se encuentra en la lista negra.", HttpStatus.BAD_REQUEST.value());
+            }
+        } catch (Exception e) {
+            return new ResponseDTO("Error al desconectar. Por favor, intenta de nuevo.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
