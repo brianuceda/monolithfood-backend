@@ -45,15 +45,21 @@ public class UserController {
         ResponseDTO response = authService.logoutToken(realToken);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+
+    @GetMapping("/getAllObjectives")
+    public ResponseEntity<?> getAllObjectives(@RequestHeader("Authorization") String bearerToken) {
+        ResponseDTO response = userService.getAllObjectives();
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
     
-    @GetMapping("/getObjectives")
+    @GetMapping("/getUserObjectives")
     public ResponseEntity<?> getObjectives(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userService.getObjectives(username);
+        ResponseDTO response = userService.getUserObjectives(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    @PutMapping("/updateObjectives")
+    @PutMapping("/setUserObjectives")
     public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken, @RequestBody List<String> objectives) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.setUserObjectives(username, objectives);

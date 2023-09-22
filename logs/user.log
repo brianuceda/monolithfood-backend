@@ -9,3 +9,5 @@
 09:53:52.033 [http-nio-8080-exec-1] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.BlacklistedTokenException
 09:53:53.082 [http-nio-8080-exec-4] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.BlacklistedTokenException
 10:01:23.256 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.MalformedJwtException
+10:02:08.193 [http-nio-8080-exec-5] ERROR p.e.u.M.repositories.UserRepository - No se encontro uno de los objetivos ingresados.
+10:02:15.418 [http-nio-8080-exec-7] ERROR p.e.u.M.repositories.UserRepository - No se encontro uno de los objetivos ingresados.
