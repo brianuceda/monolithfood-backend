@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.dtos.*;
+import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.services.AuthService;
 
 @RestController

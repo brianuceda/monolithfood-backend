@@ -14,10 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.dtos.AuthResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.LoginRequestDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.RegisterRequestDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;

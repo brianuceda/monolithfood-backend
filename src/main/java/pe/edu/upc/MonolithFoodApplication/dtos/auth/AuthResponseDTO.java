@@ -1,8 +1,9 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.auth;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 
 @Getter
 @Setter

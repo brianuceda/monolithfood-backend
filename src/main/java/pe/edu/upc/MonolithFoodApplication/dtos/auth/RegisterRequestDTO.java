@@ -1,16 +1,21 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.auth;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import lombok.AllArgsConstructor;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequestDTO {
+public class RegisterRequestDTO {
     private String username;
     private String password;
+    private String email;
+    private String names;
+    private String surnames;
+    private String profileImg;
     
 }

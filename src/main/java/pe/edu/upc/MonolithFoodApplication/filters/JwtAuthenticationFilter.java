@@ -21,8 +21,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.exceptions.*;
 
 @Component

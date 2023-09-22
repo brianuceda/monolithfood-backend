@@ -1,6 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.exceptions;
 
-import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 
 public class NoTokenException extends RuntimeException {
 
