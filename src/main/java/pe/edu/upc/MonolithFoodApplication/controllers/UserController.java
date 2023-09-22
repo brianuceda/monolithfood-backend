@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.services.AuthService;
+import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.UserService;
 
 @RestController
@@ -29,22 +30,33 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
-        String realToken = token.replace("Bearer ", "");
-        ResponseDTO response = authService.logoutToken(realToken);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
+    @Autowired
+    private JwtService jwtService;
+
 
     @GetMapping("/test")
     public ResponseEntity<?> test() {
         return new ResponseEntity<>("Test", HttpStatus.OK);
     }
 
-    @PutMapping("/objectives")
-    public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String token, @RequestBody List<String> objectives) {
-        String realToken = token.replace("Bearer ", "");
-        ResponseDTO response = userService.setUserObjectives(realToken, objectives);
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        String realToken = jwtService.getRealToken(token);
+        ResponseDTO response = authService.logoutToken(realToken);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+    
+    @GetMapping("/getObjectives")
+    public ResponseEntity<?> getObjectives(@RequestHeader("Authorization") String bearerToken) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userService.getObjectives(username);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PutMapping("/updateObjectives")
+    public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken, @RequestBody List<String> objectives) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userService.setUserObjectives(username, objectives);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 }

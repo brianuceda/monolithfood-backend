@@ -30,6 +30,19 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
+    public ResponseDTO getObjectives(String username) {
+        Optional<UserEntity> user = userRepository.findByUsername(username);
+        if(!user.isPresent()) {
+
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        List<ObjectiveEntity> objectives = user.get().getObjectives();
+        List<SimpleObjectDTO> objectiveDTOs = objectives.stream()
+            .map(obj -> new SimpleObjectDTO(obj.getName(), obj.getInformation()))
+            .collect(Collectors.toList());
+        return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
+    }
+
     public ResponseDTO setUserObjectives(String username, List<String> objectives) {
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
         if(!getUser.isPresent()) {

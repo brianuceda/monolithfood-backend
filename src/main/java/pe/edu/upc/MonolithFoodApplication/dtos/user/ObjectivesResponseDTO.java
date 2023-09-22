@@ -12,6 +12,10 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 @Setter
 public class ObjectivesResponseDTO extends ResponseDTO {
     private List<SimpleObjectDTO> objectives;
+
+    public ObjectivesResponseDTO(List<SimpleObjectDTO> objectives) {
+        this.objectives = objectives;
+    }
     
     @Builder
     public ObjectivesResponseDTO(String message, Integer statusCode, List<SimpleObjectDTO> objectives) {

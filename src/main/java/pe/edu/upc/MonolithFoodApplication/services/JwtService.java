@@ -101,6 +101,14 @@ public class JwtService {
     public String getUsernameFromToken(String token) {
         return getClaim(token, Claims::getSubject);
     }
+    public String getUsernameFromBearerToken(String bearerToken) {
+        String realToken = bearerToken.replace("Bearer ", "");
+        return getUsernameFromToken(realToken);
+    }
+    public String getRealToken(String bearerToken) {
+        String realToken = bearerToken.replace("Bearer ", "");
+        return realToken;
+    }
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }
