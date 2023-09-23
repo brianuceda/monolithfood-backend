@@ -128,6 +128,11 @@ public class UserService {
         }
 
         return new CaloricIntakeAlertDTO(totalCaloriesConsumed > recommendedCaloricLimit, totalCaloriesConsumed, recommendedCaloricLimit, exceededAmount, message);
+    
+    
+    
+    
+    
     }
     
     
