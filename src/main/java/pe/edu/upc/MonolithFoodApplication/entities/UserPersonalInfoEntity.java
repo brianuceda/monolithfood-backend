@@ -29,6 +29,9 @@ public class UserPersonalInfoEntity {
 
     @Column(nullable = false)
     private Double weightKg;
+
+    @Column(name = "daily_caloric_intake", nullable = false)
+    private Double dailyCaloricIntake; // <-- Añade esta línea
    
     @ManyToOne
     @JoinColumn(name = "activity_level_id", nullable = false)
@@ -37,5 +40,5 @@ public class UserPersonalInfoEntity {
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
-
 }
+

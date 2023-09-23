@@ -12,5 +12,7 @@ public class CaloricIntakeAlertDTO {
     private Double totalCaloriesConsumed;
     private Double recommendedCaloricLimit;
     private Double exceededAmount;
+    private String message;
+    
 }
 

@@ -14,4 +14,3 @@ public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
     @Query("SELECT c.nutrientQuantity FROM CompositionEntity c WHERE c.food.id = :foodId AND c.nutrient.name = 'CALORIA'")
     Optional<Double> findCaloriesByFoodId(@Param("foodId") Long foodId);
 }
-

@@ -1,7 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
-import java.time.LocalDate;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +12,19 @@ import pe.edu.upc.MonolithFoodApplication.dtos.RemoveFoodIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.RemoveFoodIntakeResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.UpdateFoodIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.UpdateFoodIntakeResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.entities.CompositionEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.NutrientEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.NutrientRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.CompositionRepository;
 
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -30,13 +35,12 @@ public class UserService {
     @Autowired
     private FoodRepository foodRepository;
 
-    @Autowired
-    private NutrientRepository nutrientRepository;
 
     @Autowired
     private EatRepository eatRepository;
 
-
+    @Autowired
+    private CompositionRepository compositionRepository;
 
 
     public FoodIntakeResponseDTO addFoodIntake(FoodIntakeDTO foodIntakeDTO) {
@@ -92,27 +96,41 @@ public class UserService {
         return new RemoveFoodIntakeResponseDTO(food.getName(), removedCalories);
     }
 
+    public CaloricIntakeAlertDTO checkDailyCaloricIntake(String username) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-    public CaloricIntakeAlertDTO checkCaloricIntake( String username  ) {
-        Optional<UserEntity> user = userRepository.findByUsername(username);
-        String userId = user.get().getId().toString();
-        
-    // Aquí, necesitas obtener el límite calórico recomendado para el usuario.
-    // Por simplicidad, usaré un valor fijo, pero deberías obtenerlo de la base de datos.
-    Double recommendedCaloricLimit = 2000.0; // Este valor debería ser obtenido de la base de datos.
+        // 1. Obtener el total de calorías consumidas por el usuario en el día.
+        List<EatEntity> todaysEats = eatRepository.findByUsernameAndDate(username, LocalDate.now());
+        double totalCaloriesConsumed = 0;
+        for (EatEntity eat : todaysEats) {
+            FoodEntity food = eat.getFood();
+            List<CompositionEntity> compositions = compositionRepository.findByFood(food);
+            for (CompositionEntity composition : compositions) {
+                NutrientEntity nutrient = composition.getNutrient();
+                if ("Calories".equalsIgnoreCase(nutrient.getName())) {
+                    totalCaloriesConsumed += composition.getNutrientQuantity();
+                }
+            }
+        }
 
+        // 2. Comparar ese total con las calorías recomendadas para el usuario.
+        UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
+        double recommendedCaloricLimit = userPersonalInfo.getDailyCaloricIntake();
 
-    //ARREGLAR URGENTE AQUI ME QUEDO HOY 16/09
-    Double totalCaloriesConsumed = eatRepository.findTotalCaloriesByUserIdAndDate(userId, LocalDate.now());
-       // .orElse(0.0);
+        // 3. Si las calorías consumidas superan las recomendadas, mostrar una alerta.
+        String message;
+        double exceededAmount = totalCaloriesConsumed - recommendedCaloricLimit;
+        if (totalCaloriesConsumed > recommendedCaloricLimit) {
+            message = "Alert: You have exceeded your recommended daily caloric intake!";
+        } else {
+            message = "You are within your recommended daily caloric intake.";
+            exceededAmount = 0.0;
+        }
 
-    Boolean hasExceededLimit = totalCaloriesConsumed > recommendedCaloricLimit;
-    Double exceededAmount = hasExceededLimit ? totalCaloriesConsumed - recommendedCaloricLimit : 0.0;
-
-    return new CaloricIntakeAlertDTO(hasExceededLimit, totalCaloriesConsumed, recommendedCaloricLimit, exceededAmount);
+        return new CaloricIntakeAlertDTO(totalCaloriesConsumed > recommendedCaloricLimit, totalCaloriesConsumed, recommendedCaloricLimit, exceededAmount, message);
     }
-
-
+    
+    
                 
 }
 
