@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.UserPersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.PersonalInfoRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 
 @RestController
@@ -17,7 +17,7 @@ public class UserPersonalInfoController {
     private UserPersonalInfoService userPersonalInfoService;
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestParam String username, @RequestBody UserPersonalInfoDTO userPersonallnfoDto) {
+    public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestParam String username, @RequestBody PersonalInfoRequestDTO userPersonallnfoDto) {
         ResponseDTO response = userPersonalInfoService.updateUserPeronalInfo(username, userPersonallnfoDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
