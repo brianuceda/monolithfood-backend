@@ -1,21 +1,23 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.PersonalInfoRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 
 @RestController
-@RequestMapping("/api/userPersonalInfo")
+@RequiredArgsConstructor
+@RequestMapping("/api/personal-info")
 public class UserPersonalInfoController {
+    // * Atributos
+    // Inyección de dependencias
+    private final UserPersonalInfoService userPersonalInfoService;
 
-    @Autowired
-    private UserPersonalInfoService userPersonalInfoService;
-
+    // * Metodos
     @PutMapping("/update")
     public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestParam String username, @RequestBody PersonalInfoRequestDTO userPersonallnfoDto) {
         ResponseDTO response = userPersonalInfoService.updateUserPeronalInfo(username, userPersonallnfoDto);

@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import pe.edu.upc.MonolithFoodApplication.dtos.PersonalInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.PersonalInfoRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoRequestDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
@@ -75,10 +75,8 @@ public class UserPersonalInfoService {
                 logger.info("No se actualizo ningun campo para el usuario {}.", username);
                 return new ResponseDTO("No se actualizó ningún campo.", 200);
             }
-            // Construye un ojeto de tipo UserPersonalInfoDTO con los campos actualizados para devolverselo al usuario
-            
             // Retorna un mensaje con los campos actualizados y con los campos actualizados
-            return getResponse(updatedFields, userPersonalInfo);
+            return generateUpdateMessage(updatedFields, userPersonalInfo);
         } catch (DataAccessException e) {
             logger.error("Error al guardar la informacion del usuario en la BD. ", e);
             return new ResponseDTO("Error al guardar la informacion en la BD.", 500);
@@ -86,7 +84,7 @@ public class UserPersonalInfoService {
     }
 
     // FUNCIÓN: Genera un mensaje con los campos que se actualizaron
-    private ResponseDTO getResponse(List<String> updatedFields, UserPersonalInfoEntity userPersonalInfo) {
+    private ResponseDTO generateUpdateMessage(List<String> updatedFields, UserPersonalInfoEntity userPersonalInfo) {
         if (updatedFields.isEmpty()) {
             return new ResponseDTO("Ningun campo actualizado.", 400);
         } else if (updatedFields.size() == 1) {
