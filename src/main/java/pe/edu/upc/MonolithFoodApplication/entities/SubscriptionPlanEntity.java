@@ -15,5 +15,4 @@ public class SubscriptionPlanEntity {
     @Column(nullable = false)
     private double price;
 
-
 }

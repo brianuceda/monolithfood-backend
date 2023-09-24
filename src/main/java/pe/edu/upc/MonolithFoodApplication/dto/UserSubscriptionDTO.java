@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSubscriptionDTO {
-    private Long userId;
+    private String username;
     private Long subscriptionPlanId;
     private boolean isActive;
     
