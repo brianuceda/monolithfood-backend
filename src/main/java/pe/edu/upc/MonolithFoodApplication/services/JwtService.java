@@ -23,17 +23,19 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
-
+    // * Atributos
+    // Variables de entorno
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
-    
+
     @Value("${jwt.time.expiration}")
     private String TIME_EXPIRATION;
-    
+
+    // Blacklist de Tokens
     private Set<String> memoryBackendBlacklistedTokens = new HashSet<>();
-    
-    // * OBTENCIÓN DEL TOKEN * //
-    // ? Obtener un Token de una Solicitud HTTP ? //
+
+    // * Funciones auxiliares
+    // Obtener el token de una solicitud HTTP
     public String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
@@ -43,8 +45,7 @@ public class JwtService {
         }
     }
 
-    // * GENERACIÓN DEL TOKEN * //
-    // ? Generar un Token //
+    // Generar un Token JWT en los datos de un usuario
     public String genToken(UserDetails user) {
         Map<String, Object> extraClaims = new HashMap<>();
         return genToken(extraClaims, user);
@@ -59,33 +60,28 @@ public class JwtService {
                 .signWith(genTokenSign(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
-    // ? Firmar un Token ? //
+    // Firmar el Token con una clave privada
     private Key genTokenSign() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-    // * VALIDACIÓN DEL TOKEN * //
-    // ? Validar Existencia del Token ? //
+    // Validar la existencia del Token JWT
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-    // ? Validar Expiración del Token ? //
+    // Validar la expiración del Token JWT
     private boolean isTokenExpired(String token) {
         return getExpiration(token).before(new Date());
     }
-    // ? Validar Blacklist del Token ? //
+    // Validar si el Token está en la Blacklist
     public void addTokenToBlacklist(String token) {
         memoryBackendBlacklistedTokens.add(token);
     }
     public boolean isTokenBlacklisted(String token) {
         return memoryBackendBlacklistedTokens.contains(token);
     }
-
-    // * OBTENCIÓN DE DATOS DEL TOKEN * //
-    // ? Claims del Token ? //
+    // Claims: son los datos que se almacenan en el Token
     private Claims getAllClaims(String token) {
         return Jwts
                 .parserBuilder()
@@ -101,7 +97,16 @@ public class JwtService {
     public String getUsernameFromToken(String token) {
         return getClaim(token, Claims::getSubject);
     }
+    public String getUsernameFromBearerToken(String bearerToken) {
+        String realToken = bearerToken.replace("Bearer ", "");
+        return getUsernameFromToken(realToken);
+    }
+    public String getRealToken(String bearerToken) {
+        String realToken = bearerToken.replace("Bearer ", "");
+        return realToken;
+    }
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }
+	
 }

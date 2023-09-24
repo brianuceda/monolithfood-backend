@@ -2,10 +2,21 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 
 import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -33,8 +44,8 @@ public class RecipeEntity {
     private String disadvantages;
 
     @Column(nullable = true)
-    private Integer review_stars;
-    
+    private Double review_stars;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PrivacityEnum privacity = PrivacityEnum.PRIVATE;
@@ -46,15 +57,12 @@ public class RecipeEntity {
     @JoinColumn(name = "creator_user_id")
     private UserEntity creatorUser;
 
-    @ManyToMany(
-        fetch = FetchType.EAGER,
-        cascade = CascadeType.ALL
-    )
-	@JoinTable(
-		name = "food_recipe",
-		joinColumns = @JoinColumn(name = "recipe_id"),
-		inverseJoinColumns = @JoinColumn(name = "food_id")
-	)
-	private List<FoodEntity> foods;
+    @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER)
+    private List<IngredientEntity> ingredients;
 
+    @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
+    private List<EatEntity> eats;
+
+    @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER)
+    private List<CompositionRecipeEntity> compositions;
 }

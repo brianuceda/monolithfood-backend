@@ -1,0 +1,3 @@
+07:59:22.942 [http-nio-8080-exec-3] WARN  p.e.u.M.services.AuthService - Acceso denegado para la IP 179.6.5.75 hacia el usuario kiridepapel.
+07:59:32.836 [http-nio-8080-exec-4] WARN  p.e.u.M.services.AuthService - Acceso denegado para la IP 179.6.5.75 hacia el usuario kiridepapel.
+07:59:38.608 [http-nio-8080-exec-5] INFO  p.e.u.M.services.AuthService - IP 179.6.5.75 desbloqueada para el usuario kiridepapel.

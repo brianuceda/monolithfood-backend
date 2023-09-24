@@ -21,12 +21,6 @@
         <encoder>
         <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
-        <!-- Filtro para no registrar los logs de la clase MonolithFoodApplication -->
-        <!-- <filter class="ch.qos.logback.classic.filter.LoggerFilter">
-            <logger>pe.edu.upc.MonolithFoodApplication.MonolithFoodApplication</logger>
-            <level>ALL</level>
-            <onMatch>DENY</onMatch>
-        </filter> -->
     </appender>
 
     <logger name="pe.edu.upc.MonolithFoodApplication" level="INFO" additivity="false">

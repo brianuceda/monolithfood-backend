@@ -14,7 +14,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.filters.JwtAuthenticationFilter;
 
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -34,8 +33,8 @@ public class SecurityConfig {
             // ? Permite o bloquea la conexión a los endpoints ? //
             .authorizeHttpRequests(authRequest -> { authRequest
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll() // Swagger API
-                .requestMatchers("/doc/swagger-ui/**").permitAll() // Swagger UI
+                // .requestMatchers("/v3/api-docs/**").permitAll() // Swagger API
+                // .requestMatchers("/doc/swagger-ui/**").permitAll() // Swagger UI
                 .anyRequest().authenticated();
             })
             // ? Session Management: Es el que se encarga de manejar las sesiones de los usuarios ? //
