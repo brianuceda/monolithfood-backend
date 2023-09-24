@@ -21,18 +21,19 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 @Service
 public class UserService {
 
+    // Atributos
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private ObjectiveRepository objectiveRepository;
-
-
+    // Log de errores
     private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
+    // Obtener todos los usuarios
     public ResponseDTO getAllObjectives() {
         List<ObjectiveEntity> objectives = objectiveRepository.findAll();
         if(objectives.isEmpty()) {
+            logger.error("No se encontraron objetivos.");
             return new ResponseDTO("No se encontraron objetivos.", 404);
         }
         List<SimpleObjectDTO> objectiveDTOs = objectives.stream()
@@ -41,11 +42,11 @@ public class UserService {
         return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
     }
     
-
+    // Obtener los objetivos de un usuario
     public ResponseDTO getUserObjectives(String username) {
         Optional<UserEntity> user = userRepository.findByUsername(username);
         if(!user.isPresent()) {
-
+            logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
         List<ObjectiveEntity> objectives = user.get().getObjectives();
@@ -55,6 +56,7 @@ public class UserService {
         return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
     }
 
+    // Guardar o actualizar los objetivos de un usuario
     public ResponseDTO setUserObjectives(String username, List<String> objectives) {
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
         if(!getUser.isPresent()) {
@@ -66,7 +68,7 @@ public class UserService {
         for(String objective : objectives) {
             boolean exists = allObjectives.stream().anyMatch(o -> o.getName().equals(objective));
             if(!exists) {
-                logger.error("No se encontro uno de los objetivos ingresados.");
+                logger.error("No se encontró uno de los objetivos ingresados.");
                 return new ResponseDTO("No se encontro uno de los objetivos ingresados.", 404);
             }
         }
@@ -79,10 +81,7 @@ public class UserService {
         userRepository.save(getUser.get());
         // Convertir la lista de ObjectiveEntity a SimpleObjectDTO
         List<SimpleObjectDTO> savedObjectives = newUserObjectives.stream()
-            .map(objectiveEntity -> new SimpleObjectDTO(
-                objectiveEntity.getName(),
-                objectiveEntity.getInformation())
-            )
+            .map(entity -> new SimpleObjectDTO(entity.getName(), entity.getInformation()))
             .collect(Collectors.toList());
         return new ObjectivesResponseDTO("Objetivos guardados", 200, savedObjectives);
     }

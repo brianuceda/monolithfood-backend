@@ -38,13 +38,10 @@ public class AuthService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Username no encontrado"));
-            return AuthResponseDTO.builder()
-                .token(jwtService.genToken(user))
-                .message("Inicio de sesion realizado correctamente.")
-                .statusCode(HttpStatus.OK.value())
-                .build();
+            String generatedToken = jwtService.genToken(user);
+            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken);
         } catch (AuthenticationException e) {
-            return new ResponseDTO("Username o password invalidos", HttpStatus.UNAUTHORIZED.value());
+            return new ResponseDTO("Nombre de usuario o contraseña inválidos", HttpStatus.UNAUTHORIZED.value());
         }
     }
 
@@ -52,14 +49,16 @@ public class AuthService {
         try {
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
             if(userRepository.findByUsername(request.getUsername()).isPresent()) {
-                System.out.println("1");
-                return new ResponseDTO("El username ya esta en uso.", HttpStatus.BAD_REQUEST.value());
+                return new ResponseDTO("El nombre de usuario ya está en uso.", HttpStatus.BAD_REQUEST.value());
             }
             if(userRepository.findByEmail(request.getEmail()).isPresent()) {
-                System.out.println("2");
-                return new ResponseDTO("El email ya esta en uso.", HttpStatus.BAD_REQUEST.value());
+                return new ResponseDTO("El email ya está en uso.", HttpStatus.BAD_REQUEST.value());
             }
-            // Crear el usuario con los datos de la petición y el rol de usuario por defecto (USER)
+            // Validar la contraseña segura
+            ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
+            // Si la contraseña no es segura, devolver la respuesta de validación
+            if (respuestaValidacion != null) return respuestaValidacion;
+            // Crear el usuario con los datos de la petición y el rol de usuario por defecto (USER) y lo guarda en la BD
             UserEntity user = UserEntity.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -69,30 +68,26 @@ public class AuthService {
                 .profileImg(request.getProfileImg())
                 .roles(setRoleUser())
                 .build();
-            // Guardar el usuario en la base de datos
             userRepository.save(user);
+            // Generar el token JWT para el usuario
+            String generatedToken = jwtService.genToken(user);
             // Devolver el token generado junto con el mensaje de éxito y el código de estado
-            return AuthResponseDTO.builder()
-                .token(jwtService.genToken(user))
-                .message("Registro realizado correctamente.")
-                .statusCode(HttpStatus.OK.value())
-                .build();
+            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken);
         } catch(DataIntegrityViolationException e) {
-            return new ResponseDTO("El username o el email ya se encuentran en uso.", HttpStatus.CONFLICT.value());
+            return new ResponseDTO("El nombre de usuario o el email ya se están en uso.", HttpStatus.CONFLICT.value());
         } catch (Exception e) {
             return new ResponseDTO("Error al registrarse. Por favor, intenta de nuevo.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
-    // ? Logout ? //
     public ResponseDTO logoutToken(String realToken) {
         try {
             if(!jwtService.isTokenBlacklisted(realToken)) {
                 jwtService.addTokenToBlacklist(realToken);
-                return new ResponseDTO("Desconectado con exito.", HttpStatus.OK.value());
+                return new ResponseDTO("Desconectado exitosamente.", HttpStatus.OK.value());
             }
             else {
-                return new ResponseDTO("El token ya se encuentra en la lista negra.", HttpStatus.BAD_REQUEST.value());
+                return new ResponseDTO("El token ya está inhabilitado.", HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             return new ResponseDTO("Error al desconectar. Por favor, intenta de nuevo.", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -104,6 +99,44 @@ public class AuthService {
         RoleEntity USER = roleRepository.findByName(RoleEnum.USER);
         roles.add(USER);
         return roles;
+    }
+
+    public ResponseDTO validarContraseniaSegura(String contrasenia) {
+        if (contrasenia.length() < 8) {
+            return new ResponseDTO("La contraseña debe tener al menos 8 caracteres.", HttpStatus.BAD_REQUEST.value());
+        }
+    
+        boolean tieneLetraMayuscula = false;
+        boolean tieneLetraMinuscula = false;
+        boolean tieneDigito = false;
+        boolean tieneCaracterEspecial = false;
+    
+        for (char c : contrasenia.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                tieneLetraMayuscula = true;
+            } else if (Character.isLowerCase(c)) {
+                tieneLetraMinuscula = true;
+            } else if (Character.isDigit(c)) {
+                tieneDigito = true;
+            } else if ("~!@#$%^&*()_+-=[];,./{}|:?><".indexOf(c) >= 0) {
+                tieneCaracterEspecial = true;
+            }
+        }
+        
+        if (!tieneLetraMayuscula) {
+            return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula.", HttpStatus.BAD_REQUEST.value());
+        }
+        if (!tieneLetraMinuscula) {
+            return new ResponseDTO("La contraseña debe contener al menos una letra minúscula.", HttpStatus.BAD_REQUEST.value());
+        }
+        if (!tieneDigito) {
+            return new ResponseDTO("La contraseña debe contener al menos un dígito numérico.", HttpStatus.BAD_REQUEST.value());
+        }
+        if (!tieneCaracterEspecial) {
+            return new ResponseDTO("La contraseña debe contener al menos un carácter especial.", HttpStatus.BAD_REQUEST.value());
+        }
+    
+        return null;
     }
 
 }
