@@ -23,16 +23,18 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
-
+    // * Atributos
+    // Variables de entorno
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
-    
+
     @Value("${jwt.time.expiration}")
     private String TIME_EXPIRATION;
-    
-    // Blacklist de Tokens JWT
+
+    // * Funciones auxiliares
+    // Blacklist de Tokens
     private Set<String> memoryBackendBlacklistedTokens = new HashSet<>();
-    
+
     // Obtener el token de una solicitud HTTP
     public String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -48,6 +50,7 @@ public class JwtService {
         Map<String, Object> extraClaims = new HashMap<>();
         return genToken(extraClaims, user);
     }
+
     private String genToken(Map<String, Object> extraClaims, UserDetails user) {
         return Jwts
                 .builder()
@@ -70,14 +73,17 @@ public class JwtService {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
     // Validar la expiración del Token JWT
     private boolean isTokenExpired(String token) {
         return getExpiration(token).before(new Date());
     }
+
     // Validar si el Token está en la Blacklist
     public void addTokenToBlacklist(String token) {
         memoryBackendBlacklistedTokens.add(token);
     }
+
     public boolean isTokenBlacklisted(String token) {
         return memoryBackendBlacklistedTokens.contains(token);
     }
@@ -91,21 +97,26 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
     public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
     public String getUsernameFromToken(String token) {
         return getClaim(token, Claims::getSubject);
     }
+
     public String getUsernameFromBearerToken(String bearerToken) {
         String realToken = bearerToken.replace("Bearer ", "");
         return getUsernameFromToken(realToken);
     }
+
     public String getRealToken(String bearerToken) {
         String realToken = bearerToken.replace("Bearer ", "");
         return realToken;
     }
+
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }

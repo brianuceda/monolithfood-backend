@@ -46,7 +46,7 @@ public class MonolithFoodApplication {
         UserPersonalInfoRepository userPersonalInfoRepository,
         UserFitnessInfoRepository userFitnessInfoRepository,
         UserConfigRepository userConfigRepository,
-        IpLoginAttemptRepository ipLoginAttemptRepository,
+        // IpLoginAttemptRepository ipLoginAttemptRepository,
         EatRepository eatRepository
     ){
         return args -> {
@@ -65,7 +65,7 @@ public class MonolithFoodApplication {
             List<UserPersonalInfoEntity> usersPersonalInfos = new ArrayList<>();
             List<UserFitnessInfoEntity> usersFitnessInfos = new ArrayList<>();
             List<UserConfigEntity> usersConfig = new ArrayList<>();
-            List<IpLoginAttemptEntity> ipsLoginsAttempts = new ArrayList<>();
+            // List<IpLoginAttemptEntity> ipsLoginsAttempts = new ArrayList<>();
             List<EatEntity> eats = new ArrayList<>();
 
             if(activityLevelRepository.count() == 0) {
@@ -410,28 +410,28 @@ public class MonolithFoodApplication {
                 }
                 userConfigRepository.saveAll(usersConfig);
             }
-            if(ipLoginAttemptRepository.count() == 0) {
-                for (UserEntity user : users) {
-                    Random rand = new Random();
-                    // Generamos entre 1 y 3 intentos de inicio de sesion por usuario
-                    int loginAttempts = 1 + rand.nextInt(3);
-                    for (int i = 0; i < loginAttempts; i++) {
-                        IpLoginAttemptEntity ipLoginAttempt = new IpLoginAttemptEntity();
-                        // Genera una direccion IPv4 aleatoria
-                        ipLoginAttempt.setIpAddress(rand.nextInt(256) + "." + rand.nextInt(256) + "." + rand.nextInt(256) + "." + rand.nextInt(256));
-                        // Establece si la cuenta está bloqueada aleatoriamente
-                        ipLoginAttempt.setIsAccountBlocked(false);
-                        // Establece la fecha en que se bloqueo
-                        ipLoginAttempt.setBlockedDate(null);
-                        // Fecha de último intento en los últimos 3 días
-                        ipLoginAttempt.setLastAttemptDate(Timestamp.valueOf(LocalDateTime.now().minusDays(rand.nextInt(3))));
-                        // Asignacion de usuario
-                        ipLoginAttempt.setUser(user);
-                        ipsLoginsAttempts.add(ipLoginAttempt);
-                    }
-                }
-                ipLoginAttemptRepository.saveAll(ipsLoginsAttempts);
-            }
+            // if(ipLoginAttemptRepository.count() == 0) {
+            //     for (UserEntity user : users) {
+            //         Random rand = new Random();
+            //         // Generamos entre 1 y 3 intentos de inicio de sesion por usuario
+            //         int loginAttempts = 1 + rand.nextInt(2);
+            //         for (int i = 0; i < loginAttempts; i++) {
+            //             IpLoginAttemptEntity ipLoginAttempt = new IpLoginAttemptEntity();
+            //             // Genera una direccion IPv4 aleatoria
+            //             ipLoginAttempt.setIpAddress(rand.nextInt(256) + "." + rand.nextInt(256) + "." + rand.nextInt(256) + "." + rand.nextInt(256));
+            //             // Establece si la cuenta está bloqueada aleatoriamente
+            //             ipLoginAttempt.setIsIpBlocked(false);
+            //             // Establece la fecha en que se bloqueo
+            //             ipLoginAttempt.setBlockedDate(null);
+            //             // Fecha de último intento en los últimos 3 días
+            //             ipLoginAttempt.setLastAttemptDate(Timestamp.valueOf(LocalDateTime.now().minusDays(rand.nextInt(3))));
+            //             // Asignacion de usuario
+            //             ipLoginAttempt.setUser(user);
+            //             ipsLoginsAttempts.add(ipLoginAttempt);
+            //         }
+            //     }
+            //     ipLoginAttemptRepository.saveAll(ipsLoginsAttempts);
+            // }
             if(eatRepository.count() == 0) {
                 for(UserEntity user : users) {
                     for(int i = 0; i < new Random().nextInt(11) + 4; i++) {

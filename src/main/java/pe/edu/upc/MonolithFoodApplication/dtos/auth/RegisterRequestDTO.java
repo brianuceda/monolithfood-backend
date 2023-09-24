@@ -1,10 +1,9 @@
 package pe.edu.upc.MonolithFoodApplication.dtos.auth;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import lombok.AllArgsConstructor;
 
 @Builder
 @Data
@@ -17,5 +16,5 @@ public class RegisterRequestDTO {
     private String names;
     private String surnames;
     private String profileImg;
-    
+
 }

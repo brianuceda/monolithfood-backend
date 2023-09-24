@@ -9,7 +9,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 @Setter
 public class AuthResponseDTO extends ResponseDTO {
     private String token;
-    
+
     @Builder
     public AuthResponseDTO(String message, Integer statusCode, String token) {
         super(message, statusCode);

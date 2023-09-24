@@ -23,7 +23,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserService;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
-    
+
     @Autowired
     private final AuthService authService;
 
@@ -33,7 +33,6 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
-
     @GetMapping("/test")
     public ResponseEntity<?> test() {
         return new ResponseEntity<>("Test", HttpStatus.OK);
@@ -42,7 +41,7 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         String realToken = jwtService.getRealToken(token);
-        ResponseDTO response = authService.logoutToken(realToken);
+        ResponseDTO response = authService.logout(realToken);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
@@ -51,7 +50,7 @@ public class UserController {
         ResponseDTO response = userService.getAllObjectives();
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    
+
     @GetMapping("/getUserObjectives")
     public ResponseEntity<?> getObjectives(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
@@ -60,7 +59,8 @@ public class UserController {
     }
 
     @PutMapping("/setUserObjectives")
-    public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken, @RequestBody List<String> objectives) {
+    public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken,
+            @RequestBody List<String> objectives) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.setUserObjectives(username, objectives);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));

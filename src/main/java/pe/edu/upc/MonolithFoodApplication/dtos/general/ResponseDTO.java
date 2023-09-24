@@ -6,7 +6,7 @@ import lombok.Data;
 public class ResponseDTO {
     private String message;
     private Integer statusCode;
-    
+
     public ResponseDTO() {
         this.message = "OK";
         this.statusCode = 200;

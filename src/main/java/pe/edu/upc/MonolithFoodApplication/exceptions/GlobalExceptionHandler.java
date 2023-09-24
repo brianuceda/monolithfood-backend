@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
         ResponseDTO response = new ResponseDTO("Error en el formato de los datos enviados (1).", 400);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
     // Se ejecuta cuando se envía un JSON con un formato incorrecto
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ResponseDTO> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {

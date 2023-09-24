@@ -20,8 +20,11 @@ import lombok.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity implements UserDetails {    
+@Table(name = "users", indexes = {
+        @Index(name = "user_username_idx", columnList = "username", unique = true),
+        @Index(name = "user_email_idx", columnList = "email", unique = true)
+})
+public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,59 +53,45 @@ public class UserEntity implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserConfigEntity userConfig;
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<IpLoginAttemptEntity> ipLoginAttempt;
-  
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;
-  
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserFitnessInfoEntity userFitnessInfo;
 
-    @ManyToMany(
-        fetch = FetchType.EAGER
-    )
-    @JoinTable(
-        name = "user_objective",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "objective_id"),
-        uniqueConstraints = {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_objective", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "objective_id"), uniqueConstraints = {
             @UniqueConstraint(columnNames = {
-                "user_id",
-                "objective_id"
+                    "user_id",
+                    "objective_id"
             })
-        }
-    )
+    })
     private List<ObjectiveEntity> objectives;
-    
+
     @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
     private List<RecipeEntity> createdRecipes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EatEntity> eats;
 
-    @ManyToMany(
-        fetch = FetchType.EAGER
-    )
-    @JoinTable(
-        name ="user_role",
-        joinColumns = @JoinColumn (name = "user_id"),
-        inverseJoinColumns = @JoinColumn (name = "role_id"),
-        uniqueConstraints = {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"), uniqueConstraints = {
             @UniqueConstraint(columnNames = {
-                "user_id",
-                "role_id"
+                    "user_id",
+                    "role_id"
             })
-        }
-    )
+    })
     private Set<RoleEntity> roles;
-    
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
-            .collect(Collectors.toSet());
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
+                .collect(Collectors.toSet());
     }
 
     @Override
