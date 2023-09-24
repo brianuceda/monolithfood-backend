@@ -62,32 +62,25 @@ public class AuthService {
             if (userEntity != null) {
                 // Verificar si la IP está bloqueada
                 if (isIpBlocked(request.getIpAddress(), userEntity)) {
-                    logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", request.getIpAddress(),
-                            request.getUsername());
+                    logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", request.getIpAddress(), request.getUsername());
                     return new ResponseDTO("Acceso bloqueado desde esta dirección IP", HttpStatus.FORBIDDEN.value());
                 }
             }
-            // Si el usuario y la contraseña son válidos, autenticar al usuario en el
-            // contexto de Spring Security y generar un token JWT para el usuario
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            // Si el usuario y la contraseña son válidos, autenticar al usuario en el contexto de Spring Security y generar un token JWT para el usuario
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
             String generatedToken = jwtService.genToken(user);
             // Reiniciar el contador de intentos fallidos de inicio de sesión
-            IpLoginAttemptEntity attempt = ipLoginAttemptRepository
-                    .findByIpAddressAndUsername(request.getIpAddress(), request.getUsername()).orElse(null);
+            IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(request.getIpAddress(), request.getUsername()).orElse(null);
             attempt.setAttemptsCount(1);
             ipLoginAttemptRepository.save(attempt);
-            // Retornar el token generado junto con el mensaje de éxito y el código de
-            // estado
-            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(),
-                    generatedToken);
+            // Retornar el token generado junto con el mensaje de éxito y el código de estado
+            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken);
         } catch (AuthenticationException e) {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
-            if (userEntity != null) {
+            if (userEntity != null)
                 registerFailedAttempt(request.getIpAddress(), userEntity);
-            }
             return new ResponseDTO("Nombre de usuario o contraseña inválidos", HttpStatus.UNAUTHORIZED.value());
         }
     }
@@ -96,19 +89,16 @@ public class AuthService {
     public ResponseDTO register(RegisterRequestDTO request) {
         try {
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
-            if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            if (userRepository.findByUsername(request.getUsername()).isPresent())
                 return new ResponseDTO("El nombre de usuario ya está en uso.", HttpStatus.BAD_REQUEST.value());
-            }
-            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            if (userRepository.findByEmail(request.getEmail()).isPresent())
                 return new ResponseDTO("El email ya está en uso.", HttpStatus.BAD_REQUEST.value());
-            }
             // Validar la contraseña segura
             ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
             // Si la contraseña no es segura, devolver la respuesta de validación
             if (respuestaValidacion != null)
                 return respuestaValidacion;
-            // Crear el usuario con los datos de la petición y el rol de usuario por defecto
-            // (USER) y lo guarda en la BD
+            // Crear el usuario con los datos de la petición y el rol de usuario por defecto (USER) y lo guarda en la BD
             UserEntity user = UserEntity.builder()
                     .username(request.getUsername())
                     .password(passwordEncoder.encode(request.getPassword()))
@@ -121,8 +111,7 @@ public class AuthService {
             userRepository.save(user);
             // Generar el token JWT para el usuario
             String generatedToken = jwtService.genToken(user);
-            // Devolver el token generado junto con el mensaje de éxito y el código de
-            // estado
+            // Devolver el token generado junto con el mensaje de éxito y el código de estado
             return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken);
         } catch (DataIntegrityViolationException e) {
             return new ResponseDTO("El nombre de usuario o el email ya se están en uso.", HttpStatus.CONFLICT.value());
@@ -158,52 +147,40 @@ public class AuthService {
 
     // Validar si la contraseña es segura
     public ResponseDTO validarContraseniaSegura(String contrasenia) {
-        if (contrasenia.length() < 8) {
+        if (contrasenia.length() < 8)
             return new ResponseDTO("La contraseña debe tener al menos 8 caracteres.", HttpStatus.BAD_REQUEST.value());
-        }
 
         boolean tieneLetraMayuscula = false;
         boolean tieneLetraMinuscula = false;
         boolean tieneDigito = false;
         boolean tieneCaracterEspecial = false;
-
+        // Recorrer cada caracter de la contraseña
         for (char c : contrasenia.toCharArray()) {
-            if (Character.isUpperCase(c)) {
+            if (Character.isUpperCase(c))
                 tieneLetraMayuscula = true;
-            } else if (Character.isLowerCase(c)) {
+            else if (Character.isLowerCase(c))
                 tieneLetraMinuscula = true;
-            } else if (Character.isDigit(c)) {
+            else if (Character.isDigit(c)) 
                 tieneDigito = true;
-            } else if ("~!@#$%^&*()_+-=[];,./{}|:?><".indexOf(c) >= 0) {
+            else if ("~!@#$%^&*()_+-=[];,./{}|:?><".indexOf(c) >= 0)
                 tieneCaracterEspecial = true;
-            }
         }
-
-        if (!tieneLetraMayuscula) {
-            return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula.",
-                    HttpStatus.BAD_REQUEST.value());
-        }
-        if (!tieneLetraMinuscula) {
-            return new ResponseDTO("La contraseña debe contener al menos una letra minúscula.",
-                    HttpStatus.BAD_REQUEST.value());
-        }
-        if (!tieneDigito) {
-            return new ResponseDTO("La contraseña debe contener al menos un dígito numérico.",
-                    HttpStatus.BAD_REQUEST.value());
-        }
-        if (!tieneCaracterEspecial) {
-            return new ResponseDTO("La contraseña debe contener al menos un carácter especial.",
-                    HttpStatus.BAD_REQUEST.value());
-        }
-
+        // Si la contraseña no cumple con los requisitos, devolver un mensaje de error
+        if (!tieneLetraMayuscula)
+            return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula.", HttpStatus.BAD_REQUEST.value());
+        if (!tieneLetraMinuscula)
+            return new ResponseDTO("La contraseña debe contener al menos una letra minúscula.", HttpStatus.BAD_REQUEST.value());
+        if (!tieneDigito)
+            return new ResponseDTO("La contraseña debe contener al menos un dígito numérico.", HttpStatus.BAD_REQUEST.value());
+        if (!tieneCaracterEspecial)
+            return new ResponseDTO("La contraseña debe contener al menos un carácter especial.", HttpStatus.BAD_REQUEST.value());
+        // Si la contraseña cumple con los requisitos, devolver null
         return null;
     }
 
-    // Registrar un intento fallido de inicio de sesión a una IP y usuario
-    // específicos
+    // Registrar un intento fallido de inicio de sesión a una IP y usuario específicos
     private void registerFailedAttempt(String ipAddress, UserEntity userEntity) {
-        IpLoginAttemptEntity attempt = ipLoginAttemptRepository
-                .findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
+        IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
         Timestamp now = new Timestamp(System.currentTimeMillis());
         long tenMinutesMillis = this.RESET_ATTEMPT_DURATION_MINUTES * 60 * 1000;
         // Si no hay un registro existente para esta IP y usuario
@@ -218,15 +195,13 @@ public class AuthService {
             attempt.setUser(user);
         } else {
             // Si el último intento fue hace más de XX minutos
-            if ((now.getTime() - attempt.getLastAttemptDate().getTime()) > tenMinutesMillis) {
-                // Reiniciar el contador de intentos
+            if ((now.getTime() - attempt.getLastAttemptDate().getTime()) > tenMinutesMillis) 
                 attempt.setAttemptsCount(1);
-            } else {
+            else {
                 attempt.setAttemptsCount(attempt.getAttemptsCount() + 1);
                 if (attempt.getAttemptsCount() >= this.MAX_ATTEMPTS_LOGIN) {
                     // Bloquear la IP por XX horas
-                    logger.warn("IP {} bloqueada para el usuario {}.", attempt.getIpAddress(),
-                            attempt.getUser().getUsername());
+                    logger.warn("IP {} bloqueada para el usuario {}.", attempt.getIpAddress(), attempt.getUser().getUsername());
                     attempt.setIsIpBlocked(true);
                     attempt.setBlockedDate(now);
                 }
@@ -239,20 +214,17 @@ public class AuthService {
 
     // Verificar si una IP está bloqueada
     private boolean isIpBlocked(String ipAddress, UserEntity userEntity) {
-        IpLoginAttemptEntity attempt = ipLoginAttemptRepository
-                .findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
+        IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
         // Si no hay un registro existente en la BD para esta IP y este usuario, la IP
         // no está bloqueada
-        if (attempt == null) {
+        if (attempt == null)
             return false;
-        }
         Timestamp now = new Timestamp(System.currentTimeMillis());
         long oneDayMillis = this.IP_BLOCK_DURATION_HOURS * 60 * 60 * 1000;
         // Si la IP está bloqueada y han pasado más de XX horas desde que se bloqueó
         if (attempt.getIsIpBlocked() && (now.getTime() - attempt.getBlockedDate().getTime()) > oneDayMillis) {
             // Desbloquear
-            logger.info("IP {} desbloqueada para el usuario {}.", attempt.getIpAddress(),
-                    attempt.getUser().getUsername());
+            logger.info("IP {} desbloqueada para el usuario {}.", attempt.getIpAddress(), attempt.getUser().getUsername());
             attempt.setIsIpBlocked(false);
             attempt.setBlockedDate(null);
             attempt.setLastAttemptDate(now);

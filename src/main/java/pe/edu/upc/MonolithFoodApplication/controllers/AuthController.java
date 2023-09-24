@@ -1,6 +1,5 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,16 +17,18 @@ import pe.edu.upc.MonolithFoodApplication.services.AuthService;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-
-    @Autowired
+    // * Atributos
+    // Inyección de dependencias
     private final AuthService authService;
 
+    // * Metodos
+    // Login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
         ResponseDTO response = authService.login(request);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-
+    // Register
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
         ResponseDTO response = authService.register(request);

@@ -30,6 +30,7 @@ public class UserService {
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
+    // * Metodos
     // Obtener todos los usuarios
     public ResponseDTO getAllObjectives() {
         List<ObjectiveEntity> objectives = objectiveRepository.findAll();
@@ -42,7 +43,6 @@ public class UserService {
                 .collect(Collectors.toList());
         return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
     }
-
     // Obtener los objetivos de un usuario
     public ResponseDTO getUserObjectives(String username) {
         Optional<UserEntity> user = userRepository.findByUsername(username);
@@ -56,9 +56,13 @@ public class UserService {
                 .collect(Collectors.toList());
         return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
     }
-
     // Guardar o actualizar los objetivos de un usuario
     public ResponseDTO setUserObjectives(String username, List<String> objectives) {
+        // Verificar si la lista de objetivos está vacía
+        if (objectives.isEmpty()) {
+            logger.error("No se seleccionó ningún objetivo.");
+            return new ResponseDTO("Debes seleccionar al menos un objetivo.", 400);
+        }
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
         if (!getUser.isPresent()) {
             logger.error("Usuario no encontrado.");

@@ -2,7 +2,6 @@ package pe.edu.upc.MonolithFoodApplication.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,41 +22,37 @@ import pe.edu.upc.MonolithFoodApplication.services.UserService;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
-
-    @Autowired
+    // * Atributos
+    // Inyección de dependencias
     private final AuthService authService;
-
-    @Autowired
     private final UserService userService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
-
+    // * Metodos
+    // Test
     @GetMapping("/test")
     public ResponseEntity<?> test() {
         return new ResponseEntity<>("Test", HttpStatus.OK);
     }
-
+    // Auth
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         String realToken = jwtService.getRealToken(token);
         ResponseDTO response = authService.logout(realToken);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-
+    // Objectives
     @GetMapping("/getAllObjectives")
     public ResponseEntity<?> getAllObjectives(@RequestHeader("Authorization") String bearerToken) {
         ResponseDTO response = userService.getAllObjectives();
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-
     @GetMapping("/getUserObjectives")
     public ResponseEntity<?> getObjectives(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.getUserObjectives(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-
     @PutMapping("/setUserObjectives")
     public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken,
             @RequestBody List<String> objectives) {
