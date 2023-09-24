@@ -20,23 +20,14 @@ public class UserConfigController {
         this.userConfigService = userConfigService;
     }
 
-    @PostMapping("/enablednoti/{user}")
-    public ResponseEntity<HttpStatus> enablednoti (@PathVariable ("user") Long user){
+    @PostMapping("/enablednoti/{user}/status/{status}")
+    public ResponseEntity<String> enablednoti (@PathVariable ("user") Long user, @PathVariable ("status") boolean status){
         try {
-            userConfigService.updateNotiStatus(true,user);
-            return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-        } catch (Exception x){
-            return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
+            userConfigService.updateNotiStatus(status,user);
+            return new ResponseEntity<String>(HttpStatus.OK);
+        } catch (Exception ex){
+            return new ResponseEntity<String>(ex.getMessage(),HttpStatus.NOT_FOUND);
         }
     }
-    
-    @PostMapping("/disablednoti/{user}")
-    public ResponseEntity<HttpStatus> disablednoti (@PathVariable ("user") Long user){
-        try {
-            userConfigService.updateNotiStatus(false,user);
-            return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-        } catch (Exception x){
-            return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
-        }
-    }
+
 }
