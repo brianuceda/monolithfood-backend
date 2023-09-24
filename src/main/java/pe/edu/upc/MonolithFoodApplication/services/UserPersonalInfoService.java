@@ -94,5 +94,4 @@ public class UserPersonalInfoService {
             return "Obesidad grado 3";
         }
     }
-    
 }
