@@ -7,10 +7,10 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoResponseDTO;
@@ -20,14 +20,16 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class UserPersonalInfoService {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    // Log para mostrar errores en el archivo user.log
+    // * Atributos
+    // Inyección de dependencias
+    private final UserRepository userRepository;
+    // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserPersonalInfoService.class);
 
+    // * Metodos
+    // Put: Actualiza la información personal del usuario
     public ResponseDTO updateUserPeronalInfo(String username, PersonalInfoRequestDTO newUserPersonalInfo) {
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
         // Si no se encuentra el usuario en la base de datos, se retorna un mensaje

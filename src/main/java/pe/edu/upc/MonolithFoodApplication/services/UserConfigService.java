@@ -1,7 +1,5 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -24,6 +22,7 @@ public class UserConfigService {
     // * Atributos
     // Inyección de dependencias
     private final UserRepository userRepository;
+    // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserConfigService.class);
 
     // * Metodos
@@ -57,6 +56,7 @@ public class UserConfigService {
         // Guarda la configuración del usuario en una variable por referencia (si se modifica la variable, se modifica el objeto original)
         UserConfigEntity userConfig = userOpt.get().getUserConfig();
 
+        // Compara el nuevo valor con el valor actual de la configuración del usuario
         if (fieldName.equals("Notificaciones") && newValue != null && !newValue.equals(userConfig.getNotifications())) {
             userConfig.setNotifications(newValue);
         } else if (fieldName.equals("Modo oscuro") && newValue != null && !newValue.equals(userConfig.getDarkMode())) {
@@ -66,6 +66,7 @@ public class UserConfigService {
             return new ResponseDTO("No se actualizó ningún campo.", 200);
         }
 
+        // Guarda la configuración del usuario en la BD
         try {
             userRepository.save(userOpt.get());
             logger.info("{} actualizado para el usuario {}. Nuevo valor: {}.", fieldName, username, newValue);
@@ -76,6 +77,7 @@ public class UserConfigService {
         }
     }
 
+    // Genera el mensaje de respuesta para la actualización de la configuración del usuario
     private ResponseDTO generateUpdateMessage(UserConfigEntity userConfig, String fieldName) {
         if (fieldName.equals("Notificaciones")) {
             return new NotificationsDTO("Notificaciones actualizado correctamente.", 200, userConfig.getNotifications());

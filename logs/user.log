@@ -1,2 +1,0 @@
-12:38:10.652 [http-nio-8080-exec-6] INFO  p.e.u.M.services.UserConfigService - Modo oscuro actualizado para el usuario kiridepapel. Nuevo valor: true.
-12:38:21.248 [http-nio-8080-exec-8] INFO  p.e.u.M.services.UserConfigService - No se actualizo ningun campo para el usuario kiridepapel.
