@@ -6,17 +6,21 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
@@ -235,5 +239,5 @@ public class AuthService {
         // Devolver si la IP está bloqueada o no
         return attempt.getIsIpBlocked();
     }
-
+	
 }

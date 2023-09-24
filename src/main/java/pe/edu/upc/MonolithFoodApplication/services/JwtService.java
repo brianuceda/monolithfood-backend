@@ -44,6 +44,7 @@ public class JwtService {
             return null;
         }
     }
+
     // Generar un Token JWT en los datos de un usuario
     public String genToken(UserDetails user) {
         Map<String, Object> extraClaims = new HashMap<>();
@@ -107,5 +108,5 @@ public class JwtService {
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }
-    
+	
 }
