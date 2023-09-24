@@ -14,9 +14,11 @@ public class UserConfigService {
         this.userConfigRepository = userConfigRepository;
     }
 
-    public void updateNotiStatus (boolean status, Long userId){
+    public void updateNotiStatus (boolean status, Long userId) throws Exception{
         UserConfigEntity userConfigEntity = userConfigRepository.findByUserId(userId); //busco la config
-      
+        if (userConfigEntity == null){
+            throw new Exception("No se encontro la configuración"); // sino encuentra la config
+        }
         userConfigEntity.setNotificationsEnabled(status);//true or false
         userConfigRepository.save(userConfigEntity); // actualiza la config
     }
