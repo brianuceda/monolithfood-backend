@@ -7,5 +7,5 @@ import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 
 @Repository
 public interface EatRepository extends JpaRepository<EatEntity, Long> {
-
+    
 }
