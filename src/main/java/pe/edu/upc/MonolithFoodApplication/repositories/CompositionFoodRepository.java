@@ -8,5 +8,5 @@ import pe.edu.upc.MonolithFoodApplication.entities.CompositionFoodKey;
 
 @Repository
 public interface CompositionFoodRepository extends JpaRepository<CompositionFoodEntity, CompositionFoodKey> {
-    
+
 }

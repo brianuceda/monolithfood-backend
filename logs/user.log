@@ -1,0 +1,5 @@
+07:59:22.942 [http-nio-8080-exec-3] WARN  p.e.u.M.services.AuthService - Acceso denegado para la IP 179.6.5.75 hacia el usuario kiridepapel.
+07:59:32.836 [http-nio-8080-exec-4] WARN  p.e.u.M.services.AuthService - Acceso denegado para la IP 179.6.5.75 hacia el usuario kiridepapel.
+07:59:38.608 [http-nio-8080-exec-5] INFO  p.e.u.M.services.AuthService - IP 179.6.5.75 desbloqueada para el usuario kiridepapel.
+21:22:33.442 [http-nio-8080-exec-5] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: org.springframework.security.core.userdetails.UsernameNotFoundException
+21:22:47.641 [http-nio-8080-exec-8] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: org.springframework.security.core.userdetails.UsernameNotFoundException

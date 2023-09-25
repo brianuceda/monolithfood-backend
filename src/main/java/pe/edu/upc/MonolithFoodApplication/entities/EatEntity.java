@@ -2,10 +2,19 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 
 import java.sql.Timestamp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +28,7 @@ public class EatEntity {
 
     @Column(nullable = true)
     private Timestamp date;
-    
+
     @Column(nullable = false)
     private Double eatQuantity;
 
@@ -34,9 +43,9 @@ public class EatEntity {
     @ManyToOne
     @JoinColumn(name = "food_id")
     private FoodEntity food;
-    
+
     @ManyToOne
     @JoinColumn(name = "recipe_id", nullable = true)
     private RecipeEntity recipe;
-    
+
 }
