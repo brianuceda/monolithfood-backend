@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.general;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import lombok.Data;
 public class ResponseDTO {
     private String message;
     private Integer statusCode;
-    
+
     public ResponseDTO() {
         this.message = "OK";
         this.statusCode = 200;

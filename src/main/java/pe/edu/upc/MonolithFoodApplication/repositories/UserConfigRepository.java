@@ -8,6 +8,4 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 @Repository
 public interface UserConfigRepository extends JpaRepository<UserConfigEntity, Long> {
 
-    UserConfigEntity findByUserId(Long id);
-    
 }
