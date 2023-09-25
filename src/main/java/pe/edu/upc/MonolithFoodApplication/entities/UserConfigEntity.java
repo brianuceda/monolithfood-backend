@@ -18,7 +18,7 @@ public class UserConfigEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Boolean notificationsEnabled = true;
+    private Boolean notifications = true;
 
     @Column(nullable = false)
     private Timestamp lastFoodEntry;
