@@ -25,5 +25,5 @@ public class ObjectiveEntity {
 
     @ManyToMany(mappedBy = "objectives")
     private List<UserEntity> users;
-
+    
 }

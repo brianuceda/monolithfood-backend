@@ -7,5 +7,5 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 
 @Repository
 public interface UserFitnessInfoRepository extends JpaRepository<UserFitnessInfoEntity, Long> {
-
+    
 }

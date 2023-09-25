@@ -2,17 +2,10 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 
 import java.sql.Timestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -29,24 +22,24 @@ public class UserFitnessInfoEntity {
 
     @Column(nullable = true)
     private Timestamp targetDate;
-
+    
     @Column(nullable = true)
     private Double imc;
-
+    
     @Column(nullable = true)
     private Double dailyCaloricIntake;
-
+    
     @Column(nullable = true)
     private Double dailyProteinIntake;
-
+    
     @Column(nullable = true)
     private Double dailyCarbohydrateIntake;
-
+    
     @Column(nullable = true)
     private Double dailyFatIntake;
-
+    
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name="user_id")
     private UserEntity user;
-
+    
 }
