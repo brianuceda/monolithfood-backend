@@ -2,10 +2,17 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 
 import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -29,11 +36,8 @@ public class ActivityLevelEntity {
     @Column(length = 512)
     private String information;
 
-    @OneToMany(
-        mappedBy = "activityLevel",
-        cascade = {
+    @OneToMany(mappedBy = "activityLevel", cascade = {
             CascadeType.MERGE
-        }
-    )
+    })
     private List<UserPersonalInfoEntity> users;
 }
