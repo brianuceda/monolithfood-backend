@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.SimpleObjectDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.InfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.ObjectivesResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.PhotoDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
@@ -30,7 +32,31 @@ public class UserService {
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    // * Metodos
+    // * Informacion
+    public ResponseDTO getInformation(String username) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> getUser = userRepository.findByUsername(username);
+        if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
+        // Retorna la información del usuario
+        UserEntity u = getUser.get();
+        return new InfoDTO("Información recuperada correctamente.", 200,
+            u.getUsername(),
+            u.getEmail(),
+            u.getNames(),
+            u.getSurnames(),
+            u.getProfileImg()
+        );
+    }
+    public ResponseDTO updatePhoto(String username, String photoUrl) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> getUser = userRepository.findByUsername(username);
+        if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
+        // Actualiza y guarda la foto de perfil del usuario
+        getUser.get().setProfileImg(photoUrl);
+        userRepository.save(getUser.get());
+        return new PhotoDTO("Foto actualizada correctamente", 200, photoUrl);
+    }
+    // * Objetivos
     // Obtener todos los usuarios
     public ResponseDTO getAllObjectives() {
         List<ObjectiveEntity> objectives = objectiveRepository.findAll();

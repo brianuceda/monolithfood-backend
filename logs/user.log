@@ -9,3 +9,12 @@
 22:21:56.727 [http-nio-8080-exec-7] INFO  p.e.u.M.services.UserConfigService - No se actualizo ningun campo para el usuario kiridepapel.
 22:22:04.925 [http-nio-8080-exec-8] INFO  p.e.u.M.services.UserConfigService - Modo oscuro actualizado para el usuario kiridepapel. Nuevo valor: true.
 22:22:16.519 [http-nio-8080-exec-10] INFO  p.e.u.M.services.UserConfigService - No se actualizo ningun campo para el usuario kiridepapel.
+23:13:38.237 [http-nio-8080-exec-2] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: org.springframework.security.core.userdetails.UsernameNotFoundException
+23:17:33.209 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.NoTokenException
+23:26:20.069 [http-nio-8080-exec-5] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.NoTokenException
+23:26:50.610 [http-nio-8080-exec-7] INFO  p.e.u.M.s.UserPersonalInfoService - Campos actualizados para el usuario kiridepapel: Genero, Nacimiento, Altura, Peso.
+23:26:54.359 [http-nio-8080-exec-8] INFO  p.e.u.M.s.UserPersonalInfoService - No se actualizo ningun campo para el usuario kiridepapel.
+23:26:58.424 [http-nio-8080-exec-9] INFO  p.e.u.M.s.UserPersonalInfoService - Campos actualizados para el usuario kiridepapel: Peso.
+23:27:00.184 [http-nio-8080-exec-10] INFO  p.e.u.M.s.UserPersonalInfoService - No se actualizo ningun campo para el usuario kiridepapel.
+23:27:04.796 [http-nio-8080-exec-2] INFO  p.e.u.M.s.UserPersonalInfoService - Campos actualizados para el usuario kiridepapel: Peso.
+23:27:41.802 [http-nio-8080-exec-8] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: pe.edu.upc.MonolithFoodApplication.exceptions.BlacklistedTokenException

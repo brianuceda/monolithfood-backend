@@ -29,14 +29,23 @@ public class UserPersonalInfoService {
     private static final Logger logger = LoggerFactory.getLogger(UserPersonalInfoService.class);
 
     // * Metodos
+    public ResponseDTO getInformation(String username) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> getUser = userRepository.findByUsername(username);
+        if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
+        // Retorna la información del usuario
+        UserPersonalInfoEntity u = getUser.get().getUserPersonalInfo();
+        PersonalInfoRequestDTO up = new PersonalInfoRequestDTO(u.getGender(), u.getBirthdate(), u.getHeightCm(), u.getWeightKg());
+        return new PersonalInfoResponseDTO("Información recuperada correctamente.", 200, up);
+    }
     // Put: Actualiza la información personal del usuario
     public ResponseDTO updateUserPeronalInfo(String username, PersonalInfoRequestDTO newUserPersonalInfo) {
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        // Si no se encuentra el usuario en la base de datos, se retorna un mensaje
+        // Si no se encuentra el usuario
         if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
-        // Gaurda la información personal del usuario en una variable por referencia (si se modifica la variable, se modifica el objeto original)
+        // Gaurda la información personal del usuario en una variable
         UserPersonalInfoEntity userPersonalInfo = getUser.get().getUserPersonalInfo();
-        // Crea una lista para guardar los campos que se actualizaron
+        // Lista para guardar los campos que se actualizaron
         List<String> updatedFields = new ArrayList<>();
         // Se actualizan los campos que el usuario haya ingresado
         if (newUserPersonalInfo.getGender() != null && (newUserPersonalInfo.getGender() == GenderEnum.F || newUserPersonalInfo.getGender() == GenderEnum.M)) {
@@ -85,6 +94,7 @@ public class UserPersonalInfoService {
         }
     }
 
+    // * Funciones auxiliares
     // FUNCIÓN: Genera un mensaje con los campos que se actualizaron
     private ResponseDTO generateUpdateMessage(List<String> updatedFields, UserPersonalInfoEntity userPersonalInfo) {
         if (updatedFields.isEmpty()) {
@@ -104,7 +114,7 @@ public class UserPersonalInfoService {
             return new PersonalInfoResponseDTO(message, 200, dto);
         }
     }
-
+    // FUNCIÓN: Convierte la información personal del usuario a un objeto UserPersonalInfoDTO
     private PersonalInfoRequestDTO mapToDTO(UserPersonalInfoEntity entity) {
         return new PersonalInfoRequestDTO(
             entity.getGender(),

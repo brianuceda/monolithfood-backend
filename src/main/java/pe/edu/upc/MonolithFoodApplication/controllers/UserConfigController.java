@@ -17,7 +17,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserConfigService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/config")
+@RequestMapping("/user/config")
 public class UserConfigController {
     // * Atributos
     // Inyección de dependencias
@@ -25,19 +25,19 @@ public class UserConfigController {
     private final JwtService jwtService;
 
     // * Metodos
-    @GetMapping("/getConfig")
+    @GetMapping("/all")
     public ResponseEntity<?> getConfig(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         UserConfigDTO response = userConfigService.getConfig(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    @PutMapping("/darkmode")
+    @PutMapping("/darkmode/update")
     public ResponseEntity<?> changeDarkMode(@RequestHeader("Authorization") String bearerToken, @RequestParam Boolean darkMode) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userConfigService.changeDarkMode(username, darkMode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    @PutMapping("/notifications")
+    @PutMapping("/notifications/update")
     public ResponseEntity<?> changeNotifications(@RequestHeader("Authorization") String bearerToken, @RequestParam Boolean notifications) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userConfigService.changeNotifications(username, notifications);

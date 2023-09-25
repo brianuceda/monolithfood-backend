@@ -12,7 +12,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/personal-info")
+@RequestMapping("/user/personalinfo")
 public class UserPersonalInfoController {
     // * Atributos
     // Inyección de dependencias
@@ -20,6 +20,12 @@ public class UserPersonalInfoController {
     private final JwtService jwtService;
 
     // * Metodos
+    @GetMapping("/all")
+    public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userPersonalInfoService.getInformation(username);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
     @PutMapping("/update")
     public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PersonalInfoRequestDTO userPersonallnfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);

@@ -9,12 +9,12 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 @Setter
 public class PersonalInfoResponseDTO extends ResponseDTO {
 
-    private PersonalInfoRequestDTO updatedPersonalInfo;
+    private PersonalInfoRequestDTO personalInfo;
 
     @Builder
-    public PersonalInfoResponseDTO(String message, Integer statusCode, PersonalInfoRequestDTO updatedPersonalInfo) {
+    public PersonalInfoResponseDTO(String message, Integer statusCode, PersonalInfoRequestDTO personalInfo) {
         super(message, statusCode);
-        this.updatedPersonalInfo = updatedPersonalInfo;
+        this.personalInfo = personalInfo;
     }
     
 }
