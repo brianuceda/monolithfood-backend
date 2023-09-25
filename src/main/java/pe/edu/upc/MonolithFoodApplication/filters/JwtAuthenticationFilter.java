@@ -111,6 +111,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void saveAndShowInfoError(Exception e, HttpServletResponse response, ResponseDTO responseDTO)
             throws IOException, java.io.IOException {
         logger.error("Entrando al bloque Exception: " + e.getClass().getName());
+        logger.error("Causa exacta: " + e.getCause());
         sendErrorResponseInJSON(response, responseDTO);
     }
 

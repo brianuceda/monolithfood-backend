@@ -76,8 +76,10 @@ public class AuthService {
             String generatedToken = jwtService.genToken(user);
             // Reiniciar el contador de intentos fallidos de inicio de sesión
             IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(request.getIpAddress(), request.getUsername()).orElse(null);
-            attempt.setAttemptsCount(1);
-            ipLoginAttemptRepository.save(attempt);
+            if (attempt != null) {
+                attempt.setAttemptsCount(1);
+                ipLoginAttemptRepository.save(attempt);
+            }
             // Retornar el token generado junto con el mensaje de éxito y el código de estado
             return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken);
         } catch (AuthenticationException e) {
