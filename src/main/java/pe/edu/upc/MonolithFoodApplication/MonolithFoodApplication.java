@@ -398,7 +398,7 @@ public class MonolithFoodApplication {
                     Random rand = new Random();
                     UserConfigEntity config = new UserConfigEntity();
                     // Generacion aleatoria de true y false
-                    config.setNotificationsEnabled(rand.nextBoolean());
+                    config.setNotifications(rand.nextBoolean());
                     config.setDarkMode(rand.nextBoolean());
                     // Generacion de LocalDateTime aleatorio entre hace 4 días (4) y hoy (0) para lastFoodEntry
                     config.setLastFoodEntry(Timestamp.valueOf(LocalDateTime.now().plusDays(-rand.nextInt(4))));
