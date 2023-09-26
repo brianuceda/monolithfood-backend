@@ -4,4 +4,5 @@ public enum PrivacityEnum {
     PRIVATE,
     PUBLIC,
     COMMUNITY
+    
 }

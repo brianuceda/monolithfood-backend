@@ -21,12 +21,11 @@ public class IpLoginAttemptEntity {
     private String ipAddress;
 
     private Boolean isAccountBlocked = false;
-    private Integer attemptsCount;
     private Timestamp lastAttemptDate;
     private Timestamp blockedDate;
     
-    @OneToOne
-    @JoinColumn(name="user_id")
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
     
 }

@@ -28,9 +28,14 @@ public class NutrientEntity {
 
     @OneToMany(
         mappedBy = "nutrient",
-        cascade = CascadeType.ALL,
-        fetch = FetchType.EAGER
+        fetch = FetchType.LAZY
     )
-    private List<CompositionEntity> compositions;
+    private List<CompositionFoodEntity> compositionsFood;
+
+    @OneToMany(
+        mappedBy = "nutrient",
+        fetch = FetchType.LAZY
+    )
+    private List<CompositionRecipeEntity> compositionsRecipe;
 
 }

@@ -1,6 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,17 +22,17 @@ public class UserPersonalInfoEntity {
     private GenderEnum gender;
 
     @Column(nullable = false)
-    private Date birthdate;
+    private Timestamp birthdate;
 
     @Column(nullable = false)
     private Double heightCm;
 
     @Column(nullable = false)
     private Double weightKg;
-
-    @Column(name = "daily_caloric_intake", nullable = false)
-    private Double dailyCaloricIntake; // <-- Añade esta línea
    
+    @Column(name = "daily_caloric_intake", nullable = false)
+    private Double dailyCaloricIntake;
+
     @ManyToOne
     @JoinColumn(name = "activity_level_id", nullable = false)
     private ActivityLevelEntity activityLevel;
@@ -40,5 +40,6 @@ public class UserPersonalInfoEntity {
     @OneToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
-}
 
+
+}

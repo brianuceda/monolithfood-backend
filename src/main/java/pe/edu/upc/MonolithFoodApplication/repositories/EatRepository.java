@@ -25,11 +25,22 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
     void deleteByUsernameAndDate(String username, LocalDate date);
 
     //Obtener el total de calorías consumidas por un usuario en un día específico
-    @Query("SELECT SUM(f.calories * e.quantity) FROM EatEntity e JOIN e.food f WHERE e.user.username = :username AND e.date = :date")
+    @Query("SELECT SUM(comp.nutrientQuantity * e.eatQuantity) FROM EatEntity e " +
+    "JOIN e.food f " +
+    "JOIN f.compositions comp " +
+    "JOIN comp.nutrient n " +
+    "WHERE e.user.username = :username AND e.date = :date AND n.name = 'calories'")
     Double findTotalCaloriesByUsernameAndDate(String username, LocalDate date);
 
     //Obtener los días en los que un usuario ha excedido su límite calórico
-    @Query("SELECT e.date, SUM(f.calories * e.quantity) FROM EatEntity e JOIN e.food f WHERE e.user.username = :username GROUP BY e.date HAVING SUM(f.calories * e.quantity) > :caloricLimit")
+    // NOTE: This query also needs to be corrected in the same way as the previous one.
+    @Query("SELECT e.date, SUM(comp.nutrientQuantity * e.eatQuantity) FROM EatEntity e " +
+    "JOIN e.food f " +
+    "JOIN f.compositions comp " +
+    "JOIN comp.nutrient n " +
+    "WHERE e.user.username = :username " +
+    "GROUP BY e.date " +
+    "HAVING SUM(comp.nutrientQuantity * e.eatQuantity) > :caloricLimit AND n.name = 'calories'")
     List<Object[]> findDaysExceedingCaloricLimitByUsername(String username, Double caloricLimit);
 
     // Aquí se puede agregar métodos personalizados si es necesario.
