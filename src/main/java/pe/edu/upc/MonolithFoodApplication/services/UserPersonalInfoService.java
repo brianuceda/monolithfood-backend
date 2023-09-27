@@ -7,10 +7,6 @@ import org.springframework.stereotype.Service;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.IMCDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
-import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonalInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service

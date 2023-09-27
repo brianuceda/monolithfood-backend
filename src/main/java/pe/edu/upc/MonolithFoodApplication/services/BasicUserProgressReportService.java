@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -18,9 +17,6 @@ import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 @AllArgsConstructor
 public class BasicUserProgressReportService {
     private final EatRepository eatRepository;
-    //@Autowired
-   // private UserRepository userRepository;
-
 
     public CaloriesConsumedLastWeekDTO getCaloriesConsumedInTheLastWeek (String username)
     {   
