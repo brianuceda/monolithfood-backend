@@ -1,5 +1,0 @@
-12:49:22.064 [http-nio-8080-exec-9] ERROR p.e.u.M.services.SubscriptionService - El usuario gabi ya cuenta con el plan de suscripción elegido.
-12:52:45.886 [http-nio-8080-exec-1] ERROR p.e.u.M.services.SubscriptionService - Plan de suscripción no encontrado para el usuario: gabi
-12:54:50.312 [http-nio-8080-exec-5] ERROR p.e.u.M.services.SubscriptionService - Plan de suscripción no encontrado para el usuario: gabi
-12:55:14.332 [http-nio-8080-exec-8] ERROR p.e.u.M.services.SubscriptionService - El usuario gabi no cuenta con el plan de suscripción elegido.
-12:56:38.218 [http-nio-8080-exec-4] ERROR p.e.u.M.services.SubscriptionService - El usuario gabi no cuenta con el plan de suscripción elegido.

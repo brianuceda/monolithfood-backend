@@ -146,7 +146,7 @@ public class AuthService {
     // Crear un Set<> con el rol USER por defecto
     private Set<RoleEntity> setRoleUser() {
         Set<RoleEntity> roles = new HashSet<>();
-        RoleEntity USER = roleRepository.findByName(RoleEnum.USER);
+        RoleEntity USER = roleRepository.findByName(RoleEnum.USER).get();
         roles.add(USER);
         return roles;
     }
