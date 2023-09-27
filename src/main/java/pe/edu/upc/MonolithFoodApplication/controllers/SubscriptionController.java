@@ -18,10 +18,10 @@ public class SubscriptionController {
     private SubscriptionService subscriptionService;
 
     @PostMapping("/purchase")
-    public void purchaseSubscription(@RequestBody UserSubscriptionDTO userSubscriptionDTO) {
+    public ResponseEntity<String> purchaseSubscription(@RequestBody UserSubscriptionDTO userSubscriptionDTO) {
         subscriptionService.purchaseSubscription(userSubscriptionDTO);
-        
-    }
+        return ResponseEntity.status(HttpStatus.OK).body("Subscription purchase successfully");
+    }    
     
     @DeleteMapping("/cancel/{username}")
     public ResponseEntity<String> cancelSubscription(@RequestParam("username") String username) {
@@ -33,7 +33,13 @@ public class SubscriptionController {
     @GetMapping("/getSubscriptionPlan/{username}")
     public ResponseEntity<String> getSubscriptionPlanByUsername(@RequestParam("username") String username) {
         String subscriptionPlanName = subscriptionService.getSubscriptionPlanByUsername(username);
-        return ResponseEntity.status(HttpStatus.OK).body(subscriptionPlanName);
+    
+        if (subscriptionPlanName != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(subscriptionPlanName);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subscription not found");
+        }
     }
+    
     
 }

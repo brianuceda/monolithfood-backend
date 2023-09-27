@@ -26,21 +26,41 @@ public class FoodController {
     @GetMapping("/searchByName")
     public ResponseEntity<?> searchFoodsByName(@RequestParam String foodName) {
         try {
-            return new ResponseEntity<List<SearchFoodDTO>>(foodService.searchFoodsByName(foodName), HttpStatus.OK);
+            List<SearchFoodDTO> foundFoods = foodService.searchFoodsByName(foodName);
+            if (foundFoods.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Food not found by name");
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(foundFoods);
+            }
         } catch(Exception e) {
-            return new ResponseEntity<String>("Error", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error");
         }
     }
+    
 
     @GetMapping("/searchByCategory")
-    public ResponseEntity<List<SearchFoodDTO>> searchFoodsByCategory(@RequestParam String categoryName) {
-        return new ResponseEntity<List<SearchFoodDTO>>(foodService.searchFoodsByCategory(categoryName), HttpStatus.OK);
+    public ResponseEntity<?> searchFoodsByCategory(@RequestParam String categoryName) {
+        List<SearchFoodDTO> foundFoods = foodService.searchFoodsByCategory(categoryName);
+    
+        if (foundFoods.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Food not found by category");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(foundFoods);
+        }
     }
+    
 
     @GetMapping("/searchByNutrient")
-    public ResponseEntity<List<FoodNutrientDTO>> searchFoodsByNutrient(@RequestParam String nutrientName) {
-        return new ResponseEntity<List<FoodNutrientDTO>>(foodService.searchFoodsByNutrient(nutrientName), HttpStatus.OK);
+    public ResponseEntity<?> searchFoodsByNutrient(@RequestParam String nutrientName) {
+        List<FoodNutrientDTO> foundFoods = foodService.searchFoodsByNutrient(nutrientName);
+    
+        if (foundFoods.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Food not found by nutrient");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(foundFoods);
+        }
     }
+    
 
     // @GetMapping("/search")
     // public ResponseEntity<String> searchFood(
