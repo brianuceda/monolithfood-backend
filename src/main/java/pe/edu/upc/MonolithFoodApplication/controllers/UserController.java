@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.dtos.bfoodintake.NewIntakeDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.bfoodintake.UpdateIntakeDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.NewIntakeDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.UpdateIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.services.UserService;
 

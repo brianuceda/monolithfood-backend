@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos.bfoodintake;
+package pe.edu.upc.MonolithFoodApplication.dtos.foodintake;
 
 import java.util.List;
 
