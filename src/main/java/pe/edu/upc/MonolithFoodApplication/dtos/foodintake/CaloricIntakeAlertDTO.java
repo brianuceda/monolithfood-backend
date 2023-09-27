@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.foodintake;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

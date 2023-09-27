@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.foodintake;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class UpdateFoodIntakeDTO {
+public class RemoveFoodIntakeDTO {
     private Long foodId;
-    private Double newQuantity;
 }
 

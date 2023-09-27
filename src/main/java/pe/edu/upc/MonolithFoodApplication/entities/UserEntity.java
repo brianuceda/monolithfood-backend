@@ -1,10 +1,7 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-
 import java.util.List;
 import java.util.Set;
-
-
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,22 +14,11 @@ import lombok.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity  {
-
-    // public UserEntity(Long id, String username, String password, String email, String names, String surnames, String profileImg, Boolean is_account_blocked, UserConfigEntity userConfig, List<ObjectiveEntity> objectives, Set<RoleEntity> roles) {
-    //     this.id = id;
-    //     this.username = username;
-    //     this.password = password;
-    //     this.email = email;
-    //     this.names = names;
-    //     this.surnames = surnames;
-    //     this.profileImg = profileImg;
-    //     this.is_account_blocked = is_account_blocked;
-    //     this.objectives = objectives;
-    //     this.roles = roles;
-    // }
-    
+@Table(name = "users", indexes = {
+        @Index(name = "user_username_idx", columnList = "username", unique = true),
+        @Index(name = "user_email_idx", columnList = "email", unique = true)
+})
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,54 +47,38 @@ public class UserEntity  {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserConfigEntity userConfig;
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<IpLoginAttemptEntity> ipLoginAttempt;
-  
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;
-  
-    @OneToOne(mappedBy="user", cascade = CascadeType.ALL)
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserFitnessInfoEntity userFitnessInfo;
 
-    @ManyToMany(
-        fetch = FetchType.EAGER
-    )
-    @JoinTable(
-        name = "user_objective",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "objective_id"),
-        uniqueConstraints = {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_objective", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "objective_id"), uniqueConstraints = {
             @UniqueConstraint(columnNames = {
-                "user_id",
-                "objective_id"
+                    "user_id",
+                    "objective_id"
             })
-        }
-    )
+    })
     private List<ObjectiveEntity> objectives;
-    
+
     @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
     private List<RecipeEntity> createdRecipes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EatEntity> eats;
 
-    @ManyToMany(
-        fetch = FetchType.EAGER
-    )
-    @JoinTable(
-        name ="user_role",
-        joinColumns = @JoinColumn (name = "user_id"),
-        inverseJoinColumns = @JoinColumn (name = "role_id"),
-        uniqueConstraints = {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"), uniqueConstraints = {
             @UniqueConstraint(columnNames = {
-                "user_id",
-                "role_id"
+                    "user_id",
+                    "role_id"
             })
-        }
-    )
+    })
     private Set<RoleEntity> roles;
-    
-
 
 }

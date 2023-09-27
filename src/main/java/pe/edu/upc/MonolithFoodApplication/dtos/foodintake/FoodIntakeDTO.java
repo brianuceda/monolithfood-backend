@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.foodintake;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FoodIntakeDTO {
-    private Long foodId;
+    private String name;
     private Double quantity;
 }

@@ -1,61 +1,57 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import pe.edu.upc.MonolithFoodApplication.dtos.CaloricIntakeAlertDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.FoodIntakeDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.FoodIntakeResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.RemoveFoodIntakeDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.RemoveFoodIntakeResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.UpdateFoodIntakeDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.UpdateFoodIntakeResponseDTO;
+import lombok.RequiredArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.dtos.bfoodintake.NewIntakeDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.bfoodintake.UpdateIntakeDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.services.UserService;
 
 @RestController
-@RequestMapping("/api/user")
+@RequiredArgsConstructor
+@RequestMapping("/user")
 public class UserController {
-    
-    @Autowired
-    private UserService userService;
+    // * Atributos
+    // Inyección de dependencias
+    private final UserService userService;
 
-    @PostMapping("/intake")
-    public ResponseEntity<FoodIntakeResponseDTO> addFoodIntake(@RequestBody FoodIntakeDTO foodIntakeDTO) {
-        FoodIntakeResponseDTO response = userService.addFoodIntake(foodIntakeDTO);
-        return ResponseEntity.ok(response);
+    @GetMapping("/intake/all")
+    public ResponseEntity<?> getAllFoodIntake(@RequestParam("username") String username) {
+        ResponseDTO response = userService.getAllFoodIntake(username);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    @PostMapping("/intake/update")
-    public ResponseEntity<UpdateFoodIntakeResponseDTO> updateFoodIntake(@RequestBody UpdateFoodIntakeDTO updateFoodIntakeDTO) {
-        UpdateFoodIntakeResponseDTO response = userService.updateFoodIntake(updateFoodIntakeDTO);
-        return ResponseEntity.ok(response);
+    @PostMapping("/intake/add")
+    public ResponseEntity<?> addFoodIntake(@RequestParam String username, @RequestBody NewIntakeDTO foodIntakeDTO) {
+        ResponseDTO response = userService.addFoodIntake(username, foodIntakeDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    @DeleteMapping("/intake/{foodId}")
-    public ResponseEntity<RemoveFoodIntakeResponseDTO> removeFoodIntake(@PathVariable Long foodId) {
-        RemoveFoodIntakeDTO removeFoodIntakeDTO = new RemoveFoodIntakeDTO(foodId);
-        RemoveFoodIntakeResponseDTO response = userService.removeFoodIntake(removeFoodIntakeDTO);
-        return ResponseEntity.ok(response);
+    @PutMapping("/intake/update")
+    public ResponseEntity<?> updateFoodIntake(@RequestParam String username, @RequestBody UpdateIntakeDTO newFoodIntakeDTO) {
+        ResponseDTO response = userService.updateFoodIntake(username, newFoodIntakeDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-
-
-    @GetMapping("/intake/alert")
-    public ResponseEntity<CaloricIntakeAlertDTO> checkCaloricIntake(@RequestParam String username) {
-        CaloricIntakeAlertDTO response = userService.checkDailyCaloricIntake(username);
-        return ResponseEntity.ok(response);
+    @DeleteMapping("/intake/delete")
+    public ResponseEntity<?> deleteFoodIntake(@RequestParam String username, @RequestParam Long foodId) {
+        ResponseDTO response = userService.deleteFoodIntake(username, foodId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-
-
-  
-
+    // @GetMapping("/intake/alert")
+    // public ResponseEntity<CaloricIntakeAlertDTO> checkCaloricIntake(@RequestParam String username) {
+    //     CaloricIntakeAlertDTO response = userService.checkDailyCaloricIntake(username);
+    //     return ResponseEntity.ok(response);
+    // }
 }
