@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.IMCDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
@@ -93,8 +94,67 @@ public class UserPersonalInfoService {
             return new ResponseDTO("Error al guardar la informacion en la BD.", 500);
         }
     }
+    public IMCDTO updateWeightAndGetIMC(String username, Double weight) {
+        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+        //actualizar el peso en la tabla user personal info
+        Double imc = calculateIMC(weight, userEntity.get().getUserPersonalInfo().getHeightCm());
+
+        userEntity.get().getUserFitnessInfo().setImc(imc);
+        
+        userEntity.get().getUserPersonalInfo().setWeightKg(weight);
+        userRepository.save(userEntity.get());
+
+        IMCDTO imcDTO = new IMCDTO();
+        imcDTO.setImc(imc);
+        imcDTO.setClasification(getClasification(imc));
+        imcDTO.setNewHeight(userEntity.get().getUserPersonalInfo().getHeightCm());
+        imcDTO.setNewWeight(weight);
+
+        return imcDTO;
+    }
+
+    public IMCDTO updateHeightAndGetIMC (String username, Double height)
+    {
+        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+
+        Double imc = calculateIMC(userEntity.get().getUserPersonalInfo().getWeightKg(), height);
+        userEntity.get().getUserFitnessInfo().setImc(imc);
+        userEntity.get().getUserPersonalInfo().setHeightCm(height);
+        userRepository.save(userEntity.get());
+
+        IMCDTO imcDTO = new IMCDTO();
+        imcDTO.setImc(imc);
+        imcDTO.setClasification(getClasification(imc));
+        imcDTO.setNewHeight(height);
+        imcDTO.setNewWeight(userEntity.get().getUserPersonalInfo().getWeightKg());
+
+        return imcDTO;
+    }
 
     // * Funciones auxiliares
+    public Double calculateIMC(Double weight, Double height)
+    {
+        Double newHeight = height/100;
+        Double imc = weight / (newHeight*newHeight);
+        return imc;
+    }
+
+    public String getClasification (Double imc)
+    {
+        if(imc < 18.5)
+            return "Bajo peso";
+        else if(imc >= 18.5 && imc < 25)
+            return "Normal";
+        else if(imc >= 25 && imc < 30)
+            return "Sobrepeso";
+        else if(imc >= 30 && imc < 35)
+            return "Obesidad grado 1";
+        else if(imc >= 35 && imc < 40)
+            return "Obesidad grado 2";
+        else
+            return "Obesidad grado 3";
+    }
+
     // FUNCIÓN: Genera un mensaje con los campos que se actualizaron
     private ResponseDTO generateUpdateMessage(List<String> updatedFields, UserPersonalInfoEntity userPersonalInfo) {
         if (updatedFields.isEmpty()) {
@@ -123,4 +183,5 @@ public class UserPersonalInfoService {
             entity.getWeightKg() 
         );
     }
+  
 }
