@@ -11,4 +11,5 @@ import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 @Repository
 public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     Optional<RoleEntity> findByName(RoleEnum name);
+
 }
