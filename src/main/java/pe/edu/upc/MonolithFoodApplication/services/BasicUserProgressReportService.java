@@ -8,16 +8,20 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.dtos.AverageDailyCaloriesConsumedDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.CaloriesConsumedLastWeekDTO;
+import lombok.RequiredArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.AverageDailyCaloriesConsumedDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.CaloriesConsumedLastWeekDTO;
 import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BasicUserProgressReportService {
+    // * Atributos
+    // Inyección de dependencias
     private final EatRepository eatRepository;
 
+    // * Metodos
+    // * Get Calories Consumed
     public CaloriesConsumedLastWeekDTO getCaloriesConsumedInTheLastWeek (String username)
     {   
         List<Object[]> results = eatRepository.AveragecaloriesLastWeek(username);
@@ -27,7 +31,6 @@ public class BasicUserProgressReportService {
             (Double) firstResult[1]
         );
     }
-
     public List<AverageDailyCaloriesConsumedDTO> getAverageDailyCaloriesConsumedDTO (String username)
     {   
         List<Object[]> results = eatRepository.AverageCalorieConsumptioDay(username);
@@ -43,10 +46,9 @@ public class BasicUserProgressReportService {
         
         return averageDailyCaloriesConsumedDTOs;
     }
-
     private String formatDate(Timestamp timestamp) {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd/MM/yyyy");
-    Date date = new Date(timestamp.getTime());
-    return dateFormat.format(date);
-}
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd/MM/yyyy");
+        Date date = new Date(timestamp.getTime());
+        return dateFormat.format(date);
+    }
 }
