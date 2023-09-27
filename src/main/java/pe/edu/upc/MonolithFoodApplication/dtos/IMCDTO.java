@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class IMCDTO {
     private Double imc;
     private String clasification;
+    private Double newHeight;
+    private Double newWeight;
 }

@@ -33,6 +33,8 @@ public class UserPersonalInfoService {
         IMCDTO imcDTO= new IMCDTO();
         imcDTO.setImc(imc);
         imcDTO.setClasification(getClasification(imc));
+        imcDTO.setNewHeight(userEntity.get().getUserPersonalInfo().getHeightCm());
+        imcDTO.setNewWeight(weight);
 
 
         return imcDTO;
@@ -51,6 +53,8 @@ public class UserPersonalInfoService {
         IMCDTO imcDTO= new IMCDTO();
         imcDTO.setImc(imc);
         imcDTO.setClasification(getClasification(imc));
+        imcDTO.setNewHeight(height);
+        imcDTO.setNewWeight(userEntity.get().getUserPersonalInfo().getWeightKg());
 
         return imcDTO;
     }
