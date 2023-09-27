@@ -11,7 +11,6 @@ import pe.edu.upc.MonolithFoodApplication.entities.CompositionFoodKey;
 
 @Repository
 public interface CompositionFoodRepository extends JpaRepository<CompositionFoodEntity, CompositionFoodKey> {
-
     @Query(value =
         "SELECT cf.* FROM composition_food cf " +
         "JOIN food f ON cf.food_id = f.id " +
@@ -20,4 +19,5 @@ public interface CompositionFoodRepository extends JpaRepository<CompositionFood
         nativeQuery = true                
     )
     Optional<CompositionFoodEntity> findByFoodAndNutrient(String foodName, String nutrientName);
+
 }

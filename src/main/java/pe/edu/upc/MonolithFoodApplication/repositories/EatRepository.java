@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,6 @@ import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 
 @Repository
 public interface EatRepository extends JpaRepository<EatEntity, Long> {
-
     // JPQL
     @Query(
         "SELECT " + 
@@ -30,7 +30,5 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "WHERE u.username = :username AND n.name = 'Calorias'"
     )
     List<Object[]> findAllIntakesByUsername(@Param("username") String username);
-
-    
-
+  
 }

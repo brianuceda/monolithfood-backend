@@ -10,9 +10,7 @@ import org.springframework.data.repository.query.Param;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 
 public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
-
     Optional<FoodEntity> findByName(String name);
-
     List<FoodEntity> findByNameContaining(String name);
 
     @Query("SELECT f FROM FoodEntity f " +
