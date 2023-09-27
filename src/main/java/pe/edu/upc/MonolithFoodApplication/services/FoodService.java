@@ -3,9 +3,9 @@ package pe.edu.upc.MonolithFoodApplication.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pe.edu.upc.MonolithFoodApplication.dto.FoodCompositionDTO;
-import pe.edu.upc.MonolithFoodApplication.dto.FoodNutrientDTO;
-import pe.edu.upc.MonolithFoodApplication.dto.SearchFoodDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodCompositionDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodNutrientDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.SearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.CategoryRepository;

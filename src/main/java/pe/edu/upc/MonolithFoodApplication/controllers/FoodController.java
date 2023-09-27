@@ -1,8 +1,8 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
 
-import pe.edu.upc.MonolithFoodApplication.dto.FoodNutrientDTO;
-import pe.edu.upc.MonolithFoodApplication.dto.SearchFoodDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodNutrientDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.SearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.services.FoodService;
 
 import org.springframework.beans.factory.annotation.Autowired;

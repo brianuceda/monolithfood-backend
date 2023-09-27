@@ -1,45 +1,40 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import pe.edu.upc.MonolithFoodApplication.dto.UserSubscriptionDTO;
+import lombok.RequiredArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.subscriptions.SubscriptionPlanDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.subscriptions.UserSubscriptionDTO;
 import pe.edu.upc.MonolithFoodApplication.services.SubscriptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
-
 @RestController
-@RequestMapping("/subscriptions")
+@RequiredArgsConstructor
+@RequestMapping("/user/subscriptions")
 public class SubscriptionController {
-
-    @Autowired
-    private SubscriptionService subscriptionService;
-
+    // * Atributos
+    // Inyección de dependencias
+    private final SubscriptionService subscriptionService;
+    
+    // * Metodos
+    // Get: Obtiene plan de suscripción del usuario
+    @GetMapping("/mySubscriptions")
+    public ResponseEntity<?> getSubscriptionPlan(@RequestParam("username") String username) {
+        ResponseDTO response = subscriptionService.getSubscriptionPlan(username);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+    // Post: Compra un plan de suscripción
     @PostMapping("/purchase")
-    public ResponseEntity<String> purchaseSubscription(@RequestBody UserSubscriptionDTO userSubscriptionDTO) {
-        subscriptionService.purchaseSubscription(userSubscriptionDTO);
-        return ResponseEntity.status(HttpStatus.OK).body("Subscription purchase successfully");
+    public ResponseEntity<?> purchaseSubscriptionPlan(@RequestParam("username") String username, @RequestBody SubscriptionPlanDTO subscriptionPlanDTO) {
+        ResponseDTO response = subscriptionService.purchaseSubscriptionPlan(username, subscriptionPlanDTO);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }    
-    
-    @DeleteMapping("/cancel/{username}")
-    public ResponseEntity<String> cancelSubscription(@RequestParam("username") String username) {
-        
-        subscriptionService.cancelSubscriptionByUsername(username);
-        return ResponseEntity.status(HttpStatus.OK).body("Subscription canceled successfully");
+    // Delete: Cancela un plan de suscripción
+    @DeleteMapping("/cancel")
+    public ResponseEntity<?> cancelSubscriptionPlan(@RequestParam("username") String username, @RequestBody UserSubscriptionDTO plan) {
+        ResponseDTO response = subscriptionService.cancelSubscriptionPlan(username, plan);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    
-    @GetMapping("/getSubscriptionPlan/{username}")
-    public ResponseEntity<String> getSubscriptionPlanByUsername(@RequestParam("username") String username) {
-        String subscriptionPlanName = subscriptionService.getSubscriptionPlanByUsername(username);
-    
-        if (subscriptionPlanName != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(subscriptionPlanName);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subscription not found");
-        }
-    }
-    
-    
 }
