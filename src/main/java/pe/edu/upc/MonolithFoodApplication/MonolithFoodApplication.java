@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -247,14 +248,17 @@ public class MonolithFoodApplication {
             if(roleRepository.count() == 0) {
                 roles = Arrays.asList(
                     new RoleEntity(null, RoleEnum.ADMIN),
-                    new RoleEntity(null, RoleEnum.USER)
+                    new RoleEntity(null, RoleEnum.USER),
+                    new RoleEntity(null, RoleEnum.VIP)
                 );
                 roleRepository.saveAll(roles);
             }
             if(userRepository.count() == 0) {
                 // Roles disponibles
-                RoleEntity USER = roleRepository.findByName(RoleEnum.USER);
-                RoleEntity ADMIN = roleRepository.findByName(RoleEnum.ADMIN);
+                Optional<RoleEntity> getUSER = roleRepository.findByName(RoleEnum.USER);
+                Optional<RoleEntity> getADMIN = roleRepository.findByName(RoleEnum.ADMIN);
+                RoleEntity USER = getUSER.get();
+                RoleEntity ADMIN = getADMIN.get();
                 // Creacion de usuarios
                 users = Arrays.asList(
                     new UserEntity(null, "kiridepapel", "$2a$10$8YYL6YTawu99l5vFqGTKI.ul/1JoG9FJ9z2HkPRFv6znEb39jvTIe", "brian@gmail.com", "Brian", "Uceda", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", false, null, null, null, null, getRandomObjectives(objectives, 7), null, null, new HashSet<>(Arrays.asList(ADMIN, USER))),
