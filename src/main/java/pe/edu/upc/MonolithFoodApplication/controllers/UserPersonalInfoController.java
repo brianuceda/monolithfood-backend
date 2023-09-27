@@ -19,20 +19,20 @@ import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/personalInfo")
+@RequestMapping("/user/info")
 public class UserPersonalInfoController {
 
     private final UserPersonalInfoService userPersonalInfoService;
     private final BasicUserProgressReportService basicUserProgressReportService;
 
     
-    @PutMapping("/updateWeight")
+    @PutMapping("/weight/update")
     public ResponseEntity<IMCDTO> updateWeightAndGetIMC(@RequestParam String username, @RequestParam Double weight) {
         IMCDTO imcDTO = userPersonalInfoService.updateWeightAndGetIMC(username, weight);
         return new ResponseEntity<>(imcDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/updateHeight")
+    @PutMapping("/height/update")
     public ResponseEntity<IMCDTO> updateHeightAndGetIMC(@RequestParam String username,@RequestParam Double height) {
         IMCDTO imcDTO = userPersonalInfoService.updateHeightAndGetIMC(username, height);
         return new ResponseEntity<>(imcDTO, HttpStatus.OK);
