@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.general;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MacronutriendDTO {
+public class SimpleObjectDTO {
     private String name;
-    private Double dailyIntake;
-    
+    private String information;
 }

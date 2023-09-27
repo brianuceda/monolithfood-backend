@@ -1,32 +1,47 @@
-// package pe.edu.upc.MonolithFoodApplication.services;
+package pe.edu.upc.MonolithFoodApplication.services;
 
-// import java.util.Optional;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
 
-// import pe.edu.upc.MonolithFoodApplication.dtos.ProgressReportDTO;
-// import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
-// import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
+import lombok.AllArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.dtos.AverageDailyCaloriesConsumedDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.CaloriesConsumedLastWeekDTO;
+import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 
-// @Service
-// public class BasicUserProgressReportService {
-//     @Autowired
-//     private UserRepository userRepository;
+@Service
+@AllArgsConstructor
+public class BasicUserProgressReportService {
+    private final EatRepository eatRepository;
+    //@Autowired
+   // private UserRepository userRepository;
 
-//     public ProgressReportDTO TotalCaloriesConsumedInTheWeek(String username, Double totalCalories)
-//     {
 
-//         // List<EatEntity> eatEntityList = eatRepository.findByUserName(userEntity.get());
+    public CaloriesConsumedLastWeekDTO getCaloriesConsumedInTheLastWeek (String username)
+    {   
+        List<Object[]> results = eatRepository.AveragecaloriesLastWeek(username);
+        Object[] firstResult = results.get(0);
+        return new CaloriesConsumedLastWeekDTO(
+            (String) firstResult[0],
+            (Double) firstResult[1]
+        );
+    }
 
-//         return null;
-//     }
-
-//     public Double CalculateTotalCaloriesConsumedInTheWeek(Double totalCalories)
-//     {   
-//         //suma total de calorias consumidas en la semana
-//         Double totalCaloriesConsumedInTheWeek=0.0;
-//         //totalCaloriesConsumedInTheWeek= totalCaloriesConsumedInTheWeek+totalCalories;
-//         return null;
-//     }
-// }
+    public List<AverageDailyCaloriesConsumedDTO> getAverageDailyCaloriesConsumedDTO (String username)
+    {   
+        List<Object[]> results = eatRepository.AverageCalorieConsumptioDay(username);
+        
+        List<AverageDailyCaloriesConsumedDTO> averageDailyCaloriesConsumedDTOs = results.stream().map(result ->{
+        return new AverageDailyCaloriesConsumedDTO(
+            (String) result[0],
+            (Timestamp) result[1],
+            (Double) result[2]
+            );
+        }
+        ).collect(Collectors.toList());
+        return averageDailyCaloriesConsumedDTOs;
+    }
+}
