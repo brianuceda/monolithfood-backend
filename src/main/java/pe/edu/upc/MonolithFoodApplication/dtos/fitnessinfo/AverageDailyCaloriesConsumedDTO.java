@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,5 +11,5 @@ public class AverageDailyCaloriesConsumedDTO {
     private String username;
     private String date;
     private Double averageCaloriesDay;
-    //considerar mostrar tambien la lista de productos con calorias consumidas en ese dia
+    // Considerar mostrar tambien la lista de productos con calorias consumidas en ese dia
 }

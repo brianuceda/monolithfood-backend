@@ -33,7 +33,7 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    // * Atributos
+    // ? Atributos
     // Inyección de dependencias
     private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;
@@ -42,6 +42,8 @@ public class UserService {
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
+    // ? Metodos
+    // * Alimentos
     public ResponseDTO getAllFoodIntake(String username) {
         // Verifica que el usuario exista
         // Se usa optional ya que el usuario puede o no existir y de eso se encarga JPA
@@ -64,7 +66,6 @@ public class UserService {
         }).collect(Collectors.toList());
         return new GetIntakesDTO("Alimentos recuperados correctamente.", 200, myIntakes);
     }
-
     public ResponseDTO addFoodIntake(String username, NewIntakeDTO foodIntakeDTO) {
         // Verifica que el usuario exista
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
@@ -87,7 +88,6 @@ public class UserService {
         logger.info("Alimento registrado correctamente para el usuario " + username + ".");
         return new ResponseDTO("Alimento registrado correctamente.", 200);
     }
-
     public ResponseDTO updateFoodIntake(String username, UpdateIntakeDTO newFoodIntakeDTO) {
         // Verifica que el usuario exista
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
@@ -153,7 +153,6 @@ public class UserService {
             return new ResponseDTO("Error al actualizar el registro de ingesta.", 500);
         }
     }
-    
     public ResponseDTO deleteFoodIntake(String username, Long eatId) {
         // Verificar que el usuario exista
         Optional<UserEntity> getUser = userRepository.findByUsername(username);
@@ -177,42 +176,6 @@ public class UserService {
             return new ResponseDTO("Error al eliminar el registro de ingesta.", 500);
         }
     }
-    
-
-    // public CaloricIntakeAlertDTO checkDailyCaloricIntake(String username) {
-    //     UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-
-    //     // 1. Obtener el total de calorías consumidas por el usuario en el día.
-    //     List<EatEntity> todaysEats = eatRepository.findByUsernameAndDate(username, LocalDate.now());
-    //     double totalCaloriesConsumed = 0;
-    //     for (EatEntity eat : todaysEats) {
-    //         FoodEntity food = eat.getFood();
-    //         List<CompositionEntity> compositions = compositionRepository.findByFood(food);
-    //         for (CompositionEntity composition : compositions) {
-    //             NutrientEntity nutrient = composition.getNutrient();
-    //             if ("Calories".equalsIgnoreCase(nutrient.getName())) {
-    //                 totalCaloriesConsumed += composition.getNutrientQuantity();
-    //             }
-    //         }
-    //     }
-
-    //     // 2. Comparar ese total con las calorías recomendadas para el usuario.
-    //     UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
-    //     double recommendedCaloricLimit = userPersonalInfo.getDailyCaloricIntake();
-
-    //     // 3. Si las calorías consumidas superan las recomendadas, mostrar una alerta.
-    //     String message;
-    //     double exceededAmount = totalCaloriesConsumed - recommendedCaloricLimit;
-    //     if (totalCaloriesConsumed > recommendedCaloricLimit) {
-    //         message = "Alert: You have exceeded your recommended daily caloric intake!";
-    //     } else {
-    //         message = "You are within your recommended daily caloric intake.";
-    //         exceededAmount = 0.0;
-    //     }
-
-    //     return new CaloricIntakeAlertDTO(totalCaloriesConsumed > recommendedCaloricLimit, totalCaloriesConsumed, recommendedCaloricLimit, exceededAmount, message);
-    // }
-
     // * Informacion
     public ResponseDTO getInformation(String username) {
         // Verifica que el usuario exista

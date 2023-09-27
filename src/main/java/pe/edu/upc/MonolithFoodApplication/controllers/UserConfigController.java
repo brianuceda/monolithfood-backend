@@ -25,6 +25,7 @@ public class UserConfigController {
     private final JwtService jwtService;
 
     // * Metodos
+    // * User Config
     @GetMapping("/all")
     public ResponseEntity<?> getConfig(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);

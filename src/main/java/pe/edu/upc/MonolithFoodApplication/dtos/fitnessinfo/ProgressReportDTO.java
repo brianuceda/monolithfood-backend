@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.dtos;
+package pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,9 +17,7 @@ public class ProgressReportDTO {
     // private Double dailyCalories;
     // //lista de macronutrientes consumidos con la cantidad consumida
     // private MacronutriendDTO macronutrients;
-
     // //lista de comidas
     // private FoodLiostDTO foodList;
-
 
 }

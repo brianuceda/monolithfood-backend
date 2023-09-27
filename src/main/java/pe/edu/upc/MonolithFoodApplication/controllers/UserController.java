@@ -41,13 +41,13 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Info
-    @GetMapping("/info/all")
+    @GetMapping("/general-info")
     public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.getInformation(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    @PutMapping("/info/photo/update")
+    @PutMapping("/general-info/photo/update")
     public ResponseEntity<ResponseDTO>updatePhoto(@RequestHeader("Authorization") String bearerToken, @RequestParam String photoUrl) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.updatePhoto(username, photoUrl);
@@ -100,9 +100,4 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    // @GetMapping("/intake/alert")
-    // public ResponseEntity<CaloricIntakeAlertDTO> checkCaloricIntake(@RequestParam String username) {
-    //     CaloricIntakeAlertDTO response = userService.checkDailyCaloricIntake(username);
-    //     return ResponseEntity.ok(response);
-    // }
 }
