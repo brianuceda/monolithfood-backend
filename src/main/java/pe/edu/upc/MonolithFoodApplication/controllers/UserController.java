@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,33 +66,36 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     @PutMapping("/objectives/update")
-    public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken,
-            @RequestBody List<String> objectives) {
+    public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken, @RequestBody List<String> objectives) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.setUserObjectives(username, objectives);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Intake
       @GetMapping("/intake/all")
-    public ResponseEntity<?> getAllFoodIntake(@RequestParam("username") String username) {
+    public ResponseEntity<?> getAllFoodIntake(@RequestHeader("Authorization") String bearerToken) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.getAllFoodIntake(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @PostMapping("/intake/add")
-    public ResponseEntity<?> addFoodIntake(@RequestParam String username, @RequestBody NewIntakeDTO foodIntakeDTO) {
+    public ResponseEntity<?> addFoodIntake(@RequestHeader("Authorization") String bearerToken, @RequestBody NewIntakeDTO foodIntakeDTO) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.addFoodIntake(username, foodIntakeDTO);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @PutMapping("/intake/update")
-    public ResponseEntity<?> updateFoodIntake(@RequestParam String username, @RequestBody UpdateIntakeDTO newFoodIntakeDTO) {
+    public ResponseEntity<?> updateFoodIntake(@RequestHeader("Authorization") String bearerToken, @RequestBody UpdateIntakeDTO newFoodIntakeDTO) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.updateFoodIntake(username, newFoodIntakeDTO);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @DeleteMapping("/intake/delete")
-    public ResponseEntity<?> deleteFoodIntake(@RequestParam String username, @RequestParam Long foodId) {
+    public ResponseEntity<?> deleteFoodIntake(@RequestHeader("Authorization") String bearerToken, @RequestParam Long foodId) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.deleteFoodIntake(username, foodId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }

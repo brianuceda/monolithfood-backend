@@ -1,4 +1,0 @@
-09:51:49.849 [http-nio-8080-exec-1] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: jakarta.servlet.ServletException
-09:55:58.426 [http-nio-8080-exec-4] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: jakarta.servlet.ServletException
-10:00:05.221 [http-nio-8080-exec-1] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: jakarta.servlet.ServletException
-10:00:05.221 [http-nio-8080-exec-1] ERROR p.e.u.M.f.JwtAuthenticationFilter - Causa exacta: java.lang.NullPointerException: Cannot invoke "pe.edu.upc.MonolithFoodApplication.entities.IpLoginAttemptEntity.setAttemptsCount(java.lang.Integer)" because "attempt" is null
