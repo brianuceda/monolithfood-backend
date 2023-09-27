@@ -194,34 +194,34 @@ public class MonolithFoodApplication {
             if(compositionFoodRepository.count() == 0) {
                 Map<String, Map<String, Double>> nutrientCompositionFoodMap = new HashMap<String, Map<String, Double>>() {
                     {
-                        put("Pollo", Map.of("Proteina", 31.0, "Grasa", 3.6, "Vitamina B6", 0.5, "Fosforo", 220.0));
-                        put("Arroz", Map.of("Carbohidratos", 28.0, "Proteina", 2.7, "Grasa", 0.3, "Magnesio", 19.0));
-                        put("Brocoli", Map.of("Proteina", 2.4, "Carbohidratos", 7.0, "Vitamina C", 64.0, "Vitamina K", 141.0));
-                        put("Platano", Map.of("Carbohidratos", 27.0, "Fibra", 3.1, "Potasio", 422.0));
-                        put("Lentejas", Map.of("Proteina", 9.0, "Fibra", 8.0, "Hierro", 3.3));
-                        put("Salmon", Map.of("Proteina", 25.0, "Grasa", 13.6, "Vitamina D", 13.1, "Vitamina B12", 5.0, "Omega 3", 2.0));
-                        put("Leche", Map.of("Proteina", 3.3, "Grasa", 3.3, "Calcio", 119.0));
-                        put("Pescado", Map.of("Proteina", 22.0, "Grasa", 6.5, "Vitamina D", 10.2, "Selenio", 41.0, "Omega 3", 1.8));
-                        put("Cebolla", Map.of("Carbohidratos", 9.3, "Fibra", 1.7, "Vitamina C", 7.4, "Folato", 23.0));
-                        put("Limon", Map.of("Carbohidratos", 8.2, "Vitamina C", 53.0, "Calcio", 26.0, "Potasio", 138.0));
-                        put("Aji", Map.of("Carbohidratos", 6.0, "Fibra", 2.4, "Vitamina A", 1033.0, "Capsaicina", 21.0));
-                        put("Carne", Map.of("Proteina", 26.0, "Grasa", 9.0, "Hierro", 2.5, "Zinc", 3.6, "Vitamina B12", 2.0));
-                        put("Papas", Map.of("Carbohidratos", 17.5, "Fibra", 2.2, "Vitamina C", 19.0, "Potasio", 429.0));
-                        put("Tomate", Map.of("Carbohidratos", 3.9, "Fibra", 1.2, "Vitamina C", 14.0, "Vitamina K", 7.9));
-                        put("Ajo", Map.of("Carbohidratos", 33.1, "Fibra", 2.1, "Vitamina C", 31.0, "Selenio", 14.0));
-                        put("Queso", Map.of("Proteina", 25.0, "Grasa", 33.0, "Calcio", 721.0, "Fosforo", 509.0));
-                        put("Lechuga", Map.of("Carbohidratos", 1.4, "Fibra", 1.0, "Vitamina A", 430.0, "Vitamina K", 74.8));
-                        put("Aceituna", Map.of("Grasa", 14.0, "Fibra", 3.0, "Calcio", 88.0, "Sodio", 1462.0));
-                        put("Huevo", Map.of("Proteina", 6.3, "Grasa", 4.8, "Vitamina D", 1.1, "Colina", 126.0));
-                        put("Mayonesa", Map.of("Grasa", 75.0, "Vitamina K", 2.2, "Vitamina E", 3.0, "acido Graso Omega 6", 22.0));
-                        put("Palta", Map.of("Grasa", 14.7, "Fibra", 6.7, "Vitamina K", 21.0, "Folato", 81.0));
-                        put("Cecina", Map.of("Proteina", 25.0, "Grasa", 3.0, "Hierro", 3.5, "Sodio", 1100.0));
-                        put("Gallina", Map.of("Proteina", 27.0, "Grasa", 3.6, "Hierro", 1.1, "Selenio", 22.0));
-                        put("Vino", Map.of("Alcohol", 13.5, "Resveratrol", 0.9, "Antioxidantes", 12.0));
+                        put("Pollo", Map.of("Proteina", 31.0, "Grasa", 3.6, "Vitamina B6", 0.5, "Fosforo", 220.0, "Calorias", 239.0, "Carbohidratos", 0.0));
+                        put("Arroz", Map.of("Carbohidratos", 28.0, "Proteina", 2.7, "Grasa", 0.3, "Magnesio", 19.0, "Calorias", 130.0));
+                        put("Brocoli", Map.of("Proteina", 2.4, "Carbohidratos", 7.0, "Vitamina C", 64.0, "Vitamina K", 141.0, "Calorias", 34.0));
+                        put("Platano", Map.of("Carbohidratos", 27.0, "Fibra", 3.1, "Potasio", 422.0, "Calorias", 105.0)); 
+                        put("Lentejas", Map.of("Proteina", 9.0, "Fibra", 8.0, "Hierro", 3.3, "Calorias", 116.0, "Carbohidratos", 20.0));
+                        put("Salmon", Map.of("Proteina", 25.0, "Grasa", 13.6, "Vitamina D", 13.1, "Vitamina B12", 5.0, "Omega 3", 2.0, "Calorias", 208.0));
+                        put("Leche", Map.of("Proteina", 3.3, "Grasa", 3.3, "Calcio", 119.0, "Calorias", 42.0, "Carbohidratos", 5.0));
+                        put("Pescado", Map.of("Proteina", 22.0, "Grasa", 6.5, "Vitamina D", 10.2, "Selenio", 41.0, "Omega 3", 1.8, "Calorias", 111.0));
+                        put("Cebolla", Map.of("Carbohidratos", 9.3, "Fibra", 1.7, "Vitamina C", 7.4, "Folato", 23.0, "Calorias", 40.0));
+                        put("Limon", Map.of("Carbohidratos", 8.2, "Vitamina C", 53.0, "Calcio", 26.0, "Potasio", 138.0, "Calorias", 17.0));
+                        put("Aji", Map.of("Carbohidratos", 6.0, "Fibra", 2.4, "Vitamina A", 1033.0, "Capsaicina", 21.0, "Calorias", 40.0));
+                        put("Carne", Map.of("Proteina", 26.0, "Grasa", 9.0, "Hierro", 2.5, "Zinc", 3.6, "Vitamina B12", 2.0, "Calorias", 165.0));
+                        put("Papa", Map.of("Carbohidratos", 17.5, "Fibra", 2.2, "Vitamina C", 19.0, "Potasio", 429.0, "Calorias", 77.0));
+                        put("Tomate", Map.of("Carbohidratos", 3.9, "Fibra", 1.2, "Vitamina C", 14.0, "Vitamina K", 7.9, "Calorias", 18.0));
+                        put("Ajo", Map.of("Carbohidratos", 33.1, "Fibra", 2.1, "Vitamina C", 31.0, "Selenio", 14.0, "Calorias", 149.0));
+                        put("Queso", Map.of("Proteina", 25.0, "Grasa", 33.0, "Calcio", 721.0, "Fosforo", 509.0, "Calorias", 402.0));
+                        put("Lechuga", Map.of("Carbohidratos", 1.4, "Fibra", 1.0, "Vitamina A", 430.0, "Vitamina K", 74.8, "Calorias", 15.0));
+                        put("Aceituna", Map.of("Grasa", 14.0, "Fibra", 3.0, "Calcio", 88.0, "Sodio", 1462.0, "Calorias", 115.0));
+                        put("Huevo", Map.of("Proteina", 6.3, "Grasa", 4.8, "Vitamina D", 1.1, "Colina", 126.0, "Calorias", 74.0));
+                        put("Mayonesa", Map.of("Grasa", 75.0, "Vitamina K", 2.2, "Vitamina E", 3.0, "acido Graso Omega 6", 22.0, "Calorias", 700.0));
+                        put("Palta", Map.of("Grasa", 14.7, "Fibra", 6.7, "Vitamina K", 21.0, "Folato", 81.0, "Calorias", 160.0));
+                        put("Cecina", Map.of("Proteina", 25.0, "Grasa", 3.0, "Hierro", 3.5, "Sodio", 1100.0, "Calorias", 131.0));
+                        put("Gallina", Map.of("Proteina", 27.0, "Grasa", 3.6, "Hierro", 1.1, "Selenio", 22.0, "Calorias", 190.0));
+                        put("Vino", Map.of("Alcohol", 13.5, "Resveratrol", 0.9, "Antioxidantes", 12.0, "Calorias", 125.0));
                         put("Azucar", Map.of("Carbohidratos", 99.8, "Calorias", 387.0, "Fructosa", 50.0, "Glucosa", 50.0, "Sacarosa", 50.0));
-                        put("Claras de huevo", Map.of("Proteina", 10.9, "Aminoacidos BCAA", 4.7, "Calcio", 6.0, "Fosfolipidos", 40.0));
+                        put("Claras de huevo", Map.of("Proteina", 10.9, "Aminoacidos BCAA", 4.7, "Calcio", 6.0, "Fosfolipidos", 40.0, "Calorias", 52.0));
                         put("Esencia de vainilla", Map.of("Calorias", 288.0, "Azucares", 71.9, "Alcohol", 35.0, "Vainillina", 200.0));
-                        put("Manjarblanco", Map.of("Carbohidratos", 77.0, "Azucar", 56.0, "Grasa", 7.0, "Calcio", 187.0, "Hierro", 1.2));
+                        put("Manjarblanco", Map.of("Carbohidratos", 77.0, "Azucar", 56.0, "Grasa", 7.0, "Calcio", 187.0, "Hierro", 1.2, "Calorias", 379.0));
                     }
                 };
                 // Crear un mapa para buscar FoodEntity por nombre
