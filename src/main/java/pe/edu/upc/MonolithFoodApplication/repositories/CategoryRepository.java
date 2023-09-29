@@ -8,4 +8,5 @@ import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryFoodEntity, Long> {
     CategoryFoodEntity findByName(String name);
+
 }

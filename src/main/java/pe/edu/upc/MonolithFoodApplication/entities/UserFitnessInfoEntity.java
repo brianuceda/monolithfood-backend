@@ -45,6 +45,12 @@ public class UserFitnessInfoEntity {
     @Column(nullable = true)
     private Double dailyFatIntake;
 
+    @Column(nullable = true)
+    private Double tmb;
+
+    @Column(nullable = true)
+    private Double dailyEnergyNeeds;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

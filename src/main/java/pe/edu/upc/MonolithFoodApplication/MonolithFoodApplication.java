@@ -247,9 +247,9 @@ public class MonolithFoodApplication {
             }
             if(roleRepository.count() == 0) {
                 roles = Arrays.asList(
-                    new RoleEntity(null, RoleEnum.ADMIN),
-                    new RoleEntity(null, RoleEnum.USER),
-                    new RoleEntity(null, RoleEnum.VIP)
+                    new RoleEntity(null, RoleEnum.ADMIN, 0.0),
+                    new RoleEntity(null, RoleEnum.USER, 0.0),
+                    new RoleEntity(null, RoleEnum.VIP, 30.0)
                 );
                 roleRepository.saveAll(roles);
             }
@@ -391,6 +391,14 @@ public class MonolithFoodApplication {
                     fitnessInfo.setDailyCarbohydrateIntake((double) Math.round(150.0 + rand.nextDouble() * 250));
                     // Ingesta de grasas diarias aleatoria entre 20g y 70g
                     fitnessInfo.setDailyFatIntake((double) Math.round(20.0 + rand.nextDouble() * 50));
+                    // Asignacion de TMB aleatoria
+                    // Calcular TMB aleatorio
+                    // fitnessInfo.setTmb(currentWeight * 24 * (1 + (0.20 + (0.30 * rand.nextDouble()))));
+                    fitnessInfo.setTmb(null);
+                    // Calcular necesidades energéticas diarias basadas en TMB y nivel de actividad física
+                    // Double dailyEnergyNeeds = fitnessInfo.getTmb() * user.getUserPersonalInfo().getActivityLevel().getQuotient();
+                    // fitnessInfo.setDailyEnergyNeeds(Math.round(dailyEnergyNeeds * 100.0) / 100.0); // Redondea a dos decimales
+                    fitnessInfo.setDailyEnergyNeeds(null);
                     // Asociar el UserEntity con el UserFitnessInfoEntity
                     fitnessInfo.setUser(user);
                     usersFitnessInfos.add(fitnessInfo);

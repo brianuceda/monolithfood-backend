@@ -18,38 +18,45 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FoodService {
-    // * Atributos
+    // ? Atributos
     // Inyección de dependencias
     private final FoodRepository foodRepository;
     private final CategoryRepository categoryRepository;
 
-    // * Metodos
-    // * Search Food
+    // ? Metodos
+    // * Gabriela: Buscar alimentos por nombre
     public List<SearchFoodDTO> searchFoodsByName(String name) {
         List<FoodEntity> foodEntities = foodRepository.findByNameContaining(name);
+        // Si no encontró resultados, retorna una lista vacía
+        if (foodEntities.isEmpty()) {
+            return Collections.emptyList();
+        }
         return foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
     }
+    // * Gabriela: Buscar alimentos por categoría
     public List<SearchFoodDTO> searchFoodsByCategory(String name) {
-        // Se implementa esta logica porque siempre se está intentado acceder a una lista (getFoods()) de una categoría.
-        // Si la BD retorna null en category (no encuentra ninguna category con ese nombre), todos sus atributos serán null
-        // Por lo que al intentar acceder a la lista de alimentos (getFoods()) se producirá un NullPointerException
         CategoryFoodEntity category = categoryRepository.findByName(name);
-        // Comprueba si la categoría es null (si no encontró resultados)
+        // Si no encontró resultados, retorna una lista vacía
         if (category == null) {
-            return Collections.emptyList(); // Devuelve una lista vacía
+            return Collections.emptyList();
         }
         List<FoodEntity> foodEntities = category.getFoods();
         return foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
     }
+    // * Gabriela: Buscar alimentos por nutriente
     public List<FoodNutrientDTO> searchFoodsByNutrient(String nutrient) {
         List<FoodEntity> foodEntities = foodRepository.findByNutrientName(nutrient);
+        // Si no encontró resultados, retorna una lista vacía
+        if (foodEntities.isEmpty()) {
+            return Collections.emptyList();
+        }
         return foodEntities.stream()
             .map(food -> convertToFoodNutrientDTO(food, nutrient))
             .collect(Collectors.toList());
     }
 
-    // * Funciones auxiliares
-    // Convertir FoodEntity a SearchFoodDTO
+    // ? Funciones auxiliares
+    // FUNCIÓN: Convierte FoodEntity a SearchFoodDTO
     private SearchFoodDTO convertToSearchFoodDTO(FoodEntity foodEntity) {
         // Convierte la lista de FoodCompositionEntity a una lista de FoodCompositionDTO
         List<FoodCompositionDTO> compositions = foodEntity.getCompositions().stream()
@@ -60,8 +67,7 @@ public class FoodService {
             .composition(compositions)
             .build();
     }
-
-    // Convertir FoodEntity a FoodNutrientDTO
+    // FUNCIÓN: Convierte FoodEntity a FoodNutrientDTO
     private FoodNutrientDTO convertToFoodNutrientDTO(FoodEntity foodEntity, String nutrientName) {
         return foodEntity.getCompositions().stream()
             .filter(c -> c.getNutrient().getName().equals(nutrientName))

@@ -13,6 +13,4 @@ import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
 public class PersonalInfoRequestDTO {
     private GenderEnum gender;
     private Timestamp birthdate;
-    private Double heightCm;
-    private Double weightKg;
 }

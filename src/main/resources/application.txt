@@ -1,5 +1,5 @@
 # Conexion a la base de datos
-spring.datasource.url=jdbc:postgresql://34.176.231.69:5432/monolithfooddb
+spring.datasource.url=jdbc:postgresql://postgresdb:5432/monolithfooddb
 spring.datasource.username=postgres
 spring.datasource.password=MonolithFood12345
 

@@ -1,5 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,7 @@ import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 
 @Repository
 public interface EatRepository extends JpaRepository<EatEntity, Long> {
-    // JPQL: para retornar el promedio de calorias consumidas en la ultima semana 
+    // * Willy (JPQL): Retorna el promedio de calorias consumidas en la ultima semana
     @Query(
         "SELECT " +
             "username, " +
@@ -31,7 +32,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "GROUP BY username")
     List<Object[]> AveragecaloriesLastWeek(@Param("username") String username);
 
-    // JPQL: para retornar el promedio de calorias consumidas en la ultima semana
+    // * (JPQL) Willy: Retorna el promedio de calorias consumidas en el ultimo dia
     @Query(
         "SELECT u.username as username, " +  
             "e.date As date, "+
@@ -48,7 +49,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "ORDER BY date")
     List<Object[]> AverageCalorieConsumptioDay(@Param("username") String username);
 
-    // JPQL:
+    // * (JPQL) Heather: Retorna todos los alimentos consumidos por el usuario
     @Query(
         "SELECT " + 
             "f.name as name, " + 
@@ -66,4 +67,23 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "WHERE u.username = :username AND n.name = 'Calorias'"
     )
     List<Object[]> findAllIntakesByUsername(@Param("username") String username);
+
+    // * (JPQL) Heather: Retorna todos los alimentos consumidos por el usuario entre dos fechas
+    @Query(
+        "SELECT " + 
+            "f.name as name, " + 
+            "c.name as category, " + 
+            "e.unitOfMeasurement as unitOfMeasurement, " + 
+            "e.eatQuantity as quantity, " + 
+            "(e.eatQuantity * cf.nutrientQuantity) as calories, " + 
+            "e.date as date " +
+        "FROM EatEntity e " +
+        "JOIN e.user u " +
+        "JOIN e.food f " +
+        "JOIN f.category c " +
+        "LEFT JOIN f.compositions cf " +
+        "JOIN cf.nutrient n " +
+        "WHERE u.username = :username AND n.name = 'Calorias' AND e.date BETWEEN :startDate AND :endDate"
+    )
+    List<Object[]> findAllIntakesByUsernameBetweenDates(@Param("username") String username, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

@@ -36,7 +36,7 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    // * Atributos
+    // ? Atributos
     // Inyección de dependencias
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -44,22 +44,18 @@ public class AuthService {
     private final IpLoginAttemptRepository ipLoginAttemptRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-
     // Variables de entorno
     @Value("${ip.block.duration.hours}")
     private Integer IP_BLOCK_DURATION_HOURS;
-
     @Value("${reset.attempt.duration.minutes}")
     private Integer RESET_ATTEMPT_DURATION_MINUTES;
-
     @Value("${max.attempts.login}")
     private Integer MAX_ATTEMPTS_LOGIN;
-
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    // * Metodos
-    // Iniciar sesión
+    // ? Metodos
+    // * Brian: Iniciar sesión
     public ResponseDTO login(LoginRequestDTO request) {
         try {
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
@@ -90,8 +86,7 @@ public class AuthService {
             return new ResponseDTO("Nombre de usuario o contraseña inválidos", HttpStatus.UNAUTHORIZED.value());
         }
     }
-
-    // Registrar un nuevo usuario
+    // * Brian: Registrar un nuevo usuario
     public ResponseDTO register(RegisterRequestDTO request) {
         try {
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
@@ -126,8 +121,7 @@ public class AuthService {
                     HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
-
-    // Desactivar un token
+    // * Brian: Cerrar sesión (desactivar el token)
     public ResponseDTO logout(String realToken) {
         try {
             if (!jwtService.isTokenBlacklisted(realToken)) {
@@ -142,20 +136,17 @@ public class AuthService {
         }
     }
 
-    // * Funciones auxiliares
-    // Crear un Set<> con el rol USER por defecto
+    // ? Funciones auxiliares
+    // FUNCIÓN: Devuelve un set con el rol USER para asignarlo a un nuevo usuario
     private Set<RoleEntity> setRoleUser() {
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity USER = roleRepository.findByName(RoleEnum.USER).get();
         roles.add(USER);
         return roles;
     }
-
-    // Validar si la contraseña es segura
+    // FUNCIÓN: Valida que la contraseña sea segura
     public ResponseDTO validarContraseniaSegura(String contrasenia) {
-        if (contrasenia.length() < 8)
-            return new ResponseDTO("La contraseña debe tener al menos 8 caracteres.", HttpStatus.BAD_REQUEST.value());
-
+        if (contrasenia.length() < 8) return new ResponseDTO("La contraseña debe tener al menos 8 caracteres.", HttpStatus.BAD_REQUEST.value());
         boolean tieneLetraMayuscula = false;
         boolean tieneLetraMinuscula = false;
         boolean tieneDigito = false;
@@ -183,8 +174,7 @@ public class AuthService {
         // Si la contraseña cumple con los requisitos, devolver null
         return null;
     }
-
-    // Registrar un intento fallido de inicio de sesión a una IP y usuario específicos
+    // FUNCIÓN: Registra un intento fallido de inicio de sesión
     private void registerFailedAttempt(String ipAddress, UserEntity userEntity) {
         IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
         Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -217,8 +207,7 @@ public class AuthService {
         // Guarda todos los cambios en la BD
         ipLoginAttemptRepository.save(attempt);
     }
-
-    // Verificar si una IP está bloqueada
+    // FUNCIÓN: Verifica si la IP está bloqueada o no
     private boolean isIpBlocked(String ipAddress, UserEntity userEntity) {
         IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
         // Si no hay un registro existente en la BD para esta IP y este usuario, la IP
@@ -241,5 +230,5 @@ public class AuthService {
         // Devolver si la IP está bloqueada o no
         return attempt.getIsIpBlocked();
     }
-	
+
 }

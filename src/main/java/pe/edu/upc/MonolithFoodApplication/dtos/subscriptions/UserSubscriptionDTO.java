@@ -10,11 +10,23 @@ import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 @Setter
 public class UserSubscriptionDTO extends ResponseDTO {
     private RoleEnum subscriptionPlan;
+    private Double price;
     // private boolean isActive;
 
+    public UserSubscriptionDTO(RoleEnum subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
+    }
+
     @Builder
-    public UserSubscriptionDTO(String message, Integer statusCode, RoleEnum subscriptionPlan) {
+    public UserSubscriptionDTO(RoleEnum subscriptionPlan, Double price) {
+        this.subscriptionPlan = subscriptionPlan;
+        this.price = price;
+    }
+
+    @Builder
+    public UserSubscriptionDTO(String message, Integer statusCode, RoleEnum subscriptionPlan, Double price) {
         super(message, statusCode);
         this.subscriptionPlan = subscriptionPlan;
+        this.price = price;
     }
 }

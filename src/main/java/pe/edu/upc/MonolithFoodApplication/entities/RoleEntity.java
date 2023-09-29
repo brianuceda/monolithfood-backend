@@ -26,4 +26,6 @@ public class RoleEntity {
     @Enumerated(EnumType.STRING)
     private RoleEnum name;
 
+    private Double price;
+
 }

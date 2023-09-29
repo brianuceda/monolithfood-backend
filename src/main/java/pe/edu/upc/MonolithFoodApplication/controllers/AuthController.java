@@ -17,18 +17,19 @@ import pe.edu.upc.MonolithFoodApplication.services.AuthService;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-    // * Atributos
+    // ? Atributos
     // Inyección de dependencias
     private final AuthService authService;
 
-    // * Metodos
-    // Login
+    // ? Metodos
+    // * Brian (Auth)
+    // Post: Iniciar sesión
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
         ResponseDTO response = authService.login(request);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    // Register
+    // Post: Crear cuenta
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
         ResponseDTO response = authService.register(request);

@@ -10,7 +10,13 @@ import pe.edu.upc.MonolithFoodApplication.entities.IpLoginAttemptEntity;
 
 @Repository
 public interface IpLoginAttemptRepository extends JpaRepository<IpLoginAttemptEntity, Long> {
-    @Query(value = "SELECT * FROM ip_login_attempt WHERE ip_address = ?1 AND user_id = (SELECT id FROM users WHERE username = ?2)", nativeQuery = true)
+    // * (SQL Nativo) Brian: Buscar intentos hacia la cuenta de un usuario por IP
+    @Query(value = 
+        "SELECT * FROM ip_login_attempt " +
+        "WHERE ip_address = ?1 " +
+        "AND user_id = (SELECT id FROM users WHERE username = ?2)",
+        nativeQuery = true
+    )
     Optional<IpLoginAttemptEntity> findByIpAddressAndUsername(String ipAddress, String username);
 
 }

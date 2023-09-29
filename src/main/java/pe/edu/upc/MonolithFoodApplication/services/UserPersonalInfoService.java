@@ -17,70 +17,64 @@ import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoRequestD
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class UserPersonalInfoService {
-    // * Atributos
+    // ? Atributos
     // Inyección de dependencias
     private final UserRepository userRepository;
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserPersonalInfoService.class);
 
-    // * Metodos
+    // ? Metodos
+    // * Naydeline: Obtener información personal del usuario
     public ResponseDTO getInformation(String username) {
         // Verifica que el usuario exista
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
-        // Retorna la información del usuario
-        UserPersonalInfoEntity u = getUser.get().getUserPersonalInfo();
-        PersonalInfoRequestDTO up = new PersonalInfoRequestDTO(u.getGender(), u.getBirthdate(), u.getHeightCm(), u.getWeightKg());
-        return new PersonalInfoResponseDTO("Información recuperada correctamente.", 200, up);
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        // Retorna la información personal del usuario
+        UserPersonalInfoEntity upi = optUser.get().getUserPersonalInfo();
+        PersonalInfoRequestDTO responseUpi = new PersonalInfoRequestDTO(upi.getGender(), upi.getBirthdate());
+        return new PersonalInfoResponseDTO("Información recuperada correctamente.", 200, responseUpi);
     }
-    // Put: Actualiza la información personal del usuario
+    // * Naydeline: Actualizar información personal del usuario
     public ResponseDTO updateUserPeronalInfo(String username, PersonalInfoRequestDTO newUserPersonalInfo) {
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        // Si no se encuentra el usuario
-        if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
         // Gaurda la información personal del usuario en una variable
-        UserPersonalInfoEntity userPersonalInfo = getUser.get().getUserPersonalInfo();
+        UserPersonalInfoEntity upi = optUser.get().getUserPersonalInfo();
         // Lista para guardar los campos que se actualizaron
         List<String> updatedFields = new ArrayList<>();
         // Se actualizan los campos que el usuario haya ingresado
         if (newUserPersonalInfo.getGender() != null && (newUserPersonalInfo.getGender() == GenderEnum.F || newUserPersonalInfo.getGender() == GenderEnum.M)) {
             // Si el género es diferente al que ya se tiene, se actualiza
-            if(userPersonalInfo.getGender() != newUserPersonalInfo.getGender()) {
-                userPersonalInfo.setGender(newUserPersonalInfo.getGender());
+            if(upi.getGender() != newUserPersonalInfo.getGender()) {
+                upi.setGender(newUserPersonalInfo.getGender());
                 updatedFields.add("Genero");
             }
         }
         if (newUserPersonalInfo.getBirthdate() != null && !newUserPersonalInfo.getBirthdate().toString().isEmpty()) {
             // Si la fecha de nacimiento es diferente a la que ya se tiene, se actualiza
-            if(!userPersonalInfo.getBirthdate().equals(newUserPersonalInfo.getBirthdate())) {
-                userPersonalInfo.setBirthdate(newUserPersonalInfo.getBirthdate());
+            if(!upi.getBirthdate().equals(newUserPersonalInfo.getBirthdate())) {
+                upi.setBirthdate(newUserPersonalInfo.getBirthdate());
                 updatedFields.add("Nacimiento");
-            }
-        }
-        if (newUserPersonalInfo.getHeightCm() != null && newUserPersonalInfo.getHeightCm() != 0) {
-            // Si la altura es diferente a la que ya se tiene, se actualiza
-            if(!userPersonalInfo.getHeightCm().equals(newUserPersonalInfo.getHeightCm())) {
-                userPersonalInfo.setHeightCm(newUserPersonalInfo.getHeightCm());
-                updatedFields.add("Altura");
-            }
-        }
-        if (newUserPersonalInfo.getWeightKg() != null && newUserPersonalInfo.getWeightKg() != 0) {
-            // Si el peso es diferente al que ya se tiene, se actualiza
-            if(!userPersonalInfo.getWeightKg().equals(newUserPersonalInfo.getWeightKg())) {
-                userPersonalInfo.setWeightKg(newUserPersonalInfo.getWeightKg());
-                updatedFields.add("Peso");
             }
         }
         // Si no se actualizó ningún campo, no se guarda en la BD
         try {
             if(updatedFields.size() != 0) {
-                userRepository.save(getUser.get());
+                userRepository.save(optUser.get());
                 logger.info("Campos actualizados para el usuario {}: {}.", username, String.join(", ", updatedFields));
             }
             else {
@@ -88,73 +82,71 @@ public class UserPersonalInfoService {
                 return new ResponseDTO("No se actualizó ningún campo.", 200);
             }
             // Retorna un mensaje con los campos actualizados y con los campos actualizados
-            return generateUpdateMessage(updatedFields, userPersonalInfo);
+            return generateUpdateMessage(updatedFields, upi);
         } catch (DataAccessException e) {
             logger.error("Error al guardar la informacion del usuario en la BD. ", e);
             return new ResponseDTO("Error al guardar la informacion en la BD.", 500);
         }
     }
-    public IMCDTO updateWeightAndGetIMC(String username, Double weight) {
-        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
-        //actualizar el peso en la tabla user personal info
-        Double imc = calculateIMC(weight, userEntity.get().getUserPersonalInfo().getHeightCm());
-
-        userEntity.get().getUserFitnessInfo().setImc(imc);
-        
-        userEntity.get().getUserPersonalInfo().setWeightKg(weight);
-        userRepository.save(userEntity.get());
-
-        IMCDTO imcDTO = new IMCDTO();
-        imcDTO.setImc(imc);
-        imcDTO.setClasification(getClasification(imc));
-        imcDTO.setNewHeight(userEntity.get().getUserPersonalInfo().getHeightCm());
-        imcDTO.setNewWeight(weight);
-
-        return imcDTO;
+    // * Willy: Actualiza la altura del usuario y retorna el IMC y la clasificación del IMC
+    public ResponseDTO updateHeightAndGetIMC(String username, Double heightCm) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        UserEntity user = optUser.get();
+        // Obtiene la información personal y fitness del usuario
+        UserPersonalInfoEntity userUpi = user.getUserPersonalInfo();
+        UserFitnessInfoEntity userUfi = user.getUserFitnessInfo();
+        // Actualizar el peso y el IMC de la información fitness del usuario
+        Double imc = calculateIMC(userUpi.getWeightKg(), heightCm);
+        userUfi.setImc(imc);
+        userUpi.setHeightCm(heightCm);
+        userRepository.save(user);
+        // Retorna el nuevo IMC calculado y la clasificación del IMC
+        return new IMCDTO("Altura e IMC actualizados correctamente.", 200, imc, getClasification(imc), heightCm, userUpi.getWeightKg());
+    }
+    // * Willy: Actualiza el peso del usuario y retorna el IMC y la clasificación del IMC
+    public ResponseDTO updateWeightAndGetIMC(String username, Double weightKg) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        UserEntity user = optUser.get();
+        // Obtiene la información personal y fitness del usuario
+        UserPersonalInfoEntity userUpi = user.getUserPersonalInfo();
+        UserFitnessInfoEntity userUfi = user.getUserFitnessInfo();
+        // Actualizar el peso y el IMC de la información fitness del usuario
+        Double imc = calculateIMC(weightKg, userUpi.getHeightCm());
+        userUfi.setImc(imc);
+        userUpi.setWeightKg(weightKg);
+        userRepository.save(user);
+        // Retorna el nuevo IMC calculado y la clasificación del IMC
+        return new IMCDTO("Peso e IMC actualizados correctamente.", 200, imc, getClasification(imc), userUpi.getHeightCm(), weightKg);
     }
 
-    public IMCDTO updateHeightAndGetIMC (String username, Double height)
+    // ? Funciones auxiliares
+    // FUNCIÓN: Calcula el IMC
+    public static Double calculateIMC(Double weight, Double height)
     {
-        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
-
-        Double imc = calculateIMC(userEntity.get().getUserPersonalInfo().getWeightKg(), height);
-        userEntity.get().getUserFitnessInfo().setImc(imc);
-        userEntity.get().getUserPersonalInfo().setHeightCm(height);
-        userRepository.save(userEntity.get());
-
-        IMCDTO imcDTO = new IMCDTO();
-        imcDTO.setImc(imc);
-        imcDTO.setClasification(getClasification(imc));
-        imcDTO.setNewHeight(height);
-        imcDTO.setNewWeight(userEntity.get().getUserPersonalInfo().getWeightKg());
-
-        return imcDTO;
-    }
-
-    // * Funciones auxiliares
-    public Double calculateIMC(Double weight, Double height)
-    {
-        Double newHeight = height/100;
+        Double newHeight = height / 100;
         Double imc = weight / (newHeight*newHeight);
         return imc;
     }
-
-    public String getClasification (Double imc)
+    // FUNCIÓN: Classifica el IMC
+    public String getClasification(Double imc)
     {
-        if(imc < 18.5)
-            return "Bajo peso";
-        else if(imc >= 18.5 && imc < 25)
-            return "Normal";
-        else if(imc >= 25 && imc < 30)
-            return "Sobrepeso";
-        else if(imc >= 30 && imc < 35)
-            return "Obesidad grado 1";
-        else if(imc >= 35 && imc < 40)
-            return "Obesidad grado 2";
-        else
-            return "Obesidad grado 3";
+        if(imc < 18.5) return "Bajo peso";
+        else if(imc >= 18.5 && imc < 25) return "Normal";
+        else if(imc >= 25 && imc < 30) return "Sobrepeso";
+        else if(imc >= 30 && imc < 35) return "Obesidad grado 1";
+        else if(imc >= 35 && imc < 40) return "Obesidad grado 2";
+        else return "Obesidad grado 3";
     }
-
     // FUNCIÓN: Genera un mensaje con los campos que se actualizaron
     private ResponseDTO generateUpdateMessage(List<String> updatedFields, UserPersonalInfoEntity userPersonalInfo) {
         if (updatedFields.isEmpty()) {
@@ -178,10 +170,8 @@ public class UserPersonalInfoService {
     private PersonalInfoRequestDTO mapToDTO(UserPersonalInfoEntity entity) {
         return new PersonalInfoRequestDTO(
             entity.getGender(),
-            entity.getBirthdate(),
-            entity.getHeightCm(),
-            entity.getWeightKg() 
+            entity.getBirthdate()
         );
     }
-  
+
 }

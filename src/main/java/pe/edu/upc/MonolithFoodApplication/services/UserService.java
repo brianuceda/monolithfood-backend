@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
@@ -43,14 +45,15 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     // ? Metodos
-    // * Alimentos
+    // * Heather: Obtener todos los alimentos consumidos por un usuario
     public ResponseDTO getAllFoodIntake(String username) {
         // Verifica que el usuario exista
-        // Se usa optional ya que el usuario puede o no existir y de eso se encarga JPA
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if(!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado", 404);
-        // Se obtiene una lista de Object[] con los resultados de la consulta
-        // No se usa Optional porque al ser una consulta personalizada, siempre se obtendrá un resultado con o sin datos
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if(!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        // Se obtiene una lista de Object[] con los resultados de la consulta SQL personalizada
         List<Object[]> results = eatRepository.findAllIntakesByUsername(username);
         if(results.isEmpty()) return new ResponseDTO("No se encontraron alimentos consumidos por el usuario", 200);
         // Mapea el resultado manualmente de una lista de Object[] a una lista de IntakeDTO
@@ -66,54 +69,93 @@ public class UserService {
         }).collect(Collectors.toList());
         return new GetIntakesDTO("Alimentos recuperados correctamente.", 200, myIntakes);
     }
+    // * Heather Obtener todos los alimentos consumidos por un usuario entre dos fechas
+    public ResponseDTO getAllFoodIntakeBetweenDates(String username, LocalDateTime startDate, LocalDateTime endDate) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if(!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        // Se obtiene una lista de Object[] con los resultados de la consulta SQL personalizada
+        List<Object[]> results = eatRepository.findAllIntakesByUsernameBetweenDates(username, startDate, endDate);
+        if(results.isEmpty()) return new ResponseDTO("No se encontraron alimentos consumidos entre las fechas indicadas.", 200);
+        // Mapea el resultado manualmente de una lista de Object[] a una lista de IntakeDTO
+        List<IntakeDTO> myIntakes = results.stream().map(result -> {
+            return new IntakeDTO(
+                (String) result[0],
+                (String) result[1],
+                (UnitOfMeasurementEnum) result[2],
+                (Double) result[3],
+                (Double) result[4],
+                (Timestamp) result[5]
+            );
+        }).collect(Collectors.toList());
+        return new GetIntakesDTO("Alimentos recuperados correctamente.", 200, myIntakes);
+    }
+    // * Heather: Agregar un alimento a la lista de alimentos consumidos por un usuario
     public ResponseDTO addFoodIntake(String username, NewIntakeDTO foodIntakeDTO) {
         // Verifica que el usuario exista
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if(!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
-        // Verifica que el alimento exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if(!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
         Optional<FoodEntity> getFood = foodRepository.findByName(foodIntakeDTO.getName());
-        if(!getFood.isPresent()) return new ResponseDTO("Alimento no encontrado.", 404);
-        // Crear EatEntity con la información emitida por el usuario
+        if(!getFood.isPresent()) {
+            logger.error("Alimento no encontrado.");
+            return new ResponseDTO("Alimento no encontrado.", 404);
+        }
+        UserEntity user = optUser.get();
         EatEntity newEat = new EatEntity();
-        newEat.setUser(getUser.get());
+        newEat.setUser(user);
         newEat.setFood(getFood.get());
         newEat.setEatQuantity(foodIntakeDTO.getQuantity());
         newEat.setUnitOfMeasurement(foodIntakeDTO.getUnitOfMeasurement());
         newEat.setDate(foodIntakeDTO.getDate());
         // Guardar EatEntity en la lista de Alimentos del usuario
-        getUser.get().getEats().add(newEat);
+        user.getEats().add(newEat);
         // Guardar cambios en la base de datos
-        userRepository.save(getUser.get());
+        userRepository.save(user);
         // Retornar mensaje de éxito
         logger.info("Alimento registrado correctamente para el usuario " + username + ".");
         return new ResponseDTO("Alimento registrado correctamente.", 200);
     }
+    // * Heather: Actualizar un alimento de la lista de alimentos consumidos por un usuario
     public ResponseDTO updateFoodIntake(String username, UpdateIntakeDTO newFoodIntakeDTO) {
         // Verifica que el usuario exista
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if(!getUser.isPresent())
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if(!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
+        }
         // Verifica que el registro de ingesta exista
         Optional<EatEntity> getEat = eatRepository.findById(newFoodIntakeDTO.getEatId());
-        if(!getEat.isPresent())
-            return new ResponseDTO("Registro no encontrado.", 404);
+        if(!getEat.isPresent()) {
+            logger.error("Registro de ingesta no encontrado.");
+            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+        }
         // Verifica que el alimento exista
         Optional<FoodEntity> getFood = foodRepository.findByName(newFoodIntakeDTO.getName());
-        if(!getFood.isPresent())
-            return new ResponseDTO("Alimento no encontrado", 404);
-
+        if(!getFood.isPresent()) {
+            logger.error("Alimento no encontrado.");
+            return new ResponseDTO("Alimento no encontrado.", 404);
+        }
         // Si la solicitud realizada pertenece al usuario que la realizó
         EatEntity newEat = getEat.get();
-        if(!newEat.getUser().getUsername().equals(username))
+        if(!newEat.getUser().getUsername().equals(username)) {
+            logger.error("No tiene permisos para actualizar este registro.");
             return new ResponseDTO("No tiene permisos para actualizar este registro.", 403);
+        }
         // Lista para guardar los campos que el usuario haya actualizado
         List<String> updatedFields = new ArrayList<>();
-
         // Si el elemento de eat tiene .getFood() == null, significa que es un registro de ingesta de una receta
-        if(newEat.getFood() == null)
+        if(newEat.getFood() == null) {
+            logger.error("No se puede actualizar el registro de ingesta de una receta para el usuario " + username + ".");
             return new ResponseDTO("No se puede actualizar el registro de ingesta de una receta.", 400);
-
-        newEat.setUser(getUser.get());
+        }
+        // Actualizar los campos que el usuario haya ingresado
+        newEat.setUser(optUser.get());
         if(newFoodIntakeDTO.getName() != null && !newFoodIntakeDTO.getName().isEmpty()) {
             if(!newEat.getFood().getName().equals(newFoodIntakeDTO.getName())) {
                 newEat.setFood(getFood.get());
@@ -139,10 +181,12 @@ public class UserService {
             }
         }
         try {
+            // Si la lista de campos actualizados no está vacía, se guarda en la BD
             if(updatedFields.size() != 0) {
                 eatRepository.save(getEat.get());
                 logger.info("Registro de ingesta actualizado correctamente para el usuario " + username + ".");
             }
+            // Si no se actualizó ningún campo, no se guarda en la BD
             else {
                 logger.info("No se eactualizó ningún campo para el usuario " + username + ".");
                 return new ResponseDTO("No se actualizó ningún campo.", 200);
@@ -153,21 +197,28 @@ public class UserService {
             return new ResponseDTO("Error al actualizar el registro de ingesta.", 500);
         }
     }
+    // * Heather: Quitar un alimento de la lista de alimentos consumidos por un usuario
     public ResponseDTO deleteFoodIntake(String username, Long eatId) {
-        // Verificar que el usuario exista
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if (!getUser.isPresent())
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
+        }
         // Verificar que el registro de ingesta exista
         Optional<EatEntity> getEat = eatRepository.findById(eatId);
-        if (!getEat.isPresent())
-            return new ResponseDTO("Registro no encontrado.", 404);
+        if (!getEat.isPresent()) {
+            logger.error("Registro de ingesta no encontrado.");
+            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+        }
         // Si la solicitud realizada pertenece al usuario que la realizó
         EatEntity eatToDelete = getEat.get();
-        if (!eatToDelete.getUser().getUsername().equals(username))
-            return new ResponseDTO("No tiene permisos para eliminar este registro.", 403);
+        if (!eatToDelete.getUser().getUsername().equals(username)) {
+            logger.error("No tiene permisos para eliminar este registro.");
+            return new ResponseDTO("El usuario " + username + " no tiene permisos para eliminar el registro " + eatId + ".", 403);
+        }
+        // Eliminar el registro de ingesta de la lista de ingestas del usuario
         try {
-            // Eliminar el registro
             eatRepository.delete(eatToDelete);
             logger.info("Registro de ingesta eliminado correctamente para el usuario " + username + ".");
             return new ResponseDTO("Registro de ingesta eliminado correctamente.", 200);
@@ -176,32 +227,47 @@ public class UserService {
             return new ResponseDTO("Error al eliminar el registro de ingesta.", 500);
         }
     }
-    // * Informacion
+    // * Naydeline: Obtener información personal del usuario
     public ResponseDTO getInformation(String username) {
         // Verifica que el usuario exista
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
         // Retorna la información del usuario
-        UserEntity u = getUser.get();
+        UserEntity user = optUser.get();
         return new InfoDTO("Información recuperada correctamente.", 200,
-            u.getUsername(),
-            u.getEmail(),
-            u.getNames(),
-            u.getSurnames(),
-            u.getProfileImg()
+            user.getUsername(),
+            user.getEmail(),
+            user.getNames(),
+            user.getSurnames(),
+            user.getProfileImg()
         );
     }
+    // * Naydeline: Actualizar la foto de perfil del usuario
     public ResponseDTO updatePhoto(String username, String photoUrl) {
         // Verifica que el usuario exista
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if (!getUser.isPresent()) return new ResponseDTO("Usuario no encontrado.", 404);
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        UserEntity user = optUser.get();
+        if (photoUrl == null || photoUrl.isEmpty()) {
+            logger.error("El usuario " + username + " no envió ninguna foto para actualizar.");
+            return new ResponseDTO("Debes enviar una foto.", 400);
+        }
+        if (user.getProfileImg().equals(photoUrl)) {
+            logger.error("El usuario " + username + " ya tiene esa foto de perfil.");
+            return new ResponseDTO("Ya tienes esa foto de perfil.", 400);
+        }
         // Actualiza y guarda la foto de perfil del usuario
-        getUser.get().setProfileImg(photoUrl);
-        userRepository.save(getUser.get());
-        return new PhotoDTO("Foto actualizada correctamente", 200, photoUrl);
+        user.setProfileImg(photoUrl);
+        userRepository.save(user);
+        return new PhotoDTO("Foto actualizada correctamente.", 200, photoUrl);
     }
-    // * Objetivos
-    // Obtener todos los usuarios
+    // * Brian: Obtener todos los objetivos de la base de datos
     public ResponseDTO getAllObjectives() {
         List<ObjectiveEntity> objectives = objectiveRepository.findAll();
         if (objectives.isEmpty()) {
@@ -213,30 +279,34 @@ public class UserService {
                 .collect(Collectors.toList());
         return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
     }
-    // Obtener los objetivos de un usuario
-    public ResponseDTO getUserObjectives(String username) {
-        Optional<UserEntity> user = userRepository.findByUsername(username);
-        if (!user.isPresent()) {
+    // * Brian: Obtener todos los objetivos de un usuario
+    public ResponseDTO getMyObjectives(String username) {
+        // Verificar que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        List<ObjectiveEntity> objectives = user.get().getObjectives();
+        List<ObjectiveEntity> objectives = optUser.get().getObjectives();
+        // Obtener todos los objetivos de la base de datos
         List<SimpleObjectDTO> objectiveDTOs = objectives.stream()
                 .map(obj -> new SimpleObjectDTO(obj.getName(), obj.getInformation()))
                 .collect(Collectors.toList());
         return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
     }
-    // Guardar o actualizar los objetivos de un usuario
-    public ResponseDTO setUserObjectives(String username, List<String> objectives) {
+    // * Brian: Actualizar los objetivos de un usuario
+    public ResponseDTO selectObjectives(String username, List<String> objectives) {
+        // Verificar que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        UserEntity user = optUser.get();
         // Verificar si la lista de objetivos está vacía
         if (objectives.isEmpty()) {
             logger.error("No se seleccionó ningún objetivo.");
             return new ResponseDTO("Debes seleccionar al menos un objetivo.", 400);
-        }
-        Optional<UserEntity> getUser = userRepository.findByUsername(username);
-        if (!getUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
         }
         List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
         // Validar que todos los objetivos enviados existen en la base de datos
@@ -252,13 +322,13 @@ public class UserService {
                 .filter(o -> objectives.contains(o.getName()))
                 .collect(Collectors.toList());
         // Guardar los objetivos en el usuario
-        getUser.get().setObjectives(newUserObjectives);
-        userRepository.save(getUser.get());
+        user.setObjectives(newUserObjectives);
+        userRepository.save(user);
         // Convertir la lista de ObjectiveEntity a SimpleObjectDTO
         List<SimpleObjectDTO> savedObjectives = newUserObjectives.stream()
                 .map(entity -> new SimpleObjectDTO(entity.getName(), entity.getInformation()))
                 .collect(Collectors.toList());
-        return new ObjectivesResponseDTO("Objetivos guardados", 200, savedObjectives);
+        return new ObjectivesResponseDTO("Objetivos guardados correctamente.", 200, savedObjectives);
     }
   
 }

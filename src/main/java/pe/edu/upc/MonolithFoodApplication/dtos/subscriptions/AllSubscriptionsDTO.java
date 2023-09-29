@@ -1,25 +1,24 @@
 package pe.edu.upc.MonolithFoodApplication.dtos.subscriptions;
 
-import java.util.Set;
+import java.util.List;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 
 @Getter
 @Setter
 public class AllSubscriptionsDTO extends ResponseDTO {
     
-    Set<RoleEnum> subscriptions;
+    List<UserSubscriptionDTO> subscriptions;
 
-    public AllSubscriptionsDTO(Set<RoleEnum> subscriptions) {
+    public AllSubscriptionsDTO(List<UserSubscriptionDTO> subscriptions) {
         this.subscriptions = subscriptions;
     }
 
     @Builder
-    public AllSubscriptionsDTO(String message, Integer statusCode, Set<RoleEnum> subscriptions) {
+    public AllSubscriptionsDTO(String message, Integer statusCode, List<UserSubscriptionDTO> subscriptions) {
         super(message, statusCode);
         this.subscriptions = subscriptions;
     }
