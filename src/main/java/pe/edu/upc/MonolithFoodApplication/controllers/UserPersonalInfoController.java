@@ -37,7 +37,13 @@ public class UserPersonalInfoController {
     public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.getInformation(username);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        }
     }
     @PutMapping("/update")
     public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PersonalInfoRequestDTO userPersonallnfoDto) {

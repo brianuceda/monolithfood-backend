@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.general.SimpleObjectDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.InfoDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.ObjectivesResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PhotoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.GetIntakesDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.IntakeDTO;
@@ -26,10 +24,8 @@ import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
@@ -38,7 +34,6 @@ public class UserService {
     // ? Atributos
     // Inyección de dependencias
     private final UserRepository userRepository;
-    private final ObjectiveRepository objectiveRepository;
     private final EatRepository eatRepository;
     private final FoodRepository foodRepository;
     // Log de errores y eventos
@@ -46,7 +41,7 @@ public class UserService {
 
     // ? Metodos
     // * Heather: Obtener todos los alimentos consumidos por un usuario
-    public ResponseDTO getAllFoodIntake(String username) {
+    public ResponseDTO getMyFoodIntakes(String username) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if(!optUser.isPresent()) {
@@ -55,7 +50,10 @@ public class UserService {
         }
         // Se obtiene una lista de Object[] con los resultados de la consulta SQL personalizada
         List<Object[]> results = eatRepository.findAllIntakesByUsername(username);
-        if(results.isEmpty()) return new ResponseDTO("No se encontraron alimentos consumidos por el usuario", 200);
+        if(results.isEmpty()) {
+            logger.error("No se encontraron alimentos consumidos por el usuario " + username + ".");
+            return new ResponseDTO("Aún no has consumido alimentos.", 404);
+        }
         // Mapea el resultado manualmente de una lista de Object[] a una lista de IntakeDTO
         List<IntakeDTO> myIntakes = results.stream().map(result -> {
             return new IntakeDTO(
@@ -67,10 +65,10 @@ public class UserService {
                 (Timestamp) result[5]
             );
         }).collect(Collectors.toList());
-        return new GetIntakesDTO("Alimentos recuperados correctamente.", 200, myIntakes);
+        return new GetIntakesDTO(null, 200, myIntakes);
     }
     // * Heather Obtener todos los alimentos consumidos por un usuario entre dos fechas
-    public ResponseDTO getAllFoodIntakeBetweenDates(String username, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseDTO getMyFoodIntakesBetweenDates(String username, LocalDateTime startDate, LocalDateTime endDate) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if(!optUser.isPresent()) {
@@ -79,7 +77,10 @@ public class UserService {
         }
         // Se obtiene una lista de Object[] con los resultados de la consulta SQL personalizada
         List<Object[]> results = eatRepository.findAllIntakesByUsernameBetweenDates(username, startDate, endDate);
-        if(results.isEmpty()) return new ResponseDTO("No se encontraron alimentos consumidos entre las fechas indicadas.", 200);
+        if(results.isEmpty()) {
+            logger.error("No se encontraron alimentos consumidos por el usuario " + username + " entre las fechas " + startDate + " y " + endDate + ".");
+            return new ResponseDTO("No consumiste alimentos en entre esas fechas", 404);
+        }
         // Mapea el resultado manualmente de una lista de Object[] a una lista de IntakeDTO
         List<IntakeDTO> myIntakes = results.stream().map(result -> {
             return new IntakeDTO(
@@ -91,7 +92,7 @@ public class UserService {
                 (Timestamp) result[5]
             );
         }).collect(Collectors.toList());
-        return new GetIntakesDTO("Alimentos recuperados correctamente.", 200, myIntakes);
+        return new GetIntakesDTO(null, 200, myIntakes);
     }
     // * Heather: Agregar un alimento a la lista de alimentos consumidos por un usuario
     public ResponseDTO addFoodIntake(String username, NewIntakeDTO foodIntakeDTO) {
@@ -145,14 +146,15 @@ public class UserService {
         EatEntity newEat = getEat.get();
         if(!newEat.getUser().getUsername().equals(username)) {
             logger.error("No tiene permisos para actualizar este registro.");
-            return new ResponseDTO("No tiene permisos para actualizar este registro.", 403);
+            logger.error("El usuario " + username + " no tiene permisos para actualizar el registro " + newFoodIntakeDTO.getEatId() + ".");
+            return new ResponseDTO("No tienes permisos para actualizar este registro.", 403);
         }
         // Lista para guardar los campos que el usuario haya actualizado
         List<String> updatedFields = new ArrayList<>();
         // Si el elemento de eat tiene .getFood() == null, significa que es un registro de ingesta de una receta
         if(newEat.getFood() == null) {
-            logger.error("No se puede actualizar el registro de ingesta de una receta para el usuario " + username + ".");
-            return new ResponseDTO("No se puede actualizar el registro de ingesta de una receta.", 400);
+            logger.error("Aún no se puede actualizar el registro de ingesta de una receta para el usuario " + username + ".");
+            return new ResponseDTO("Aún no se puede actualizar el registro de ingesta de una receta.", 400);
         }
         // Actualizar los campos que el usuario haya ingresado
         newEat.setUser(optUser.get());
@@ -214,14 +216,14 @@ public class UserService {
         // Si la solicitud realizada pertenece al usuario que la realizó
         EatEntity eatToDelete = getEat.get();
         if (!eatToDelete.getUser().getUsername().equals(username)) {
-            logger.error("No tiene permisos para eliminar este registro.");
-            return new ResponseDTO("El usuario " + username + " no tiene permisos para eliminar el registro " + eatId + ".", 403);
+            logger.error("El usuario " + username + " no tiene permisos para eliminar el registro " + eatId + ".");
+            return new ResponseDTO("No tienes permisos para eliminar este registro.", 403);
         }
         // Eliminar el registro de ingesta de la lista de ingestas del usuario
         try {
             eatRepository.delete(eatToDelete);
             logger.info("Registro de ingesta eliminado correctamente para el usuario " + username + ".");
-            return new ResponseDTO("Registro de ingesta eliminado correctamente.", 200);
+            return new ResponseDTO("Registro eliminado correctamente.", 200);
         } catch (Exception e) {
             logger.error("Error al eliminar el registro de ingesta del usuario " + username + ": " + e.getMessage());
             return new ResponseDTO("Error al eliminar el registro de ingesta.", 500);
@@ -237,7 +239,7 @@ public class UserService {
         }
         // Retorna la información del usuario
         UserEntity user = optUser.get();
-        return new InfoDTO("Información recuperada correctamente.", 200,
+        return new InfoDTO(null, 200,
             user.getUsername(),
             user.getEmail(),
             user.getNames(),
@@ -265,70 +267,7 @@ public class UserService {
         // Actualiza y guarda la foto de perfil del usuario
         user.setProfileImg(photoUrl);
         userRepository.save(user);
-        return new PhotoDTO("Foto actualizada correctamente.", 200, photoUrl);
-    }
-    // * Brian: Obtener todos los objetivos de la base de datos
-    public ResponseDTO getAllObjectives() {
-        List<ObjectiveEntity> objectives = objectiveRepository.findAll();
-        if (objectives.isEmpty()) {
-            logger.error("No se encontraron objetivos.");
-            return new ResponseDTO("No se encontraron objetivos.", 404);
-        }
-        List<SimpleObjectDTO> objectiveDTOs = objectives.stream()
-                .map(obj -> new SimpleObjectDTO(obj.getName(), obj.getInformation()))
-                .collect(Collectors.toList());
-        return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
-    }
-    // * Brian: Obtener todos los objetivos de un usuario
-    public ResponseDTO getMyObjectives(String username) {
-        // Verificar que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        List<ObjectiveEntity> objectives = optUser.get().getObjectives();
-        // Obtener todos los objetivos de la base de datos
-        List<SimpleObjectDTO> objectiveDTOs = objectives.stream()
-                .map(obj -> new SimpleObjectDTO(obj.getName(), obj.getInformation()))
-                .collect(Collectors.toList());
-        return new ObjectivesResponseDTO("Objetivos recuperados correctamente.", 200, objectiveDTOs);
-    }
-    // * Brian: Actualizar los objetivos de un usuario
-    public ResponseDTO selectObjectives(String username, List<String> objectives) {
-        // Verificar que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        UserEntity user = optUser.get();
-        // Verificar si la lista de objetivos está vacía
-        if (objectives.isEmpty()) {
-            logger.error("No se seleccionó ningún objetivo.");
-            return new ResponseDTO("Debes seleccionar al menos un objetivo.", 400);
-        }
-        List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
-        // Validar que todos los objetivos enviados existen en la base de datos
-        for (String objective : objectives) {
-            boolean exists = allObjectives.stream().anyMatch(o -> o.getName().equals(objective));
-            if (!exists) {
-                logger.error("No se encontró uno de los objetivos ingresados.");
-                return new ResponseDTO("No se encontro uno de los objetivos ingresados.", 404);
-            }
-        }
-        // Filtrar los objetivos que coinciden con los enviados por el usuario
-        List<ObjectiveEntity> newUserObjectives = allObjectives.stream()
-                .filter(o -> objectives.contains(o.getName()))
-                .collect(Collectors.toList());
-        // Guardar los objetivos en el usuario
-        user.setObjectives(newUserObjectives);
-        userRepository.save(user);
-        // Convertir la lista de ObjectiveEntity a SimpleObjectDTO
-        List<SimpleObjectDTO> savedObjectives = newUserObjectives.stream()
-                .map(entity -> new SimpleObjectDTO(entity.getName(), entity.getInformation()))
-                .collect(Collectors.toList());
-        return new ObjectivesResponseDTO("Objetivos guardados correctamente.", 200, savedObjectives);
+        return new PhotoDTO("Foto actualizada.", 200, photoUrl);
     }
   
 }

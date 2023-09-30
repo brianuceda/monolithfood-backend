@@ -2,7 +2,6 @@ package pe.edu.upc.MonolithFoodApplication.controllers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +49,13 @@ public class UserController {
     public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.getInformation(username);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        }
     }
     // Put: Actualizar la foto de perfil de un usuario
     @PutMapping("/general-info/photo")
@@ -60,39 +65,23 @@ public class UserController {
         ResponseDTO response = userService.updatePhoto(username, photoUrl);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    // * Brian (Objetivos)
-    // Get: Obtener todos los objetivos disponibles
-    @GetMapping("/objectives/all")
-    public ResponseEntity<?> getAllObjectives() {
-        ResponseDTO response = userService.getAllObjectives();
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
-    // Get: Obtener los objetivos de un usuario
-    @GetMapping("/objectives")
-    public ResponseEntity<?> getMyObjectives(@RequestHeader("Authorization") String bearerToken) {
-        String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userService.getMyObjectives(username);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
-    // Put: Actualizar los objetivos de un usuario
-    @PutMapping("/objectives/update")
-    public ResponseEntity<?> selectObjectives(@RequestHeader("Authorization") String bearerToken,
-            @RequestBody List<String> objectives) {
-        String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userService.selectObjectives(username, objectives);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
     // * Heather (Alimentos consumidos)
     // Get: Obtener todos los alimentos consumidos por un usuario
     @GetMapping("/intakes/all")
-    public ResponseEntity<?> getAllFoodIntake(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<?> getMyFoodIntakes(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userService.getAllFoodIntake(username);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        ResponseDTO response = userService.getMyFoodIntakes(username);
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        }
     }
     // Get: Obtener todos los alimentos consumidos por un usuario entre dos fechas
     @GetMapping("/intakes")
-    public ResponseEntity<?> getAllFoodIntakeByDate(@RequestHeader("Authorization") String bearerToken, 
+    public ResponseEntity<?> getMyFoodIntakesBetweenDates(@RequestHeader("Authorization") String bearerToken, 
             @RequestParam(required = false) LocalDateTime startDate, 
             @RequestParam(required = false) LocalDateTime endDate) {
         // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
@@ -103,8 +92,14 @@ public class UserController {
             endDate = today.atTime(23, 59, 59, 999_000_000);
         }
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userService.getAllFoodIntakeBetweenDates(username, startDate, endDate);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        ResponseDTO response = userService.getMyFoodIntakesBetweenDates(username, startDate, endDate);
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        }
     }
     // Post: Agregar un alimento a la lista de alimentos consumidos por un usuario
     @PostMapping("/intakes/add")

@@ -71,34 +71,34 @@ public class MonolithFoodApplication {
 
             if(activityLevelRepository.count() == 0) {
                 activityLevels = Arrays.asList(
-                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", 1.2, "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad fisica.", null),
-                    new ActivityLevelEntity(null, "Ejercicio ligero", 1.375, "1 - 3 dias", "Actividad ligera como caminar casualmente o tareas diarias no exigentes.", null),
-                    new ActivityLevelEntity(null, "Ejercicio moderado", 1.55, "3 - 5 dias", "Actividad moderada que puede incluir trabajos que requieran actividad fisica o ejercicios regulares.", null),
-                    new ActivityLevelEntity(null, "Ejercicio intenso", 1.725, "5 - 7 dias", "Ejercicio intenso o trabajos fisicamente demandantes.", null),
-                    new ActivityLevelEntity(null, "Ejercicio muy intenso", 1.9, "Atleta profesional", "Atletas o individuos con trabajos extremadamente fisicos.", null),
-                    // Mas niveles de actividad fisica
-                    new ActivityLevelEntity(null, "Caminata ocasional", 1.4, "1-2 dias", "Caminatas cortas y ocasionales", null),
-                    new ActivityLevelEntity(null, "Caminata diaria", 1.6, "5-6 dias", "Caminatas diarias de al menos 30 minutos", null),
-                    new ActivityLevelEntity(null, "Deporte recreativo", 1.65, "2-3 dias", "Futbol, basquetbol u otro deporte recreativo durante la semana", null),
-                    new ActivityLevelEntity(null, "Entrenamiento de fuerza", 1.8, "3-4 dias", "Entrenamiento de pesas o calistenia varios dias a la semana", null)
+                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad fisica.", 1.2, null),
+                    new ActivityLevelEntity(null, "Ejercicio ligero", "1 - 3 dias", "Actividad ligera como caminar casualmente o tareas diarias no exigentes.", 1.375, null),
+                    new ActivityLevelEntity(null, "Ejercicio moderado", "3 - 5 dias", "Actividad moderada que puede incluir trabajos que requieran actividad fisica o ejercicios regulares.", 1.55, null),
+                    new ActivityLevelEntity(null, "Ejercicio intenso", "5 - 7 dias", "Ejercicio intenso o trabajos fisicamente demandantes.", 1.725, null),
+                    new ActivityLevelEntity(null, "Ejercicio muy intenso", "Atleta profesional", "Atletas o individuos con trabajos extremadamente fisicos.", 1.9, null)
+                    // // Mas niveles de actividad fisica
+                    // new ActivityLevelEntity(null, "Caminata ocasional", "1-2 dias", "Caminatas cortas y ocasionales", 1.4, null),
+                    // new ActivityLevelEntity(null, "Caminata diaria", "5-6 dias", "Caminatas diarias de al menos 30 minutos", 1.6, null),
+                    // new ActivityLevelEntity(null, "Deporte recreativo", "2-3 dias", "Futbol, basquetbol u otro deporte recreativo durante la semana", 1.65, null),
+                    // new ActivityLevelEntity(null, "Entrenamiento de fuerza", "3-4 dias", "Entrenamiento de pesas o calistenia varios dias a la semana", 1.8, null)
                 );
                 activityLevelRepository.saveAll(activityLevels);
             }
             if(objectiveRepository.count() == 0) {
                 objectives = Arrays.asList(
-                    new ObjectiveEntity(null, "Bajar de peso", "Objetivo centrado en reducir el peso corporal a traves de una dieta equilibrada.", null),
-                    new ObjectiveEntity(null, "Aumentar masa muscular", "Objetivo centrado en ganar masa muscular a traves de una dieta rica en proteinas.", null),
-                    new ObjectiveEntity(null, "Mantener el peso", "Objetivo centrado en mantener el peso corporal actual.", null),
-                    new ObjectiveEntity(null, "Aumentar resistencia", "Objetivo centrado en aumentar la resistencia fisica a traves de una dieta equilibrada.", null),
-                    new ObjectiveEntity(null, "Mejorar salud cardiaca", "Objetivo centrado en fortalecer el corazon y sistema circulatorio.", null),
-                    new ObjectiveEntity(null, "Mejorar salud osea", "Objetivo centrado en fortalecer los huesos y prevenir enfermedades oseas.", null),
-                    new ObjectiveEntity(null, "Reducir grasa corporal", "Objetivo centrado en reducir el porcentaje de grasa corporal.", null),
-                    new ObjectiveEntity(null, "Mejorar digestion", "Objetivo centrado en promover una digestion saludable a traves de una dieta rica en fibra.", null),
+                    new ObjectiveEntity(null, "Bajar de peso", "Objetivo centrado en reducir el peso corporal a traves de una dieta equilibrada.", 1.6, null),
+                    new ObjectiveEntity(null, "Aumentar masa muscular", "Objetivo centrado en ganar masa muscular a traves de una dieta rica en proteinas.", 2.2, null),
+                    new ObjectiveEntity(null, "Mantener el peso", "Objetivo centrado en mantener el peso corporal actual.", 1.4, null),
+                    new ObjectiveEntity(null, "Aumentar resistencia", "Objetivo centrado en aumentar la resistencia fisica a traves de una dieta equilibrada.", 1.8, null),
+                    new ObjectiveEntity(null, "Mejorar salud cardiaca", "Objetivo centrado en fortalecer el corazon y sistema circulatorio.",1.4, null),
+                    new ObjectiveEntity(null, "Mejorar salud osea", "Objetivo centrado en fortalecer los huesos y prevenir enfermedades oseas.", 1.4, null),
+                    new ObjectiveEntity(null, "Reducir grasa corporal", "Objetivo centrado en reducir el porcentaje de grasa corporal.", 1.8, null),
+                    new ObjectiveEntity(null, "Mejorar digestion", "Objetivo centrado en promover una digestion saludable a traves de una dieta rica en fibra.", 1.2, null),
                     // Mas objetivos secundarios
-                    new ObjectiveEntity(null, "Mejorar sistema inmune", "Objetivo para fortalecer el sistema inmunologico.", null),  
-                    new ObjectiveEntity(null, "Controlar el colesterol", "Objetivo para reducir los niveles de colesterol.", null),
-                    new ObjectiveEntity(null, "Controlar la glucosa", "Objetivo para mantener niveles saludables de azucar en la sangre.", null),
-                    new ObjectiveEntity(null, "Mejorar piel y cabello", "Objetivo para mejorar la apariencia de piel y cabello.", null)
+                    new ObjectiveEntity(null, "Mejorar sistema inmune", "Objetivo para fortalecer el sistema inmunologico.", 1.6, null),  
+                    new ObjectiveEntity(null, "Controlar el colesterol", "Objetivo para reducir los niveles de colesterol.", 1.4, null),
+                    new ObjectiveEntity(null, "Controlar la glucosa", "Objetivo para mantener niveles saludables de azucar en la sangre.", 1.6, null),
+                    new ObjectiveEntity(null, "Mejorar piel y cabello", "Objetivo para mejorar la apariencia de piel y cabello.", 1.6, null)
                 );
                 objectiveRepository.saveAll(objectives);
             }
@@ -247,9 +247,9 @@ public class MonolithFoodApplication {
             }
             if(roleRepository.count() == 0) {
                 roles = Arrays.asList(
-                    new RoleEntity(null, RoleEnum.ADMIN, 0.0),
-                    new RoleEntity(null, RoleEnum.USER, 0.0),
-                    new RoleEntity(null, RoleEnum.VIP, 30.0)
+                    new RoleEntity(null, RoleEnum.ADMIN, "Role de Administrador", 0.0),
+                    new RoleEntity(null, RoleEnum.USER, "Rol de Usuario", 0.0),
+                    new RoleEntity(null, RoleEnum.VIP, "Role Vip", 30.0)
                 );
                 roleRepository.saveAll(roles);
             }
@@ -391,14 +391,10 @@ public class MonolithFoodApplication {
                     fitnessInfo.setDailyCarbohydrateIntake((double) Math.round(150.0 + rand.nextDouble() * 250));
                     // Ingesta de grasas diarias aleatoria entre 20g y 70g
                     fitnessInfo.setDailyFatIntake((double) Math.round(20.0 + rand.nextDouble() * 50));
-                    // Asignacion de TMB aleatoria
-                    // Calcular TMB aleatorio
-                    // fitnessInfo.setTmb(currentWeight * 24 * (1 + (0.20 + (0.30 * rand.nextDouble()))));
+                    // Asignacion de avgProteinPerKg
+                    fitnessInfo.setAvgProteinPerKg(null);
+                    // Asignacion de TMB
                     fitnessInfo.setTmb(null);
-                    // Calcular necesidades energéticas diarias basadas en TMB y nivel de actividad física
-                    // Double dailyEnergyNeeds = fitnessInfo.getTmb() * user.getUserPersonalInfo().getActivityLevel().getQuotient();
-                    // fitnessInfo.setDailyEnergyNeeds(Math.round(dailyEnergyNeeds * 100.0) / 100.0); // Redondea a dos decimales
-                    fitnessInfo.setDailyEnergyNeeds(null);
                     // Asociar el UserEntity con el UserFitnessInfoEntity
                     fitnessInfo.setUser(user);
                     usersFitnessInfos.add(fitnessInfo);

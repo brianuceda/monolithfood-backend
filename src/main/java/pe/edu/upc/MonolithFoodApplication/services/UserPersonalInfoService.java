@@ -42,7 +42,7 @@ public class UserPersonalInfoService {
         // Retorna la información personal del usuario
         UserPersonalInfoEntity upi = optUser.get().getUserPersonalInfo();
         PersonalInfoRequestDTO responseUpi = new PersonalInfoRequestDTO(upi.getGender(), upi.getBirthdate());
-        return new PersonalInfoResponseDTO("Información recuperada correctamente.", 200, responseUpi);
+        return new PersonalInfoResponseDTO(null, 200, responseUpi);
     }
     // * Naydeline: Actualizar información personal del usuario
     public ResponseDTO updateUserPeronalInfo(String username, PersonalInfoRequestDTO newUserPersonalInfo) {

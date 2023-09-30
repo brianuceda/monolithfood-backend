@@ -8,7 +8,7 @@ import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscriptionPlanDTO {
+public class SubscriptionRequestDTO {
     private RoleEnum subscriptionPlan;
     private Boolean confirmed;
     // private int durationMonths;

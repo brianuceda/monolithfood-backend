@@ -9,16 +9,15 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 
 @Getter
 @Setter
-public class AllSubscriptionsDTO extends ResponseDTO {
-    
-    List<UserSubscriptionDTO> subscriptions;
+public class SubscriptionsResponseDTO extends ResponseDTO {
+    List<SubscriptionDTO> subscriptions;
 
-    public AllSubscriptionsDTO(List<UserSubscriptionDTO> subscriptions) {
+    public SubscriptionsResponseDTO(List<SubscriptionDTO> subscriptions) {
         this.subscriptions = subscriptions;
     }
 
     @Builder
-    public AllSubscriptionsDTO(String message, Integer statusCode, List<UserSubscriptionDTO> subscriptions) {
+    public SubscriptionsResponseDTO(String message, Integer statusCode, List<SubscriptionDTO> subscriptions) {
         super(message, statusCode);
         this.subscriptions = subscriptions;
     }

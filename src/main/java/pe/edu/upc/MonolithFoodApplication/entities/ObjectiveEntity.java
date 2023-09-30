@@ -23,6 +23,9 @@ public class ObjectiveEntity {
     @Column(nullable = false, length = 512)
     private String information;
 
+    @Column(nullable = false)
+    private Double proteinPerKg;
+
     @ManyToMany(mappedBy = "objectives")
     private List<UserEntity> users;
 

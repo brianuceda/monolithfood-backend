@@ -27,11 +27,11 @@ public class FitnessInfoResponseDTO extends ResponseDTO {
     private Double dailyProteinIntake;
     private Double dailyCarbohydrateIntake;
     private Double dailyFatIntake;
+    private Double avgProteinPerKg;
     private Double tmb;
-    private Double dailyEnergyNeeds;
     
     @Builder
-    public FitnessInfoResponseDTO(String message, Integer statusCode, GenderEnum gender, Timestamp borndate, Double height, Double weight, String activityLevel, Double activityLevelQuotient, Double imc, String clasification, Double dailyCaloricIntake, Double dailyProteinIntake, Double dailyCarbohydrateIntake, Double dailyFatIntake, Double tmb, Double dailyEnergyNeeds) {
+    public FitnessInfoResponseDTO(String message, Integer statusCode, GenderEnum gender, Timestamp borndate, Double height, Double weight, String activityLevel, Double activityLevelQuotient, Double imc, String clasification, Double dailyCaloricIntake, Double dailyProteinIntake, Double dailyCarbohydrateIntake, Double dailyFatIntake, Double avgProteinPerKg, Double tmb) {
         super(message, statusCode);
         this.gender = gender;
         this.borndate = borndate;
@@ -45,7 +45,7 @@ public class FitnessInfoResponseDTO extends ResponseDTO {
         this.dailyProteinIntake = dailyProteinIntake;
         this.dailyCarbohydrateIntake = dailyCarbohydrateIntake;
         this.dailyFatIntake = dailyFatIntake;
+        this.avgProteinPerKg = avgProteinPerKg;
         this.tmb = tmb;
-        this.dailyEnergyNeeds = dailyEnergyNeeds;
     }
 }

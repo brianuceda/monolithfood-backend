@@ -46,10 +46,10 @@ public class UserFitnessInfoEntity {
     private Double dailyFatIntake;
 
     @Column(nullable = true)
-    private Double tmb;
+    private Double avgProteinPerKg;
 
     @Column(nullable = true)
-    private Double dailyEnergyNeeds;
+    private Double tmb;
 
     @OneToOne
     @JoinColumn(name = "user_id")

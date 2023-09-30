@@ -27,14 +27,14 @@ public class ActivityLevelEntity {
     @Column(nullable = false, length = 80, unique = true)
     private String name;
 
-    @Column(nullable = false)
-    private Double quotient;
-
     @Column(length = 20)
     private String days;
 
     @Column(length = 512)
     private String information;
+
+    @Column(nullable = false)
+    private Double quotient;
 
     @OneToMany(mappedBy = "activityLevel", cascade = {
             CascadeType.MERGE
