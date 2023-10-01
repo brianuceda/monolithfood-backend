@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,9 +23,11 @@ import pe.edu.upc.MonolithFoodApplication.services.AuthService;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.UserService;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+
 public class UserController {
     // * Atributos
     // Inyección de dependencias
