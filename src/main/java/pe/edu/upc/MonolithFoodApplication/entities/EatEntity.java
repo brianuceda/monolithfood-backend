@@ -26,26 +26,26 @@ public class EatEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Timestamp date;
 
     @Column(nullable = false)
     private Double eatQuantity;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
+    @Column(nullable = false)
     private UnitOfMeasurementEnum unitOfMeasurement;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(nullable = false, name = "user_id")
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "food_id")
+    @JoinColumn(nullable = true, name = "food_id")
     private FoodEntity food;
 
     @ManyToOne
-    @JoinColumn(name = "recipe_id", nullable = true)
+    @JoinColumn(nullable = true, name = "recipe_id")
     private RecipeEntity recipe;
 
 }

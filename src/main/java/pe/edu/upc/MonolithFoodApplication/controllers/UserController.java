@@ -43,12 +43,12 @@ public class UserController {
         ResponseDTO response = authService.logout(realToken);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    // * Naydeline (Información personal)
-    // Get: Obtener información personal de un usuario
+    // * Naydeline (Información general)
+    // Get: Obtener información general de un usuario
     @GetMapping
-    public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<?> getGeneralInformation(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userService.getInformation(username);
+        ResponseDTO response = userService.getGeneralInformation(username);
         if (response.getStatusCode() == 200) {
             response.setStatusCode(null);
             response.setMessage(null);

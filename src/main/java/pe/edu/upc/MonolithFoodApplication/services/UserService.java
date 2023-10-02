@@ -229,8 +229,8 @@ public class UserService {
             return new ResponseDTO("Error al eliminar el registro de ingesta.", 500);
         }
     }
-    // * Naydeline: Obtener información personal del usuario
-    public ResponseDTO getInformation(String username) {
+    // * Naydeline: Obtener información general del usuario
+    public ResponseDTO getGeneralInformation(String username) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {

@@ -32,13 +32,20 @@ public class IpLoginAttemptEntity {
     @Column(nullable = false, length = 45)
     private String ipAddress;
 
+    @Column(nullable = false)
     private Boolean isIpBlocked = false;
+    
+    @Column(nullable = false)
     private Timestamp lastAttemptDate;
+
+    @Column(nullable = true)
     private Timestamp blockedDate;
+
+    @Column(nullable = false)
     private Integer attemptsCount = 1;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(nullable = true, name = "user_id")
     private UserEntity user;
 
 }

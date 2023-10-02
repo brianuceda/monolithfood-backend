@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Embeddable
 public class IngredientKey implements Serializable {
-    @Column(name = "food_id", nullable = false)
+    @Column(nullable = false, name = "food_id")
     private Long foodId;
 
-    @Column(name = "recipe_id", nullable = false)
+    @Column(nullable = false, name = "recipe_id")
     private Long recipeId;
 }

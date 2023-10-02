@@ -22,12 +22,12 @@ public class IngredientEntity {
 
     @ManyToOne
     @MapsId("foodId")
-    @JoinColumn(name = "food_id", nullable = false)
+    @JoinColumn(nullable = false, name = "food_id")
     private FoodEntity food;
 
     @ManyToOne
     @MapsId("recipeId")
-    @JoinColumn(name = "recipe_id", nullable = false)
+    @JoinColumn(nullable = false, name = "recipe_id")
     private RecipeEntity recipe;
 
     @Column(nullable = false)

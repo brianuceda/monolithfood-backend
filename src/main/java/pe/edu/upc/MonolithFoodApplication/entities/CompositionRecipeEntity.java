@@ -24,12 +24,12 @@ public class CompositionRecipeEntity {
 
     @ManyToOne
     @MapsId("recipeId")
-    @JoinColumn(name = "recipe_id", nullable = false)
+    @JoinColumn(nullable = false, name = "recipe_id")
     private RecipeEntity recipe;
 
     @ManyToOne
     @MapsId("nutrientId")
-    @JoinColumn(name = "nutrient_id", nullable = false)
+    @JoinColumn(nullable = false, name = "nutrient_id")
     private NutrientEntity nutrient;
 
     @Column(nullable = false)

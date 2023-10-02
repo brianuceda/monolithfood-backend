@@ -1,0 +1,14 @@
+11:41:53.674 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.ExpiredJwtException
+11:41:53.676 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Causa exacta: null
+11:42:22.864 [http-nio-8080-exec-5] INFO  p.e.u.M.s.UserPersonalInfoService - Campos actualizados para el usuario kiridepapel: Genero, Nacimiento.
+11:42:38.383 [http-nio-8080-exec-7] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.ExpiredJwtException
+11:42:38.384 [http-nio-8080-exec-7] ERROR p.e.u.M.f.JwtAuthenticationFilter - Causa exacta: null
+15:05:22.607 [http-nio-8080-exec-4] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.ExpiredJwtException
+15:05:22.609 [http-nio-8080-exec-4] ERROR p.e.u.M.f.JwtAuthenticationFilter - Causa exacta: null
+15:08:53.711 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.ExpiredJwtException
+15:08:53.712 [http-nio-8080-exec-3] ERROR p.e.u.M.f.JwtAuthenticationFilter - Causa exacta: null
+15:10:39.722 [http-nio-8080-exec-1] ERROR p.e.u.M.f.JwtAuthenticationFilter - Entrando al bloque Exception: io.jsonwebtoken.ExpiredJwtException
+15:10:39.722 [http-nio-8080-exec-1] ERROR p.e.u.M.f.JwtAuthenticationFilter - Causa exacta: null
+15:10:51.507 [http-nio-8080-exec-2] ERROR p.e.u.M.services.SubscriptionService - El usuario kiridepapel no cuenta con el plan de suscripción elegido.
+15:10:56.877 [http-nio-8080-exec-4] INFO  p.e.u.M.services.SubscriptionService - El usuario kiridepapel suspendió su plan de suscripción ADMIN correctamente.
+15:11:24.266 [http-nio-8080-exec-5] INFO  p.e.u.M.services.SubscriptionService - El usuario kiridepapel ha comprado el plan de suscripción VIP

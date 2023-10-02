@@ -58,10 +58,6 @@ public class UserFitnessInfoService {
             return new ResponseDTO("No se encontraron objetivos en el servidor.", 404);
         }
         List<ObjectiveEntity> myObjectives = optUser.get().getObjectives();
-        if (myObjectives.isEmpty()) {
-            logger.error("El usuario " + username + " no tiene objetivos establecidos.");
-            return new ResponseDTO("No tienes objetivos establecidos.", 404);
-        }
         // Obtiene todos los objetivos de la BD y los compara con los del usuario que están en la lista myObjectives,
         // si el usuario tiene ese objetivo, selected = true, si no, selected = false
         List<ObjectiveDTO> objectiveDTOs = allObjectives.stream()
@@ -80,38 +76,37 @@ public class UserFitnessInfoService {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        UserEntity user = optUser.get();
-        // Verificar si la lista de objetivos está vacía
-        if (objectives.isEmpty()) {
-            logger.error("No se seleccionó ningún objetivo.");
-            return new ResponseDTO("Debes seleccionar al menos un objetivo.", 400);
-        }
         // Obtener todos los objetivos de la base de datos
         List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
+        // Verificar si la lista de objetivos de la base de datos está vacía
+        if (allObjectives.isEmpty()) {
+            logger.error("No se encontraron objetivos en el servidor.");
+            return new ResponseDTO("No se encontraron objetivos en el servidor.", 404);
+        }
+        UserEntity user = optUser.get();
+        // Verificar si la lista de objetivos está vacía
+        if (objectives.isEmpty() || objectives == null) {
+            logger.error("El usuario " + username + " realizó una petición con una lista de objetivos vacía o nula.");
+            return new ResponseDTO("Debes seleccionar al menos un objetivo.", 400);
+        }
         // Validar que todos los objetivos enviados existen en la base de datos
         for (String objective : objectives) {
             boolean exists = allObjectives.stream().anyMatch(o -> o.getName().equals(objective));
             if (!exists) {
-                logger.error("No se encontró uno de los objetivos ingresados.");
-                return new ResponseDTO("No se encontro uno de los objetivos ingresados.", 404);
+                logger.error("El usuario " + username + " está intentando seleccionar un objetivo que no existe.");
+                return new ResponseDTO("No se encontro uno de los objetivos seleccionados.", 404);
             }
+        }
+        // Valida que el usuario no intente enviar el mismo objetivo dos veces o más en la lista
+        if (objectives.stream().distinct().count() != objectives.size()) {
+            logger.error("El usuario " + username + " está intentando seleccionar el mismo objetivo más de una vez.");
+            return new ResponseDTO("No puedes seleccionar el mismo objetivo más de una vez.", 400);
         }
         // Valida que el usuario no intente seleccionar más de 3 objetivos
         if (objectives.size() > 3) {
-            logger.error("No puedes seleccionar más de 3 objetivos.");
+            logger.error("El usuario " + username + " está intentando seleccionar más de 3 objetivos.");
             return new ResponseDTO("No puedes seleccionar más de 3 objetivos.", 400);
         }
-        // Valida que el usuario no intente seleccionar el mismo objetivo más de una vez
-        if (objectives.stream().distinct().count() != objectives.size()) {
-            logger.error("No puedes seleccionar el mismo objetivo más de una vez.");
-            return new ResponseDTO("No puedes seleccionar el mismo objetivo más de una vez.", 400);
-        }
-        // // Valida que el usuario no esté intendo ingresar un objetivo que ya tiene
-        // List<String> myObjectives = user.getObjectives().stream().map(o -> o.getName()).collect(Collectors.toList());
-        // if (objectives.stream().anyMatch(o -> myObjectives.contains(o))) {
-        //     logger.error("No puedes seleccionar un objetivo que ya tienes.");
-        //     return new ResponseDTO("No puedes seleccionar un objetivo que ya tienes.", 400);
-        // }
         // Filtrar los objetivos de la BD que coinciden con los enviados por el usuario
         List<ObjectiveEntity> newUserObjectives = allObjectives.stream()
                 .filter(o -> objectives.contains(o.getName()))
@@ -119,7 +114,7 @@ public class UserFitnessInfoService {
         // Guardar los objetivos en el usuario
         user.setObjectives(newUserObjectives);
         userRepository.save(user);
-        return new ResponseDTO("Objetivos seleccionados correctamente.", 200);
+        return new ResponseDTO("Objetivos nutricionales seleccionados correctamente.", 200);
     }
     // * Brian: Obtener el nivel de actividad física del usuario, es la misma lógica que getObjectives pero devuelve ActivityLevelsResponseDTO
     public ResponseDTO getActivityLevels(String username) {
@@ -135,10 +130,6 @@ public class UserFitnessInfoService {
             return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
         }
         ActivityLevelEntity myActivityLevel = optUser.get().getUserPersonalInfo().getActivityLevel();
-        if (myActivityLevel == null) {
-            logger.error("El usuario " + username + " no tiene un nivel de actividad física establecido.");
-            return new ResponseDTO("No tienes un nivel de actividad física establecido.", 404);
-        }
         // Obtiene los niveles de actividad física de la BD y los compara con el nivel de actividad física del usuario que está en myActivityLevel,
         // si el usuario tiene ese nivel de actividad física, selected = true, si no, selected = false
         List<ActivityLevelDTO> activityLevelDTOs = allActivityLevels.stream()
@@ -157,18 +148,29 @@ public class UserFitnessInfoService {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
+        // No se encontraron niveles de actividad física en el servidor
+        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
+        if (allActivityLevels.isEmpty()) {
+            logger.error("No se encontraron niveles de actividad física en el servidor.");
+            return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
+        }
         UserEntity user = optUser.get();
-        // Verificar que el nivel de actividad física exista
+        // Verifica que el dato que haya enviado el usuario sea valido
+        if (activityLevelName.isEmpty() || activityLevelName == null) {
+            logger.error("El usuario " + username + " realizó una petición con un nivel de actividad física vacío o nulo.");
+            return new ResponseDTO("Debes seleccionar un nivel de actividad física.", 400);
+        }
+        // Verificar que el nivel de actividad física exista en la base de datos
         Optional<ActivityLevelEntity> optActivityLevel = activityLevelRepository.findByName(activityLevelName);
         if (!optActivityLevel.isPresent()) {
-            logger.error("Nivel de actividad física no encontrado.");
+            logger.error("El usuario " + username + " está intentando seleccionar un nivel de actividad física que no existe.");
             return new ResponseDTO("No se encontró ese nivel de actividad física.", 400);
         }
         ActivityLevelEntity myActivityLevel = user.getUserPersonalInfo().getActivityLevel();
         // Verificar que el usuario no esté intentando seleccionar el mismo nivel de actividad física que ya tiene
         if (myActivityLevel != null && myActivityLevel.getName().equals(activityLevelName)) {
-            logger.error("No puedes seleccionar el mismo nivel de actividad física que ya tienes.");
-            return new ResponseDTO("No puedes seleccionar el mismo nivel de actividad física que ya tienes.", 400);
+            logger.error("El usuario " + username + " está intentando seleccionar un nivel de actividad física que ya tiene.");
+            return new ResponseDTO("Ya tienes seleccionado ese nivel de actividad fisica.", 400);
         }
         // Guardar el nivel de actividad física en el usuario
         user.getUserPersonalInfo().setActivityLevel(optActivityLevel.get());
@@ -207,7 +209,7 @@ public class UserFitnessInfoService {
         // Retorna la información de fitness del usuario
         return new FitnessInfoResponseDTO("Información fitness calculada correctamente.", 200,
             upi.getGender(),
-            upi.getBirthdate(),
+            age,
             upi.getHeightCm(),
             upi.getWeightKg(),
             upi.getActivityLevel().getName(),

@@ -33,6 +33,7 @@ public class UserPersonalInfoController {
 
     // ? Metodos
     // * Naydeline: Personal Information
+    // Get: Obtener información personal de un usuario
     @GetMapping
     public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
@@ -45,6 +46,7 @@ public class UserPersonalInfoController {
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
+    // Put: Actualizar información personal de un usuario
     @PutMapping("/update")
     public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PersonalInfoRequestDTO userPersonallnfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
@@ -52,12 +54,14 @@ public class UserPersonalInfoController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Willy (IMC)
+    // Get: Actualizar la altura de un usuario y obtener su IMC
     @PutMapping("/height")
     public ResponseEntity<?> updateHeightAndGetIMC(@RequestHeader("Authorization") String bearerToken, @RequestParam Double heightCm) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.updateHeightAndGetIMC(username, heightCm);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+    // Get: Actualizar el peso de un usuario y obtener su IMC
     @PutMapping("/weight")
     public ResponseEntity<?> updateWeightAndGetIMC(@RequestHeader("Authorization") String bearerToken, @RequestParam Double weightKg) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
@@ -65,12 +69,14 @@ public class UserPersonalInfoController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Willy (Reportes)
+    // Get: Obtener el consumo de calorías de la última semana
     @GetMapping("/lastWeekCalories")
     public ResponseEntity<CaloriesConsumedLastWeekDTO> getCaloriesConsumedInTheLastWeek(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         CaloriesConsumedLastWeekDTO caloriesConsumedLastWeekDTO = basicUserProgressReportService.getCaloriesConsumedInTheLastWeek(username);
         return new ResponseEntity<>(caloriesConsumedLastWeekDTO, HttpStatus.OK);
     }
+    // Get: Obtener el promedio de consumo de calorías diario
     @GetMapping("/averageCalories")
     public ResponseEntity<?> getAverageDailyCaloriesConsumedDTO(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
