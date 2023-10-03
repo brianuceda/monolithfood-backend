@@ -1,5 +1,7 @@
 package pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo;
 
+import java.sql.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +19,8 @@ public class FitnessInfoResponseDTO extends ResponseDTO {
     private Integer age;
     private Double height;
     private Double weight;
+    private Double targetWeightKg;
+    private Timestamp targetDate;
     private String activityLevel;
     private Double activityLevelQuotient;
     private Double imc;
@@ -29,12 +33,14 @@ public class FitnessInfoResponseDTO extends ResponseDTO {
     private Double tmb;
     
     @Builder
-    public FitnessInfoResponseDTO(String message, Integer statusCode, GenderEnum gender, Integer age, Double height, Double weight, String activityLevel, Double activityLevelQuotient, Double imc, String clasification, Double dailyCaloricIntake, Double dailyProteinIntake, Double dailyCarbohydrateIntake, Double dailyFatIntake, Double avgProteinPerKg, Double tmb) {
+    public FitnessInfoResponseDTO(String message, Integer statusCode, GenderEnum gender, Integer age, Double height, Double weight, Double targetWeightKg, Timestamp targetDate, String activityLevel, Double activityLevelQuotient, Double imc, String clasification, Double dailyCaloricIntake, Double dailyProteinIntake, Double dailyCarbohydrateIntake, Double dailyFatIntake, Double avgProteinPerKg, Double tmb) {
         super(message, statusCode);
         this.gender = gender;
         this.age = age;
         this.height = height;
         this.weight = weight;
+        this.targetWeightKg = targetWeightKg;
+        this.targetDate = targetDate;
         this.activityLevel = activityLevel;
         this.activityLevelQuotient = activityLevelQuotient;
         this.imc = imc;

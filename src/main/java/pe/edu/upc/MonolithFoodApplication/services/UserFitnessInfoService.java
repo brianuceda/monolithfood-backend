@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.activitylevel.ActivityLevelDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.activitylevel.ActivityLevelsResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectiveDTO;
@@ -28,7 +29,6 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.ActivityLevelRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
@@ -37,7 +37,6 @@ public class UserFitnessInfoService {
     // ? Atributos
     // Inyección de dependencias
     private final UserRepository userRepository;
-    private final UserFitnessInfoRepository userFitnessInfoRepository;
     private final ObjectiveRepository objectiveRepository;
     private final ActivityLevelRepository activityLevelRepository;
     // Log de errores y eventos
@@ -129,15 +128,17 @@ public class UserFitnessInfoService {
             logger.error("No se encontraron niveles de actividad física en el servidor.");
             return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
         }
-        ActivityLevelEntity myActivityLevel = optUser.get().getUserPersonalInfo().getActivityLevel();
         // Obtiene los niveles de actividad física de la BD y los compara con el nivel de actividad física del usuario que está en myActivityLevel,
         // si el usuario tiene ese nivel de actividad física, selected = true, si no, selected = false
+        UserPersonalInfoEntity userPersonalInfo = optUser.get().getUserPersonalInfo();
         List<ActivityLevelDTO> activityLevelDTOs = allActivityLevels.stream()
-                .map(obj -> {
-                    boolean selected = myActivityLevel.getName().equals(obj.getName());
-                    return new ActivityLevelDTO(obj.getName(), obj.getDays(), obj.getInformation(), obj.getQuotient(), selected);
-                })
-                .collect(Collectors.toList());
+            .map(obj -> {
+                boolean selected = false;
+                if(userPersonalInfo != null && userPersonalInfo.getActivityLevel() != null)
+                    selected = userPersonalInfo.getActivityLevel().getName().equals(obj.getName());
+                return new ActivityLevelDTO(obj.getName(), obj.getDays(), obj.getInformation(), obj.getQuotient(), selected);
+            })
+        .collect(Collectors.toList());
         return new ActivityLevelsResponseDTO(null, 200, activityLevelDTOs);
     }
     // * Brian: Actualizar el nivel de actividad física del usuario
@@ -166,16 +167,48 @@ public class UserFitnessInfoService {
             logger.error("El usuario " + username + " está intentando seleccionar un nivel de actividad física que no existe.");
             return new ResponseDTO("No se encontró ese nivel de actividad física.", 400);
         }
-        ActivityLevelEntity myActivityLevel = user.getUserPersonalInfo().getActivityLevel();
+        UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
+        ActivityLevelEntity myActivityLevel = null;
+        if(userPersonalInfo != null) {
+            myActivityLevel = userPersonalInfo.getActivityLevel();
+        }
         // Verificar que el usuario no esté intentando seleccionar el mismo nivel de actividad física que ya tiene
         if (myActivityLevel != null && myActivityLevel.getName().equals(activityLevelName)) {
             logger.error("El usuario " + username + " está intentando seleccionar un nivel de actividad física que ya tiene.");
             return new ResponseDTO("Ya tienes seleccionado ese nivel de actividad fisica.", 400);
         }
-        // Guardar el nivel de actividad física en el usuario
-        user.getUserPersonalInfo().setActivityLevel(optActivityLevel.get());
+        // Si el usuario aun no ha creado un UserPersonalInfoEntity, se crea uno y se le asigna el nivel de actividad física
+        if (userPersonalInfo == null) {
+            userPersonalInfo = new UserPersonalInfoEntity();
+        }
+        userPersonalInfo.setUser(user);
+        userPersonalInfo.setActivityLevel(optActivityLevel.get());
+        user.setUserPersonalInfo(userPersonalInfo);
         userRepository.save(user);
         return new ResponseDTO("Nivel de actividad física seleccionado correctamente.", 200);
+    }
+    // * Willy: Registrar información fitness de un usuario que no es modificable por el sistema
+    public ResponseDTO setUserFitnessInfo(String username, FitnessInfoDTO fitnessInfoDTO) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        // Gaurda la información fitness del usuario en una variable
+        UserEntity user = optUser.get();
+        UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
+        if (ufi == null) {
+            ufi = new UserFitnessInfoEntity();
+        }
+        ufi.setTargetWeightKg(fitnessInfoDTO.getTargetWeightKg());
+        ufi.setTargetDate(fitnessInfoDTO.getTargetDate());
+        // Guarda la información fitness del usuario en la BD
+        ufi.setUser(user);
+        user.setUserFitnessInfo(ufi);
+        userRepository.save(user);
+        // Retorna la información fitness del usuario
+        return new ResponseDTO("Información fitness registrada correctamente.", 200);
     }
     // * Willy: Calcular la información fitness del usuario
     // Por ahora calcula de forma general, luego los calculos se basarán en los objetivos del usuario
@@ -186,14 +219,26 @@ public class UserFitnessInfoService {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        // Verifica que el usuario tenga información personal
-        if (optUser.get().getUserPersonalInfo() == null) {
-            logger.error("El usuario " + username + " no cuenta con la información necesaria para calcular su información fitness.");
-            return new ResponseDTO("No cuentas con la información necesaria para calcular tu información fitness.", 404);
-        }
+        // Variables para verificar que el usuario tenga la información necesaria para calcular su información fitness
         UserEntity user = optUser.get();
         UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
+        // Verifica que el usuario tenga información personal
+        if (upi == null) {
+            logger.error("El usuario " + username + " no cuenta con la información necesaria personal para calcular su información fitness.");
+            return new ResponseDTO("No cuentas con la información personal necesaria para calcular tu información fitness.", 404);
+        }
+        if (upi.getActivityLevel() == null) {
+            logger.error("El usuario " + username + " está intentando calcular su información fitness pero no tiene un nivel de actividad física seleccionado.");
+            return new ResponseDTO("Primero debes seleccionar un nivel de actividad física.", 404);
+        }
+        if (user.getObjectives().isEmpty()) {
+            logger.error("El usuario " + username + " está intentando calcular su información fitness pero no tiene objetivos seleccionados.");
+            return new ResponseDTO("Primero debes seleccionar tus objetivos nutricionales.", 404);
+        }
+        if (ufi == null) {
+            return new ResponseDTO("Primero debes especificar tu fecha y peso objetivos.", 404);
+        }
         // Calcula el IMC
         Double bigImc = calculateIMC(upi.getWeightKg(), upi.getHeightCm());
         Double imc = Double.valueOf(String.format("%.3f", bigImc));
@@ -205,13 +250,18 @@ public class UserFitnessInfoService {
         calculateMacronutrientIntake(user, upi, ufi, age);
         // Guarda la información de fitness del usuario
         ufi.setImc(imc);
-        userFitnessInfoRepository.save(ufi);
+        // Guarda la información de fitness del usuario en la BD
+        ufi.setUser(user);
+        user.setUserFitnessInfo(ufi);
+        userRepository.save(user);
         // Retorna la información de fitness del usuario
         return new FitnessInfoResponseDTO("Información fitness calculada correctamente.", 200,
             upi.getGender(),
             age,
             upi.getHeightCm(),
             upi.getWeightKg(),
+            ufi.getTargetWeightKg(),
+            ufi.getTargetDate(),
             upi.getActivityLevel().getName(),
             upi.getActivityLevel().getQuotient(),
             ufi.getImc(), clasification,

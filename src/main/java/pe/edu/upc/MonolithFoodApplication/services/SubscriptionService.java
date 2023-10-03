@@ -99,38 +99,42 @@ public class SubscriptionService {
         }
     }
     // * Gabriela: Cancelar plan de suscripcion
-    public ResponseDTO cancelSubscription(String username, RoleEnum userSubscriptionDTO) {
-        // Verifica que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
+    public ResponseDTO cancelSubscription(String username, SubscriptionRequestDTO subscriptionPlanDTO) {
+        if(subscriptionPlanDTO.getConfirmed() == true) {
+            // Verifica que el usuario exista
+            Optional<UserEntity> optUser = userRepository.findByUsername(username);
+            if (!optUser.isPresent()) {
+                logger.error("Usuario no encontrado.");
+                return new ResponseDTO("Usuario no encontrado.", 404);
+            }
+            // Verifica que el plan de suscripción exista
+            Optional<RoleEntity> optRole = roleRepository.findByName(subscriptionPlanDTO.getSubscriptionPlan());
+            if(!optRole.isPresent()) {
+                logger.error("Plan de suscripción no encontrado para el usuario: " + username);
+                return new ResponseDTO("No se encontró ese plan de suscripción.", 404);
+            }
+            UserEntity user = optUser.get();
+            RoleEntity role = optRole.get();
+            // Verifica que el usuario tenga el rol que ha elegido actualmente
+            if(!user.getRoles().contains(role)) {
+                logger.error("El usuario " + username + " no cuenta con el plan de suscripción elegido.");
+                return new ResponseDTO("No cuentas con ese plan de suscripción.", 404);
+            }
+            // Verifica que el rol que está intentando suspender el usuario, no sea su único rol (siempre debe tener al menos uno)
+            if(user.getRoles().size() == 1) {
+                logger.error("El usuario " + username + " no puede suspender su único plan de suscripción.");
+                return new ResponseDTO("No puedes suspender tu único plan de suscripción.", 404);
+            }
+            // Elimina el rol del usuario
+            user.getRoles().remove(role);
+            // Guarda el usuario en la base de datos
+            userRepository.save(user);
+            // Retorna el plan de suscripción eliminado
+            logger.info("El usuario " + username + " suspendió su plan de suscripción " + role.getName() + " correctamente.");
+            return new ResponseDTO("Has suspendido tu suscripción al plan " + role.getName() + " correctamente.", 200);
+        } else {
+            return new ResponseDTO("No se ha confirmado la cancelación.", 404);
         }
-        // Verifica que el plan de suscripción exista
-        Optional<RoleEntity> optRole = roleRepository.findByName(userSubscriptionDTO);
-        if(!optRole.isPresent()) {
-            logger.error("Plan de suscripción no encontrado para el usuario: " + username);
-            return new ResponseDTO("No se encontró ese plan de suscripción.", 404);
-        }
-        UserEntity user = optUser.get();
-        RoleEntity role = optRole.get();
-        // Verifica que el usuario tenga el rol que ha elegido actualmente
-        if(!user.getRoles().contains(role)) {
-            logger.error("El usuario " + username + " no cuenta con el plan de suscripción elegido.");
-            return new ResponseDTO("No cuentas con ese plan de suscripción.", 404);
-        }
-        // Verifica que el rol que está intentando suspender el usuario, no sea su único rol (siempre debe tener al menos uno)
-        if(user.getRoles().size() == 1) {
-            logger.error("El usuario " + username + " no puede suspender su único plan de suscripción.");
-            return new ResponseDTO("No puedes suspender tu único plan de suscripción.", 404);
-        }
-        // Elimina el rol del usuario
-        user.getRoles().remove(role);
-        // Guarda el usuario en la base de datos
-        userRepository.save(user);
-        // Retorna el plan de suscripción eliminado
-        logger.info("El usuario " + username + " suspendió su plan de suscripción " + role.getName() + " correctamente.");
-        return new ResponseDTO("Has suspendido tu suscripción al plan " + role.getName() + " correctamente.", 200);
     }
 
 }

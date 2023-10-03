@@ -3,6 +3,8 @@ package pe.edu.upc.MonolithFoodApplication.services;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,22 +89,36 @@ public class AuthService {
         }
     }
     // * Brian: Registrar un nuevo usuario
-    public ResponseDTO register(RegisterRequestDTO request) {
+    public ResponseDTO register(RegisterRequestDTO request, Boolean isOAuth) {
         try {
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
             if (userRepository.findByUsername(request.getUsername()).isPresent())
                 return new ResponseDTO("El nombre de usuario ya está en uso.", HttpStatus.BAD_REQUEST.value());
             if (userRepository.findByEmail(request.getEmail()).isPresent())
                 return new ResponseDTO("El email ya está en uso.", HttpStatus.BAD_REQUEST.value());
-            // Validar la contraseña segura
-            ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
-            // Si la contraseña no es segura, devolver la respuesta de validación
-            if (respuestaValidacion != null)
-                return respuestaValidacion;
+            // Obtener la contraseña del request (por oauth2, la contraseña es null)
+            String password = request.getPassword();
+            // Valida si la contraseña es segura o no, dependiendo de si el registro es por Oauth2 o no
+            if (!isOAuth) {
+            // Validar la contraseña segura si el registro no es por Oauth2
+                ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
+                // Si la contraseña no es segura, devolver la respuesta de validación
+                if (respuestaValidacion != null)
+                    return respuestaValidacion;
+                // Genera una contraseña encriptada si el registro no es por Oauth2
+                password = passwordEncoder.encode(request.getPassword());
+            }
+            // Validar formato del correo electrónico
+            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+            Pattern pattern = Pattern.compile(emailRegex);
+            Matcher matcher = pattern.matcher(request.getEmail());
+            if (!matcher.matches()) {
+                return new ResponseDTO("El formato del correo electrónico no es válido.", HttpStatus.BAD_REQUEST.value());
+            }
             // Crear el usuario con los datos de la petición y el rol de usuario por defecto (USER) y lo guarda en la BD
             UserEntity user = UserEntity.builder()
                     .username(request.getUsername())
-                    .password(passwordEncoder.encode(request.getPassword()))
+                    .password(password)
                     .email(request.getEmail())
                     .names(request.getNames())
                     .surnames(request.getSurnames())
@@ -135,6 +151,8 @@ public class AuthService {
                     HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
+    // * Brian: Manejar la autenticación de Oauth2
+
 
     // ? Funciones auxiliares
     // FUNCIÓN: Devuelve un set con el rol USER para asignarlo a un nuevo usuario

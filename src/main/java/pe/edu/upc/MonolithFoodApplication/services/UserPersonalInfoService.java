@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.IMCDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
@@ -44,8 +45,8 @@ public class UserPersonalInfoService {
         PersonalInfoRequestDTO responseUpi = new PersonalInfoRequestDTO(upi.getGender(), upi.getBirthdate());
         return new PersonalInfoResponseDTO(null, 200, responseUpi);
     }
-    // * Naydeline: Actualizar información personal del usuario
-    public ResponseDTO updateUserPeronalInfo(String username, PersonalInfoRequestDTO newUserPersonalInfo) {
+    // * Naydeline: Registrar nueva información de usuario
+    public ResponseDTO setUserPersonalInfo(String username, PersonalInfoDTO userPersonalInfo) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
@@ -53,7 +54,41 @@ public class UserPersonalInfoService {
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
         // Gaurda la información personal del usuario en una variable
-        UserPersonalInfoEntity upi = optUser.get().getUserPersonalInfo();
+        UserEntity user = optUser.get();
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+        // Si no existe información personal para el usuario, crea una nueva
+        if (upi == null) {
+            upi = new UserPersonalInfoEntity();
+        }
+        // Se actualizan los campos que el usuario haya ingresado
+        upi.setBirthdate(userPersonalInfo.getBirthdate());
+        upi.setGender(userPersonalInfo.getGender());
+        upi.setHeightCm(userPersonalInfo.getHeightCm());
+        upi.setWeightKg(userPersonalInfo.getWeightKg());
+        // Se guarda la información personal del usuario en la BD
+        try {
+            upi.setUser(user);
+            user.setUserPersonalInfo(upi);
+            userRepository.save(user);
+            logger.info("Información personal del usuario {} guardada correctamente.", username);
+            // Retorna un mensaje de éxito
+            return new ResponseDTO("Información personal guardada correctamente.", 200);
+        } catch (DataAccessException e) {
+            logger.error("Error al guardar la informacion del usuario" + username + " en la BD. ", e);
+            return new ResponseDTO("Error al guardar la informacion en la BD.", 500);
+        }
+    }
+    // * Naydeline: Actualizar información personal del usuario
+    public ResponseDTO updateUserPersonalInfo(String username, PersonalInfoRequestDTO newUserPersonalInfo) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        // Gaurda la información personal del usuario en una variable
+        UserEntity user = optUser.get();
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         // Lista para guardar los campos que se actualizaron
         List<String> updatedFields = new ArrayList<>();
         // Se actualizan los campos que el usuario haya ingresado
@@ -74,7 +109,9 @@ public class UserPersonalInfoService {
         // Si no se actualizó ningún campo, no se guarda en la BD
         try {
             if(updatedFields.size() != 0) {
-                userRepository.save(optUser.get());
+                upi.setUser(user);
+                user.setUserPersonalInfo(upi);
+                userRepository.save(user);
                 logger.info("Campos actualizados para el usuario {}: {}.", username, String.join(", ", updatedFields));
             }
             else {

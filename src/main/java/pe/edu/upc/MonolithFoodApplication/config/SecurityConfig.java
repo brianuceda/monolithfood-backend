@@ -32,11 +32,20 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             // ? Permite o bloquea la conexión a los endpoints ? //
             .authorizeHttpRequests(authRequest -> { authRequest
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/auth/**", "/auth/oauth2/**", "/auth/oauth2/callback/**").permitAll()
                 // .requestMatchers("/v3/api-docs/**").permitAll() // Swagger API
                 // .requestMatchers("/doc/swagger-ui/**").permitAll() // Swagger UI
                 .anyRequest().authenticated();
             })
+            // ? Oauth2 Login
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler((request, response, authentication) -> 
+                    // response.sendRedirect("/dashboard"))
+                    response.sendRedirect("http://localhost:4200"))
+                .failureHandler((request, response, exception) -> 
+                    // response.sendRedirect("/login"))
+                    response.sendRedirect("http://localhost:4200"))
+            )
             // ? Session Management: Es el que se encarga de manejar las sesiones de los usuarios ? //
             .sessionManagement(sessionManager -> { sessionManager
                 // ? STATELESS: No se manejarán las sesiones de los usuarios de Spring Security ? //

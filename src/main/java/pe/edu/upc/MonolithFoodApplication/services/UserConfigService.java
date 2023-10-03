@@ -1,5 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -27,14 +28,32 @@ public class UserConfigService {
 
     // ? Metodos
     // * Naydeline: Obtener la configuración del usuario
-    public UserConfigDTO getConfig(String username) {
+    public ResponseDTO getConfig(String username) {
         Optional<UserEntity> userOpt = userRepository.findByUsername(username);
         if (!userOpt.isPresent()) {
             logger.error("Usuario no encontrado.");
-            return new UserConfigDTO("Usuario no encontrado.", 404, false, false);
+            return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        UserConfigEntity userConfig = userOpt.get().getUserConfig();
-        return new UserConfigDTO("Configuración recuperada correctamente.", 200, userConfig.getDarkMode(), userConfig.getNotifications());
+        UserEntity user = userOpt.get();
+        UserConfigEntity userConfig = user.getUserConfig();
+        // Si no existe una configuración para el usuario, crea una nueva y la guarda en la BD
+        if (userConfig == null) {
+            userConfig = new UserConfigEntity();
+            userConfig.setNotifications(false);
+            userConfig.setDarkMode(true);
+            userConfig.setLastFoodEntry(new Timestamp(System.currentTimeMillis()));
+            userConfig.setLastWeightUpdate(new Timestamp(System.currentTimeMillis()));
+            user.setUserConfig(userConfig);
+            userConfig.setUser(user);
+            userRepository.save(user);
+        }
+        // Retorna la configuración del usuario
+        try {
+            return new UserConfigDTO(null, 200, userConfig.getNotifications(), userConfig.getLastFoodEntry(), userConfig.getLastWeightUpdate(), userConfig.getDarkMode());
+        } catch (DataAccessException e) {
+            logger.error("Error al guardar la configuración del usuario en la BD. ", e);
+            return new ResponseDTO("Error al guardar la configuración en la BD.", 500);
+        }
     }
     // * Naydeline: Activar/desactivar el modo oscuro
     public ResponseDTO changeDarkMode(String username, Boolean newDarkMode) {

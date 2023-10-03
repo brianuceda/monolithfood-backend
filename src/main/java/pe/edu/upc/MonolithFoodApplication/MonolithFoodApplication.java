@@ -354,16 +354,20 @@ public class MonolithFoodApplication {
                 GenderEnum[] genders = GenderEnum.values();
                 for (UserEntity user : users) {
                     Random rand = new Random();
-                    GenderEnum gender = genders[rand.nextInt(genders.length)];
+                    UserPersonalInfoEntity personalInfo = new UserPersonalInfoEntity();
+                    personalInfo.setGender(genders[rand.nextInt(genders.length)]);
                     // Fecha de nacimiento aleatoria entre 1980 y 2010
-                    Timestamp birthdate = Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay());
+                    personalInfo.setBirthdate(Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay()));
                     // Altura aleatoria entre 150 y 200 cm
-                    double height = 150.0 + rand.nextInt(50);
+                    personalInfo.setHeightCm(150.0 + rand.nextInt(50));
                     // Peso aleatorio entre 50 y 100 kg
-                    double weight = 50.0 + rand.nextInt(5001) / 100.0;
-                    ActivityLevelEntity activityLevel = activityLevels.get(rand.nextInt(activityLevels.size()));
-                    UserPersonalInfoEntity userPF = new UserPersonalInfoEntity(null, gender, birthdate, height, weight, activityLevel, user);
-                    usersPersonalInfos.add(userPF);
+                    personalInfo.setWeightKg(50.0 + rand.nextInt(5001) / 100.0);
+                    // Asignacion de nivel de actividad fisica
+                    personalInfo.setActivityLevel(activityLevels.get(rand.nextInt(activityLevels.size())));
+                    // Asignacion de usuario
+                    user.setUserPersonalInfo(personalInfo);
+                    personalInfo.setUser(user);
+                    usersPersonalInfos.add(personalInfo);
                 }
                 userPersonalInfoRepository.saveAll(usersPersonalInfos);
             }
@@ -372,11 +376,7 @@ public class MonolithFoodApplication {
                     Random rand = new Random();
                     UserFitnessInfoEntity fitnessInfo = new UserFitnessInfoEntity();
                     // Obtener el peso actual del usuario desde la tabla user_personal_info
-                    Double currentWeight = usersPersonalInfos.stream()
-                        .filter(info -> info.getUser().getId().equals(user.getId()))
-                        .map(UserPersonalInfoEntity::getWeightKg)
-                        .findFirst()
-                        .orElse(0.0);
+                    Double currentWeight = user.getUserPersonalInfo().getWeightKg();
                     // Peso objetivo basado en el peso actual más un 20% - 50% adicional
                     fitnessInfo.setTargetWeightKg((double) Math.round(currentWeight * (1 + (0.20 + (0.30 * rand.nextDouble())))));
                     // Fecha objetivo aleatoria entre 1 y 6 meses a partir de hoy
@@ -396,6 +396,7 @@ public class MonolithFoodApplication {
                     // Asignacion de TMB
                     fitnessInfo.setTmb(null);
                     // Asociar el UserEntity con el UserFitnessInfoEntity
+                    user.setUserFitnessInfo(fitnessInfo);
                     fitnessInfo.setUser(user);
                     usersFitnessInfos.add(fitnessInfo);
                 }
@@ -407,12 +408,13 @@ public class MonolithFoodApplication {
                     UserConfigEntity config = new UserConfigEntity();
                     // Generacion aleatoria de true y false
                     config.setNotifications(rand.nextBoolean());
-                    config.setDarkMode(rand.nextBoolean());
                     // Generacion de LocalDateTime aleatorio entre hace 4 días (4) y hoy (0) para lastFoodEntry
                     config.setLastFoodEntry(Timestamp.valueOf(LocalDateTime.now().plusDays(-rand.nextInt(4))));
                     // Generacion de LocalDateTime aleatorio entre hace 3 semanas (-20) y hace 3 días (-3) para lastWeightUpdate
                     config.setLastWeightUpdate(Timestamp.valueOf(LocalDateTime.now().plusDays(-(3 + rand.nextInt(18)))));
+                    config.setDarkMode(rand.nextBoolean());
                     // Asignacion de usuario
+                    user.setUserConfig(config);
                     config.setUser(user);
                     usersConfig.add(config);
                 }

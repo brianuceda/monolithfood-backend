@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.subscriptions.SubscriptionRequestDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.SubscriptionService;
 import org.springframework.http.HttpStatus;
@@ -46,9 +45,9 @@ public class SubscriptionController {
     // Delete: Cancelar un plan de suscripción
     @DeleteMapping("/cancel")
     public ResponseEntity<?> cancelSubscription(@RequestHeader("Authorization") String bearerToken,
-            @RequestParam RoleEnum plan) {
+            @RequestBody SubscriptionRequestDTO subscriptionPlanDTO) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = subscriptionService.cancelSubscription(username, plan);
+        ResponseDTO response = subscriptionService.cancelSubscription(username, subscriptionPlanDTO);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 

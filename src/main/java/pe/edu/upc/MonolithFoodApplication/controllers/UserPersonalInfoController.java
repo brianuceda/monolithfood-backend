@@ -1,10 +1,9 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,9 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.AverageDailyCaloriesConsumedDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.CaloriesConsumedLastWeekDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.userpersonal.PersonalInfoRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.services.BasicUserProgressReportService;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
@@ -46,11 +44,18 @@ public class UserPersonalInfoController {
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
+    // Post: Registrar información personal de un usuario
+    @PostMapping("/new")
+    public ResponseEntity<ResponseDTO>setUserPersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PersonalInfoDTO userPersonallnfoDto) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userPersonalInfoService.setUserPersonalInfo(username, userPersonallnfoDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
     // Put: Actualizar información personal de un usuario
     @PutMapping("/update")
     public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PersonalInfoRequestDTO userPersonallnfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userPersonalInfoService.updateUserPeronalInfo(username, userPersonallnfoDto);
+        ResponseDTO response = userPersonalInfoService.updateUserPersonalInfo(username, userPersonallnfoDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Willy (IMC)
@@ -71,17 +76,17 @@ public class UserPersonalInfoController {
     // * Willy (Reportes)
     // Get: Obtener el consumo de calorías de la última semana
     @GetMapping("/lastWeekCalories")
-    public ResponseEntity<CaloriesConsumedLastWeekDTO> getCaloriesConsumedInTheLastWeek(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<?> getCaloriesConsumedInTheLastWeek(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        CaloriesConsumedLastWeekDTO caloriesConsumedLastWeekDTO = basicUserProgressReportService.getCaloriesConsumedInTheLastWeek(username);
-        return new ResponseEntity<>(caloriesConsumedLastWeekDTO, HttpStatus.OK);
+        ResponseDTO response = basicUserProgressReportService.getCaloriesConsumedInTheLastWeek(username);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     // Get: Obtener el promedio de consumo de calorías diario
     @GetMapping("/averageCalories")
     public ResponseEntity<?> getAverageDailyCaloriesConsumedDTO(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        List<AverageDailyCaloriesConsumedDTO> averageDailyCaloriesConsumedDTO = basicUserProgressReportService.getAverageDailyCaloriesConsumedDTO(username);
-        return new ResponseEntity<>(averageDailyCaloriesConsumedDTO, HttpStatus.OK);
+        ResponseDTO response = basicUserProgressReportService.getAverageDailyCaloriesConsumedDTO(username);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

@@ -32,7 +32,7 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false, length = 40, unique = true)
     private String username;
 
-    @Column(nullable = false, length = 80)
+    @Column(nullable = true, length = 80)
     private String password;
 
     @Column(nullable = false, length = 150, unique = true)
@@ -51,11 +51,11 @@ public class UserEntity implements UserDetails {
     @Builder.Default
     private Boolean is_account_blocked = false;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserConfigEntity userConfig;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<IpLoginAttemptEntity> ipLoginAttempt;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserConfigEntity userConfig;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserPersonalInfoEntity userPersonalInfo;

@@ -28,20 +28,20 @@ public class UserPersonalInfoEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private GenderEnum gender;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Timestamp birthdate;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double heightCm;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double weightKg;
 
     @ManyToOne
-    @JoinColumn(name = "activity_level_id", nullable = false)
+    @JoinColumn(nullable = true, name = "activity_level_id")
     private ActivityLevelEntity activityLevel;
 
     @OneToOne

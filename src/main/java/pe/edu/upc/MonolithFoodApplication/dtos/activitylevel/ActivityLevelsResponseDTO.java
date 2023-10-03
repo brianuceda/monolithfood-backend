@@ -10,15 +10,15 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 @Getter
 @Setter
 public class ActivityLevelsResponseDTO extends ResponseDTO {
-    private List<ActivityLevelDTO> objectives;
+    private List<ActivityLevelDTO> activityLevels;
 
-    public ActivityLevelsResponseDTO(List<ActivityLevelDTO> objectives) {
-        this.objectives = objectives;
+    public ActivityLevelsResponseDTO(List<ActivityLevelDTO> activityLevels) {
+        this.activityLevels = activityLevels;
     }
 
     @Builder
-    public ActivityLevelsResponseDTO(String message, Integer statusCode, List<ActivityLevelDTO> objectives) {
+    public ActivityLevelsResponseDTO(String message, Integer statusCode, List<ActivityLevelDTO> activityLevels) {
         super(message, statusCode);
-        this.objectives = objectives;
+        this.activityLevels = activityLevels;
     }
 }
