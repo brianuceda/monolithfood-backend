@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,8 +43,14 @@ public class UserFitnessInfoEntity {
     @Column(nullable = true)
     private Double dailyFatIntake;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(nullable = true)
+    private Double avgProteinPerKg;
+
+    @Column(nullable = true)
+    private Double tmb;
+
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "user_id")
+    // private UserEntity user;
 
 }

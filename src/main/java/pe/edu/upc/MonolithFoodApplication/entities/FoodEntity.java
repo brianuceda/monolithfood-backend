@@ -42,15 +42,15 @@ public class FoodEntity {
     @Column(nullable = true)
     private Boolean isFavorite = false;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String sourceOfOrigin;
 
-    @ManyToOne
-    @JoinColumn(name = "creator_user_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = true, name = "creator_user_id")
     private UserEntity creatorUser;
 
-    @ManyToOne
-    @JoinColumn(name = "category_food_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = true, name = "category_food_id")
     private CategoryFoodEntity category;
 
     @OneToMany(mappedBy = "food", fetch = FetchType.EAGER)
@@ -59,7 +59,7 @@ public class FoodEntity {
     @OneToMany(mappedBy = "food", fetch = FetchType.LAZY)
     private List<IngredientEntity> ingredients;
 
-    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<EatEntity> eats;
 
 }

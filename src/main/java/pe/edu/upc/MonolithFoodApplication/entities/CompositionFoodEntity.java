@@ -14,14 +14,14 @@ public class CompositionFoodEntity {
     @EmbeddedId
     private CompositionFoodKey id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("foodId")
-    @JoinColumn(name = "food_id", nullable = false)
+    @JoinColumn(nullable = false, name = "food_id")
     private FoodEntity food;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("nutrientId")
-    @JoinColumn(name = "nutrient_id", nullable = false)
+    @JoinColumn(nullable = false, name = "nutrient_id")
     private NutrientEntity nutrient;
 
     @Column(nullable = false)

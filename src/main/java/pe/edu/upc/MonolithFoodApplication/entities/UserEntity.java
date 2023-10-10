@@ -32,35 +32,39 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false, length = 40, unique = true)
     private String username;
 
-    @Column(nullable = false, length = 80)
+    @Column(nullable = true, length = 80)
     private String password;
 
-    @Column(nullable = false, length = 150, unique = true)
+    @Column(nullable = true, length = 150, unique = true)
     private String email;
 
     @Column(nullable = false, length = 128)
     private String names;
 
-    @Column(nullable = false, length = 128)
-    private String surnames;
-
     @Column(nullable = false, length = 512)
     private String profileImg;
 
+    @Column(nullable = true, length = 64, unique = true)
+    private String oauthProviderId;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean isOauthRegistered = false;
+
     @Column(nullable = false)
     @Builder.Default
-    private Boolean is_account_blocked = false;
+    private Boolean isAccountBlocked = false;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserConfigEntity userConfig;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<IpLoginAttemptEntity> ipLoginAttempt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private UserConfigEntity userConfig;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private UserPersonalInfoEntity userPersonalInfo;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private UserFitnessInfoEntity userFitnessInfo;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -72,10 +76,10 @@ public class UserEntity implements UserDetails {
     })
     private List<ObjectiveEntity> objectives;
 
-    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RecipeEntity> createdRecipes;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<EatEntity> eats;
 
     @ManyToMany(fetch = FetchType.EAGER)

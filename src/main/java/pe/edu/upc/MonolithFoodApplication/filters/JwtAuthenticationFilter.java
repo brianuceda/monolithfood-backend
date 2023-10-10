@@ -48,8 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Obtener el token de la cabecera
             final String username;
             final String token = jwtService.getTokenFromRequest(request);
-            // Si no se manda un token y la URL es pública, se continúa con la cadena de
-            // filtros (el usuario está iniciando sesión o registrándose)
+            // Si no se manda un token y la URL es pública, se continúa (está iniciando sesión o registrándose)
+            // logger.info("URI: " + request.getRequestURI());
             if (token == null && isPublicUrl(request.getRequestURI())) {
                 filterChain.doFilter(request, response);
                 return;
@@ -112,13 +112,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws IOException, java.io.IOException {
         logger.error("Entrando al bloque Exception: " + e.getClass().getName());
         logger.error("Causa exacta: " + e.getCause());
+        logger.error("Error detallado: ", e);
         sendErrorResponseInJSON(response, responseDTO);
     }
 
     // Si la url es pública, retorna true
     private boolean isPublicUrl(String url) {
-        return url.equals("/auth/login") ||
-                url.equals("/auth/register");
+        return url.startsWith("/auth") ||
+                url.startsWith("/oauth") ||
+                url.startsWith("/login") ||
+                url.startsWith("/logout") ||
+                url.startsWith("/error") ||
+                url.contains("/favicon.ico");
     }
 
 }

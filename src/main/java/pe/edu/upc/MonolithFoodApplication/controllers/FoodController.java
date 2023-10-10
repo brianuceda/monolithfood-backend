@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/foods")
 public class FoodController {
-    // * Atributos
+    // ? Atributos
     // Inyección de dependencias
     private final FoodService foodService;
 
-    // * Metodos
-    // * Search Food
+    // ? Metodos
+    // * Gabriela (Filtros de búsqueda)
     // Get: Buscar todos los alimentos por nombre
     @GetMapping("/searchByName")
     public ResponseEntity<?> searchFoodsByName(@RequestParam String foodName) {

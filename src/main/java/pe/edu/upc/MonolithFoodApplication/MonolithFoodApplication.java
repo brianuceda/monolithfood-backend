@@ -71,34 +71,34 @@ public class MonolithFoodApplication {
 
             if(activityLevelRepository.count() == 0) {
                 activityLevels = Arrays.asList(
-                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", 1.2, "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad fisica.", null),
-                    new ActivityLevelEntity(null, "Ejercicio ligero", 1.375, "1 - 3 dias", "Actividad ligera como caminar casualmente o tareas diarias no exigentes.", null),
-                    new ActivityLevelEntity(null, "Ejercicio moderado", 1.55, "3 - 5 dias", "Actividad moderada que puede incluir trabajos que requieran actividad fisica o ejercicios regulares.", null),
-                    new ActivityLevelEntity(null, "Ejercicio intenso", 1.725, "5 - 7 dias", "Ejercicio intenso o trabajos fisicamente demandantes.", null),
-                    new ActivityLevelEntity(null, "Ejercicio muy intenso", 1.9, "Atleta profesional", "Atletas o individuos con trabajos extremadamente fisicos.", null),
-                    // Mas niveles de actividad fisica
-                    new ActivityLevelEntity(null, "Caminata ocasional", 1.4, "1-2 dias", "Caminatas cortas y ocasionales", null),
-                    new ActivityLevelEntity(null, "Caminata diaria", 1.6, "5-6 dias", "Caminatas diarias de al menos 30 minutos", null),
-                    new ActivityLevelEntity(null, "Deporte recreativo", 1.65, "2-3 dias", "Futbol, basquetbol u otro deporte recreativo durante la semana", null),
-                    new ActivityLevelEntity(null, "Entrenamiento de fuerza", 1.8, "3-4 dias", "Entrenamiento de pesas o calistenia varios dias a la semana", null)
+                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad fisica.", 1.2, null),
+                    new ActivityLevelEntity(null, "Ejercicio ligero", "1 - 3 dias", "Actividad ligera como caminar casualmente o tareas diarias no exigentes.", 1.375, null),
+                    new ActivityLevelEntity(null, "Ejercicio moderado", "3 - 5 dias", "Actividad moderada que puede incluir trabajos que requieran actividad fisica o ejercicios regulares.", 1.55, null),
+                    new ActivityLevelEntity(null, "Ejercicio intenso", "5 - 7 dias", "Ejercicio intenso o trabajos fisicamente demandantes.", 1.725, null),
+                    new ActivityLevelEntity(null, "Ejercicio muy intenso", "Atleta profesional", "Atletas o individuos con trabajos extremadamente fisicos.", 1.9, null)
+                    // // Mas niveles de actividad fisica
+                    // new ActivityLevelEntity(null, "Caminata ocasional", "1-2 dias", "Caminatas cortas y ocasionales", 1.4, null),
+                    // new ActivityLevelEntity(null, "Caminata diaria", "5-6 dias", "Caminatas diarias de al menos 30 minutos", 1.6, null),
+                    // new ActivityLevelEntity(null, "Deporte recreativo", "2-3 dias", "Futbol, basquetbol u otro deporte recreativo durante la semana", 1.65, null),
+                    // new ActivityLevelEntity(null, "Entrenamiento de fuerza", "3-4 dias", "Entrenamiento de pesas o calistenia varios dias a la semana", 1.8, null)
                 );
                 activityLevelRepository.saveAll(activityLevels);
             }
             if(objectiveRepository.count() == 0) {
                 objectives = Arrays.asList(
-                    new ObjectiveEntity(null, "Bajar de peso", "Objetivo centrado en reducir el peso corporal a traves de una dieta equilibrada.", null),
-                    new ObjectiveEntity(null, "Aumentar masa muscular", "Objetivo centrado en ganar masa muscular a traves de una dieta rica en proteinas.", null),
-                    new ObjectiveEntity(null, "Mantener el peso", "Objetivo centrado en mantener el peso corporal actual.", null),
-                    new ObjectiveEntity(null, "Aumentar resistencia", "Objetivo centrado en aumentar la resistencia fisica a traves de una dieta equilibrada.", null),
-                    new ObjectiveEntity(null, "Mejorar salud cardiaca", "Objetivo centrado en fortalecer el corazon y sistema circulatorio.", null),
-                    new ObjectiveEntity(null, "Mejorar salud osea", "Objetivo centrado en fortalecer los huesos y prevenir enfermedades oseas.", null),
-                    new ObjectiveEntity(null, "Reducir grasa corporal", "Objetivo centrado en reducir el porcentaje de grasa corporal.", null),
-                    new ObjectiveEntity(null, "Mejorar digestion", "Objetivo centrado en promover una digestion saludable a traves de una dieta rica en fibra.", null),
+                    new ObjectiveEntity(null, "Bajar de peso", "Objetivo centrado en reducir el peso corporal a traves de una dieta equilibrada.", 1.6, null),
+                    new ObjectiveEntity(null, "Aumentar masa muscular", "Objetivo centrado en ganar masa muscular a traves de una dieta rica en proteinas.", 2.2, null),
+                    new ObjectiveEntity(null, "Mantener el peso", "Objetivo centrado en mantener el peso corporal actual.", 1.4, null),
+                    new ObjectiveEntity(null, "Aumentar resistencia", "Objetivo centrado en aumentar la resistencia fisica a traves de una dieta equilibrada.", 1.8, null),
+                    new ObjectiveEntity(null, "Mejorar salud cardiaca", "Objetivo centrado en fortalecer el corazon y sistema circulatorio.",1.4, null),
+                    new ObjectiveEntity(null, "Mejorar salud osea", "Objetivo centrado en fortalecer los huesos y prevenir enfermedades oseas.", 1.4, null),
+                    new ObjectiveEntity(null, "Reducir grasa corporal", "Objetivo centrado en reducir el porcentaje de grasa corporal.", 1.8, null),
+                    new ObjectiveEntity(null, "Mejorar digestion", "Objetivo centrado en promover una digestion saludable a traves de una dieta rica en fibra.", 1.2, null),
                     // Mas objetivos secundarios
-                    new ObjectiveEntity(null, "Mejorar sistema inmune", "Objetivo para fortalecer el sistema inmunologico.", null),  
-                    new ObjectiveEntity(null, "Controlar el colesterol", "Objetivo para reducir los niveles de colesterol.", null),
-                    new ObjectiveEntity(null, "Controlar la glucosa", "Objetivo para mantener niveles saludables de azucar en la sangre.", null),
-                    new ObjectiveEntity(null, "Mejorar piel y cabello", "Objetivo para mejorar la apariencia de piel y cabello.", null)
+                    new ObjectiveEntity(null, "Mejorar sistema inmune", "Objetivo para fortalecer el sistema inmunologico.", 1.6, null),  
+                    new ObjectiveEntity(null, "Controlar el colesterol", "Objetivo para reducir los niveles de colesterol.", 1.4, null),
+                    new ObjectiveEntity(null, "Controlar la glucosa", "Objetivo para mantener niveles saludables de azucar en la sangre.", 1.6, null),
+                    new ObjectiveEntity(null, "Mejorar piel y cabello", "Objetivo para mejorar la apariencia de piel y cabello.", 1.6, null)
                 );
                 objectiveRepository.saveAll(objectives);
             }
@@ -247,9 +247,9 @@ public class MonolithFoodApplication {
             }
             if(roleRepository.count() == 0) {
                 roles = Arrays.asList(
-                    new RoleEntity(null, RoleEnum.ADMIN),
-                    new RoleEntity(null, RoleEnum.USER),
-                    new RoleEntity(null, RoleEnum.VIP)
+                    new RoleEntity(null, RoleEnum.ADMIN, "Role de Administrador", 0.0),
+                    new RoleEntity(null, RoleEnum.USER, "Rol de Usuario", 0.0),
+                    new RoleEntity(null, RoleEnum.VIP, "Role Vip", 30.0)
                 );
                 roleRepository.saveAll(roles);
             }
@@ -261,12 +261,12 @@ public class MonolithFoodApplication {
                 RoleEntity ADMIN = getADMIN.get();
                 // Creacion de usuarios
                 users = Arrays.asList(
-                    new UserEntity(null, "kiridepapel", "$2a$10$8YYL6YTawu99l5vFqGTKI.ul/1JoG9FJ9z2HkPRFv6znEb39jvTIe", "brian@gmail.com", "Brian", "Uceda", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", false, null, null, null, null, getRandomObjectives(objectives, 7), null, null, new HashSet<>(Arrays.asList(ADMIN, USER))),
-                    new UserEntity(null, "heatherxvalencia", "$2a$10$Qk5oaC0/Hxlk.vV/CzlcC.plvHOqkiB0qX9ticZy2vexuYnCNigWC", "heather@gmail.com", "Heather", "Valencia", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", false, null, null, null, null, getRandomObjectives(objectives, 6), null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "whoami", "$2a$10$eAs212VvPpG6hkDvS.7nQeY8zrXPW2ZwF6EvJIO5cHigEgRbOSvqi", "willy@gmail.com", "Willy", "Samata", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", false, null, null, null, null, getRandomObjectives(objectives, 2), null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "nayde", "$2a$10$rPmZPIWQxtAXvYqKi75PnuNx6E.oZ6dhSVb5XvP9W7AAbrhDgC8D6", "nayde@gmail.com", "Naydeline", "Duran", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", false, null, null, null, null, getRandomObjectives(objectives, 5), null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "gabi", "$2a$10$NcPc5la3asRhlY8R6bPwJufxND8mK4H9yPphe54VbhXVdNBfOT7NO", "gabriela@gmail.com", "Gabriela", "Reyes", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", false, null, null, null, null, getRandomObjectives(objectives, 5), null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "impresora", "$2a$10$WfNOvx0qLnDec/qA1sYGaOvsiII4uKycCMJTHdtiPjdRH8ehw1XIG", "edson@gmail.com", "Edson", "Linares", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", false, null, null, null, null, getRandomObjectives(objectives, 2), null, null, new HashSet<>(Arrays.asList(USER)))
+                    new UserEntity(null, "kiridepapel", "$2a$10$8YYL6YTawu99l5vFqGTKI.ul/1JoG9FJ9z2HkPRFv6znEb39jvTIe", "brian@gmail.com", "Brian Uceda", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 7), null, null, new HashSet<>(Arrays.asList(ADMIN, USER))),
+                    new UserEntity(null, "heatherxvalencia", "$2a$10$Qk5oaC0/Hxlk.vV/CzlcC.plvHOqkiB0qX9ticZy2vexuYnCNigWC", "heather@gmail.com", "Heather Valencia", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 6), null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "whoami", "$2a$10$eAs212VvPpG6hkDvS.7nQeY8zrXPW2ZwF6EvJIO5cHigEgRbOSvqi", "willy@gmail.com", "Willy Samata", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 2), null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "nayde", "$2a$10$rPmZPIWQxtAXvYqKi75PnuNx6E.oZ6dhSVb5XvP9W7AAbrhDgC8D6", "nayde@gmail.com", "Naydeline Duran", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 5), null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "gabi", "$2a$10$NcPc5la3asRhlY8R6bPwJufxND8mK4H9yPphe54VbhXVdNBfOT7NO", "gabriela@gmail.com", "Gabriela Reyes", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 5), null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "impresora", "$2a$10$WfNOvx0qLnDec/qA1sYGaOvsiII4uKycCMJTHdtiPjdRH8ehw1XIG", "edson@gmail.com", "Edson Linares", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 2), null, null, new HashSet<>(Arrays.asList(USER)))
                 );
                 userRepository.saveAll(users);
             }
@@ -354,16 +354,20 @@ public class MonolithFoodApplication {
                 GenderEnum[] genders = GenderEnum.values();
                 for (UserEntity user : users) {
                     Random rand = new Random();
-                    GenderEnum gender = genders[rand.nextInt(genders.length)];
+                    UserPersonalInfoEntity personalInfo = new UserPersonalInfoEntity();
+                    personalInfo.setGender(genders[rand.nextInt(genders.length)]);
                     // Fecha de nacimiento aleatoria entre 1980 y 2010
-                    Timestamp birthdate = Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay());
+                    personalInfo.setBorndate(Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay()));
                     // Altura aleatoria entre 150 y 200 cm
-                    double height = 150.0 + rand.nextInt(50);
+                    personalInfo.setHeightCm(150.0 + rand.nextInt(50));
                     // Peso aleatorio entre 50 y 100 kg
-                    double weight = 50.0 + rand.nextInt(5001) / 100.0;
-                    ActivityLevelEntity activityLevel = activityLevels.get(rand.nextInt(activityLevels.size()));
-                    UserPersonalInfoEntity userPF = new UserPersonalInfoEntity(null, gender, birthdate, height, weight, activityLevel, user);
-                    usersPersonalInfos.add(userPF);
+                    personalInfo.setWeightKg(50.0 + rand.nextInt(5001) / 100.0);
+                    // Asignacion de nivel de actividad fisica
+                    personalInfo.setActivityLevel(activityLevels.get(rand.nextInt(activityLevels.size())));
+                    // Asignacion de usuario
+                    user.setUserPersonalInfo(personalInfo);
+                    // personalInfo.setUser(user);
+                    usersPersonalInfos.add(personalInfo);
                 }
                 userPersonalInfoRepository.saveAll(usersPersonalInfos);
             }
@@ -372,11 +376,7 @@ public class MonolithFoodApplication {
                     Random rand = new Random();
                     UserFitnessInfoEntity fitnessInfo = new UserFitnessInfoEntity();
                     // Obtener el peso actual del usuario desde la tabla user_personal_info
-                    Double currentWeight = usersPersonalInfos.stream()
-                        .filter(info -> info.getUser().getId().equals(user.getId()))
-                        .map(UserPersonalInfoEntity::getWeightKg)
-                        .findFirst()
-                        .orElse(0.0);
+                    Double currentWeight = user.getUserPersonalInfo().getWeightKg();
                     // Peso objetivo basado en el peso actual más un 20% - 50% adicional
                     fitnessInfo.setTargetWeightKg((double) Math.round(currentWeight * (1 + (0.20 + (0.30 * rand.nextDouble())))));
                     // Fecha objetivo aleatoria entre 1 y 6 meses a partir de hoy
@@ -391,8 +391,13 @@ public class MonolithFoodApplication {
                     fitnessInfo.setDailyCarbohydrateIntake((double) Math.round(150.0 + rand.nextDouble() * 250));
                     // Ingesta de grasas diarias aleatoria entre 20g y 70g
                     fitnessInfo.setDailyFatIntake((double) Math.round(20.0 + rand.nextDouble() * 50));
+                    // Asignacion de avgProteinPerKg
+                    fitnessInfo.setAvgProteinPerKg(null);
+                    // Asignacion de TMB
+                    fitnessInfo.setTmb(null);
                     // Asociar el UserEntity con el UserFitnessInfoEntity
-                    fitnessInfo.setUser(user);
+                    user.setUserFitnessInfo(fitnessInfo);
+                    // fitnessInfo.setUser(user);
                     usersFitnessInfos.add(fitnessInfo);
                 }
                 userFitnessInfoRepository.saveAll(usersFitnessInfos);
@@ -403,39 +408,18 @@ public class MonolithFoodApplication {
                     UserConfigEntity config = new UserConfigEntity();
                     // Generacion aleatoria de true y false
                     config.setNotifications(rand.nextBoolean());
-                    config.setDarkMode(rand.nextBoolean());
                     // Generacion de LocalDateTime aleatorio entre hace 4 días (4) y hoy (0) para lastFoodEntry
                     config.setLastFoodEntry(Timestamp.valueOf(LocalDateTime.now().plusDays(-rand.nextInt(4))));
                     // Generacion de LocalDateTime aleatorio entre hace 3 semanas (-20) y hace 3 días (-3) para lastWeightUpdate
                     config.setLastWeightUpdate(Timestamp.valueOf(LocalDateTime.now().plusDays(-(3 + rand.nextInt(18)))));
+                    config.setDarkMode(rand.nextBoolean());
                     // Asignacion de usuario
-                    config.setUser(user);
+                    user.setUserConfig(config);
+                    // config.setUser(user);
                     usersConfig.add(config);
                 }
                 userConfigRepository.saveAll(usersConfig);
             }
-            // if(ipLoginAttemptRepository.count() == 0) {
-            //     for (UserEntity user : users) {
-            //         Random rand = new Random();
-            //         // Generamos entre 1 y 3 intentos de inicio de sesion por usuario
-            //         int loginAttempts = 1 + rand.nextInt(2);
-            //         for (int i = 0; i < loginAttempts; i++) {
-            //             IpLoginAttemptEntity ipLoginAttempt = new IpLoginAttemptEntity();
-            //             // Genera una direccion IPv4 aleatoria
-            //             ipLoginAttempt.setIpAddress(rand.nextInt(256) + "." + rand.nextInt(256) + "." + rand.nextInt(256) + "." + rand.nextInt(256));
-            //             // Establece si la cuenta está bloqueada aleatoriamente
-            //             ipLoginAttempt.setIsIpBlocked(false);
-            //             // Establece la fecha en que se bloqueo
-            //             ipLoginAttempt.setBlockedDate(null);
-            //             // Fecha de último intento en los últimos 3 días
-            //             ipLoginAttempt.setLastAttemptDate(Timestamp.valueOf(LocalDateTime.now().minusDays(rand.nextInt(3))));
-            //             // Asignacion de usuario
-            //             ipLoginAttempt.setUser(user);
-            //             ipsLoginsAttempts.add(ipLoginAttempt);
-            //         }
-            //     }
-            //     ipLoginAttemptRepository.saveAll(ipsLoginsAttempts);
-            // }
             if(eatRepository.count() == 0) {
                 for(UserEntity user : users) {
                     for(int i = 0; i < new Random().nextInt(11) + 4; i++) {

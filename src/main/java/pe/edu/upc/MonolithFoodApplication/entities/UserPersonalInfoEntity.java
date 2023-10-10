@@ -6,12 +6,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,24 +28,24 @@ public class UserPersonalInfoEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private GenderEnum gender;
 
-    @Column(nullable = false)
-    private Timestamp birthdate;
+    @Column(nullable = true)
+    private Timestamp borndate;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double heightCm;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double weightKg;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_level_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = true, name = "activity_level_id")
     private ActivityLevelEntity activityLevel;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "user_id")
+    // private UserEntity user;
 
 }

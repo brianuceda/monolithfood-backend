@@ -8,4 +8,5 @@ import pe.edu.upc.MonolithFoodApplication.entities.NutrientEntity;
 @Repository
 public interface NutrientRepository extends JpaRepository<NutrientEntity, Long> {
     NutrientEntity findByName(String name);
+
 }

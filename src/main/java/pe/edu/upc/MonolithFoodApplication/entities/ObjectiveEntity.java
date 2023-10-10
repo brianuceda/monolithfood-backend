@@ -23,7 +23,10 @@ public class ObjectiveEntity {
     @Column(nullable = false, length = 512)
     private String information;
 
-    @ManyToMany(mappedBy = "objectives")
+    @Column(nullable = false)
+    private Double proteinPerKg;
+
+    @ManyToMany(mappedBy = "objectives", fetch = FetchType.LAZY)
     private List<UserEntity> users;
 
 }

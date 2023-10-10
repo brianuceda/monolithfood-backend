@@ -23,18 +23,17 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
-    // * Atributos
+    // ? Atributos
     // Variables de entorno
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
 
     @Value("${jwt.time.expiration}")
     private String TIME_EXPIRATION;
-
     // Blacklist de Tokens
     private Set<String> memoryBackendBlacklistedTokens = new HashSet<>();
 
-    // * Funciones auxiliares
+    // ? Métodos
     // Obtener el token de una solicitud HTTP
     public String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -44,7 +43,6 @@ public class JwtService {
             return null;
         }
     }
-
     // Generar un Token JWT en los datos de un usuario
     public String genToken(UserDetails user) {
         Map<String, Object> extraClaims = new HashMap<>();
@@ -81,7 +79,7 @@ public class JwtService {
     public boolean isTokenBlacklisted(String token) {
         return memoryBackendBlacklistedTokens.contains(token);
     }
-    // Claims: son los datos que se almacenan en el Token
+    // Obtener la información del Token JWT (información que se puede obtener sin la clave privada)
     private Claims getAllClaims(String token) {
         return Jwts
                 .parserBuilder()

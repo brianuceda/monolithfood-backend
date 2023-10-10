@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,26 +27,26 @@ public class EatEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Timestamp date;
 
     @Column(nullable = false)
     private Double eatQuantity;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
+    @Column(nullable = false)
     private UnitOfMeasurementEnum unitOfMeasurement;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
     private UserEntity user;
 
-    @ManyToOne
-    @JoinColumn(name = "food_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = true, name = "food_id")
     private FoodEntity food;
 
     @ManyToOne
-    @JoinColumn(name = "recipe_id", nullable = true)
+    @JoinColumn(nullable = true, name = "recipe_id")
     private RecipeEntity recipe;
 
 }

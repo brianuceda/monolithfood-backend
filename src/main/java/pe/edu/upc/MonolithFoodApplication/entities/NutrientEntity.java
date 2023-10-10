@@ -33,10 +33,10 @@ public class NutrientEntity {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String detailed_information;
 
-    @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "nutrient", fetch = FetchType.EAGER)
     private List<CompositionFoodEntity> compositionsFood;
 
-    @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "nutrient", fetch = FetchType.EAGER)
     private List<CompositionRecipeEntity> compositionsRecipe;
 
 }

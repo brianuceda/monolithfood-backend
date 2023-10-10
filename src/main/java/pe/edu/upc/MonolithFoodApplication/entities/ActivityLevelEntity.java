@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,17 +28,17 @@ public class ActivityLevelEntity {
     @Column(nullable = false, length = 80, unique = true)
     private String name;
 
+    @Column(nullable = true, length = 20)
+    private String days;
+
+    @Column(nullable = true, length = 512)
+    private String information;
+
     @Column(nullable = false)
     private Double quotient;
 
-    @Column(length = 20)
-    private String days;
-
-    @Column(length = 512)
-    private String information;
-
     @OneToMany(mappedBy = "activityLevel", cascade = {
             CascadeType.MERGE
-    })
+    }, fetch = FetchType.EAGER)
     private List<UserPersonalInfoEntity> users;
 }

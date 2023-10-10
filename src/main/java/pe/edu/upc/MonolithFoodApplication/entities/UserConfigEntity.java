@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,19 +23,19 @@ public class UserConfigEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Boolean notifications = true;
+    private Boolean notifications;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Timestamp lastFoodEntry;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Timestamp lastWeightUpdate;
 
     @Column(nullable = false)
-    private Boolean darkMode = true;
+    private Boolean darkMode;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "user_id")
+    // private UserEntity user;
 
 }

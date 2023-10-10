@@ -5,6 +5,7 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -22,14 +23,14 @@ public class CompositionRecipeEntity {
     @EmbeddedId
     private CompositionRecipeKey id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("recipeId")
-    @JoinColumn(name = "recipe_id", nullable = false)
+    @JoinColumn(nullable = false, name = "recipe_id")
     private RecipeEntity recipe;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("nutrientId")
-    @JoinColumn(name = "nutrient_id", nullable = false)
+    @JoinColumn(nullable = false, name = "nutrient_id")
     private NutrientEntity nutrient;
 
     @Column(nullable = false)

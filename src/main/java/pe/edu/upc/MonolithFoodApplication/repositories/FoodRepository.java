@@ -13,6 +13,7 @@ public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
     Optional<FoodEntity> findByName(String name);
     List<FoodEntity> findByNameContaining(String name);
 
+    // * (JPQL) Gabriela: Buscar alimentos por nutriente
     @Query("SELECT f FROM FoodEntity f " +
             "JOIN f.compositions c " +
             "JOIN c.nutrient n " +

@@ -9,11 +9,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequestDTO {
+public class OAuth2PrincipalDTO {
     private String username;
     private String password;
     private String email;
     private String names;
     private String profileImg;
-
+    private String oauthProviderId;
+    @Builder.Default
+    private Boolean isOauthRegistered = true;
+    
 }
