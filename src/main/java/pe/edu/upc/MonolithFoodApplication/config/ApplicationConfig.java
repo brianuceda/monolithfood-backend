@@ -24,7 +24,6 @@ public class ApplicationConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
     // ? AuthenticationProvider ? //
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -33,7 +32,6 @@ public class ApplicationConfig {
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
-    
     // ? UserDetailsService ? //
     @Bean
     public UserDetailsService userDetailService() {
@@ -41,7 +39,6 @@ public class ApplicationConfig {
         return username -> userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado."));
     }
-
     // ? PasswordEncoder ? //
     @Bean
     public PasswordEncoder passwordEncoder() {

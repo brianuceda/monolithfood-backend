@@ -1,7 +1,5 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,8 +23,5 @@ public class ObjectiveEntity {
 
     @Column(nullable = false)
     private Double proteinPerKg;
-
-    @ManyToMany(mappedBy = "objectives", fetch = FetchType.LAZY)
-    private List<UserEntity> users;
 
 }

@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +95,7 @@ public class UserService {
         return new GetIntakesDTO(null, 200, myIntakes);
     }
     // * Heather: Agregar un alimento a la lista de alimentos consumidos por un usuario
+    @Transactional
     public ResponseDTO addFoodIntake(String username, NewIntakeDTO foodIntakeDTO) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -123,6 +124,7 @@ public class UserService {
         return new ResponseDTO("Alimento registrado correctamente.", 200);
     }
     // * Heather: Actualizar un alimento de la lista de alimentos consumidos por un usuario
+    @Transactional
     public ResponseDTO updateFoodIntake(String username, UpdateIntakeDTO newFoodIntakeDTO) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -145,17 +147,16 @@ public class UserService {
         // Si la solicitud realizada pertenece al usuario que la realizó
         EatEntity newEat = getEat.get();
         if(!newEat.getUser().getUsername().equals(username)) {
-            logger.error("No tiene permisos para actualizar este registro.");
             logger.error("El usuario " + username + " no tiene permisos para actualizar el registro " + newFoodIntakeDTO.getEatId() + ".");
             return new ResponseDTO("No tienes permisos para actualizar este registro.", 403);
         }
-        // Lista para guardar los campos que el usuario haya actualizado
-        List<String> updatedFields = new ArrayList<>();
         // Si el elemento de eat tiene .getFood() == null, significa que es un registro de ingesta de una receta
         if(newEat.getFood() == null) {
             logger.error("Aún no se puede actualizar el registro de ingesta de una receta para el usuario " + username + ".");
             return new ResponseDTO("Aún no se puede actualizar el registro de ingesta de una receta.", 400);
         }
+        // Lista para guardar los campos que el usuario haya actualizado
+        List<String> updatedFields = new ArrayList<>();
         // Actualizar los campos que el usuario haya ingresado
         newEat.setUser(optUser.get());
         if(newFoodIntakeDTO.getName() != null && !newFoodIntakeDTO.getName().isEmpty()) {
@@ -200,6 +201,7 @@ public class UserService {
         }
     }
     // * Heather: Quitar un alimento de la lista de alimentos consumidos por un usuario
+    @Transactional
     public ResponseDTO deleteFoodIntake(String username, Long eatId) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -247,6 +249,7 @@ public class UserService {
         );
     }
     // * Naydeline: Actualizar la foto de perfil del usuario
+    @Transactional
     public ResponseDTO updatePhoto(String username, String photoUrl) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);

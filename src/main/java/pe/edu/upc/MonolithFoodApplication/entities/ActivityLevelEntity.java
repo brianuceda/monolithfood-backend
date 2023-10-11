@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -37,8 +38,9 @@ public class ActivityLevelEntity {
     @Column(nullable = false)
     private Double quotient;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "activityLevel", cascade = {
             CascadeType.MERGE
-    }, fetch = FetchType.EAGER)
+    }, fetch = FetchType.LAZY)
     private List<UserPersonalInfoEntity> users;
 }

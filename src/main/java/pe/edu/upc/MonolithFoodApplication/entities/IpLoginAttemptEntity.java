@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -45,6 +46,7 @@ public class IpLoginAttemptEntity {
     @Column(nullable = false)
     private Integer attemptsCount = 1;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, name = "user_id")
     private UserEntity user;

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
@@ -31,18 +32,8 @@ public class UserConfigService {
         }
         UserEntity user = userOpt.get();
         UserConfigEntity uc = user.getUserConfig();
-        // Si no existe una configuración para el usuario, crea una nueva y la guarda en la BD
-        if (uc == null) {
-            uc = new UserConfigEntity();
-            uc.setNotifications(false);
-            uc.setDarkMode(true);
-            uc.setLastFoodEntry(null);
-            uc.setLastWeightUpdate(null);
-            user.setUserConfig(uc);
-        }
         // Retorna la configuración del usuario
         try {
-            userRepository.save(user);
             return new UserConfigDTO(
                 null, 200,
                 uc.getNotifications(), uc.getLastFoodEntry(), uc.getLastWeightUpdate(), uc.getDarkMode()
@@ -63,6 +54,7 @@ public class UserConfigService {
 
     // ? Funciones auxiliares
     // Función: Actualiza la configuración del usuario
+    @Transactional
     private ResponseDTO updateConfig(String username, Boolean newValue, String fieldName) {
         Optional<UserEntity> userOpt = userRepository.findByUsername(username);
         if (!userOpt.isPresent()) {

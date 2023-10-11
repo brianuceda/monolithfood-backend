@@ -18,11 +18,8 @@ import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 @Service
 @RequiredArgsConstructor
 public class BasicUserProgressReportService {
-    // ? Atributos
-    // Inyección de dependencias
     private final EatRepository eatRepository;
 
-    // ? Metodos
     // * Willy: Obtener calorias consumidas en la ultima semana
     public ResponseDTO getCaloriesConsumedInTheLastWeek (String username) {   
         List<Object[]> results = eatRepository.AveragecaloriesLastWeek(username);
@@ -38,7 +35,7 @@ public class BasicUserProgressReportService {
         List<Object[]> results = eatRepository.AverageCalorieConsumptioDay(username);
         if (results.isEmpty()) return new ResponseDTO("No has consumido alimentos en la última semana.", 200);
         List<AvgDayCalDTO> averageDailyCaloriesConsumedDTOs = results.stream().map(result -> {
-            String formattedDate = formatDate((Timestamp) result[1]);
+            String formattedDate = convertToFormatDateDdMmYyyy((Timestamp) result[1]);
             return new AvgDayCalDTO(
                 (String) result[0],
                 formattedDate,
@@ -50,8 +47,7 @@ public class BasicUserProgressReportService {
     }
 
     // ? Funciones auxiliares
-    // FUNCIÓN: Formatea una fecha a un string con el formato "EEE dd/MM/yyyy"
-    private String formatDate(Timestamp timestamp) {
+    private String convertToFormatDateDdMmYyyy(Timestamp timestamp) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd/MM/yyyy");
         Date date = new Date(timestamp.getTime());
         return dateFormat.format(date);

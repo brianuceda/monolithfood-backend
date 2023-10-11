@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
@@ -19,6 +20,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.auth.OAuth2PrincipalDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
+import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.RoleRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
@@ -31,6 +33,7 @@ public class OAuthService {
     private final JwtService jwtService;
     private static final Logger logger = LoggerFactory.getLogger(OAuthService.class);
     
+    @Transactional
     public ResponseDTO joinOAuth2(OAuth2AuthenticationToken authentication) {
         try {
             ResponseDTO response = new ResponseDTO();
@@ -84,11 +87,17 @@ public class OAuthService {
                 // Restricciones
                 if (oa2.getUsername() == null) return new ResponseDTO("No se pudo obtener el nombre de usuario.", 400);
                 if (oa2.getNames() == null) oa2.setNames(oa2.getUsername().substring(0, 1).toUpperCase() + oa2.getUsername().substring(1));
-                if (oa2.getProfileImg() == null) oa2.setProfileImg("https://i.ibb.co/SwxKHQR/microsoft-img.png");
+                if (oa2.getProfileImg() == null) oa2.setProfileImg("https://i.ibb.co/8B1kpZC/microsoft-img.png");
                 oa2.setUsername("MS_" + (oa2.getUsername().substring(0, 1).toUpperCase() + (oa2.getUsername().substring(1)).toLowerCase()));
             } else {
                 return new ResponseDTO("Proveedor de autenticación aún no configurado.", 400);
             }
+            UserConfigEntity uc = UserConfigEntity.builder()
+                .notifications(false)
+                .darkMode(true)
+                .lastFoodEntry(null)
+                .lastWeightUpdate(null)
+                .build();
             // Crear el usuario con los datos obtenidos
             UserEntity user = UserEntity.builder()
                 .username(oa2.getUsername())
@@ -99,13 +108,7 @@ public class OAuthService {
                 .oauthProviderId(oa2.getOauthProviderId())
                 .isOauthRegistered(oa2.getIsOauthRegistered())
                 .isAccountBlocked(false)
-                .ipLoginAttempt(null)
-                .userConfig(null)
-                .userPersonalInfo(null)
-                .userFitnessInfo(null)
-                .objectives(null)
-                .createdRecipes(null)
-                .eats(null)
+                .userConfig(uc)
                 .roles(setRoleUser())
                 .build();
             // Iniciar sesion o registrar

@@ -18,16 +18,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FoodService {
-    // ? Atributos
-    // Inyección de dependencias
     private final FoodRepository foodRepository;
     private final CategoryRepository categoryRepository;
 
-    // ? Metodos
     // * Gabriela: Buscar alimentos por nombre
     public List<SearchFoodDTO> searchFoodsByName(String name) {
         List<FoodEntity> foodEntities = foodRepository.findByNameContaining(name);
-        // Si no encontró resultados, retorna una lista vacía
         if (foodEntities.isEmpty()) {
             return Collections.emptyList();
         }
@@ -36,7 +32,6 @@ public class FoodService {
     // * Gabriela: Buscar alimentos por categoría
     public List<SearchFoodDTO> searchFoodsByCategory(String name) {
         CategoryFoodEntity category = categoryRepository.findByName(name);
-        // Si no encontró resultados, retorna una lista vacía
         if (category == null) {
             return Collections.emptyList();
         }
@@ -46,7 +41,6 @@ public class FoodService {
     // * Gabriela: Buscar alimentos por nutriente
     public List<FoodNutrientDTO> searchFoodsByNutrient(String nutrient) {
         List<FoodEntity> foodEntities = foodRepository.findByNutrientName(nutrient);
-        // Si no encontró resultados, retorna una lista vacía
         if (foodEntities.isEmpty()) {
             return Collections.emptyList();
         }
@@ -56,9 +50,7 @@ public class FoodService {
     }
 
     // ? Funciones auxiliares
-    // FUNCIÓN: Convierte FoodEntity a SearchFoodDTO
     private SearchFoodDTO convertToSearchFoodDTO(FoodEntity foodEntity) {
-        // Convierte la lista de FoodCompositionEntity a una lista de FoodCompositionDTO
         List<FoodCompositionDTO> compositions = foodEntity.getCompositions().stream()
             .map(c -> new FoodCompositionDTO(c.getNutrient().getName(), c.getNutrientQuantity()))
             .collect(Collectors.toList());
@@ -67,7 +59,6 @@ public class FoodService {
             .composition(compositions)
             .build();
     }
-    // FUNCIÓN: Convierte FoodEntity a FoodNutrientDTO
     private FoodNutrientDTO convertToFoodNutrientDTO(FoodEntity foodEntity, String nutrientName) {
         return foodEntity.getCompositions().stream()
             .filter(c -> c.getNutrient().getName().equals(nutrientName))

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.IMCDTO;
@@ -40,17 +41,15 @@ public class UserPersonalInfoService {
         }
         // Retorna la información personal del usuario
         UserPersonalInfoEntity upi = optUser.get().getUserPersonalInfo();
-        PersonalInfoDTO responseUpi;
         if (upi == null) {
-            // Asigna valores por defecto al usuario
-            responseUpi = new PersonalInfoDTO(GenderEnum.X, new Timestamp(System.currentTimeMillis()), 0.0, 0.0);
-            setUserPersonalInfo(username, responseUpi);
+            return new ResponseDTO("Primero debes registrar tu información personal.", 404);
         }
         // Vuelve a obtener los valores actualizados del usuario
         upi = optUser.get().getUserPersonalInfo();
         return new PersonalInfoDTO(null, 200, upi.getGender(), upi.getBorndate(), upi.getHeightCm(), upi.getWeightKg());
     }
     // * Naydeline: Registrar nueva información de usuario
+    @Transactional
     public ResponseDTO setUserPersonalInfo(String username, PersonalInfoDTO userPersonalInfo) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -60,18 +59,14 @@ public class UserPersonalInfoService {
         }
         // Gaurda la información personal del usuario en una variable
         UserEntity user = optUser.get();
-        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         UserConfigEntity uc = user.getUserConfig();
-        // Si el usuario no tiene configuracion por defecto, crea una nueva
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         if (uc == null)
-            uc = new UserConfigEntity();
-        // Si no existe información personal para el usuario, crea una nueva
+            return new ResponseDTO("Primero debes registrar tu configuración.", 400);
         if (upi == null)
             upi = new UserPersonalInfoEntity();
-        else {
-            logger.error("El usuario {} ya tiene información personal registrada.", username);
+        else
             return new ResponseDTO("Ya tienes información personal registrada.", 400);
-        }
         // Se actualizan los campos que el usuario haya ingresado
         upi.setGender(userPersonalInfo.getGender());
         upi.setBorndate(userPersonalInfo.getBorndate());
@@ -93,6 +88,7 @@ public class UserPersonalInfoService {
         }
     }
     // * Naydeline: Actualizar información personal del usuario
+    @Transactional
     public ResponseDTO updateUserPersonalInfo(String username, PersonalInfoDTO newUserPersonalInfo) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -102,8 +98,12 @@ public class UserPersonalInfoService {
         }
         // Gaurda la información personal del usuario en una variable
         UserEntity user = optUser.get();
-        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         UserConfigEntity uc = user.getUserConfig();
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+        if (uc == null)
+            return new ResponseDTO("Primero debes registrar tu configuración.", 400);
+        if (upi == null)
+            return new ResponseDTO("Primero debes registrar tu información personal.", 400);
         // Se actualizan los campos que el usuario haya ingresado
         if (newUserPersonalInfo.getGender() != null && (newUserPersonalInfo.getGender() == GenderEnum.F || newUserPersonalInfo.getGender() == GenderEnum.M))
             upi.setGender(newUserPersonalInfo.getGender());
@@ -130,6 +130,7 @@ public class UserPersonalInfoService {
         }
     }
     // * Willy: Actualiza la altura del usuario y retorna el IMC y la clasificación del IMC
+    @Transactional
     public ResponseDTO updateHeightAndGetIMC(String username, Double heightCm) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -138,18 +139,22 @@ public class UserPersonalInfoService {
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
         UserEntity user = optUser.get();
-        // Obtiene la información personal y fitness del usuario
-        UserPersonalInfoEntity userUpi = user.getUserPersonalInfo();
-        UserFitnessInfoEntity userUfi = user.getUserFitnessInfo();
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+        UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
+        if (upi == null)
+            return new ResponseDTO("Primero debes registrar tu información personal.", 400);
+        if (ufi == null)
+            ufi = new UserFitnessInfoEntity();
         // Actualizar el peso y el IMC de la información fitness del usuario
-        Double imc = calculateIMC(userUpi.getWeightKg(), heightCm);
-        userUfi.setImc(imc);
-        userUpi.setHeightCm(heightCm);
+        Double imc = calculateIMC(upi.getWeightKg(), heightCm);
+        ufi.setImc(imc);
+        upi.setHeightCm(heightCm);
         userRepository.save(user);
         // Retorna el nuevo IMC calculado y la clasificación del IMC
-        return new IMCDTO("Altura e IMC actualizados correctamente.", 200, imc, getClasification(imc), heightCm, userUpi.getWeightKg());
+        return new IMCDTO("Altura e IMC actualizados correctamente.", 200, imc, getClasification(imc), heightCm, upi.getWeightKg());
     }
     // * Willy: Actualiza el peso del usuario y retorna el IMC y la clasificación del IMC
+    @Transactional
     public ResponseDTO updateWeightAndGetIMC(String username, Double weightKg) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -158,16 +163,19 @@ public class UserPersonalInfoService {
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
         UserEntity user = optUser.get();
-        // Obtiene la información personal y fitness del usuario
-        UserPersonalInfoEntity userUpi = user.getUserPersonalInfo();
-        UserFitnessInfoEntity userUfi = user.getUserFitnessInfo();
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+        UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
+        if (upi == null)
+            return new ResponseDTO("Primero debes registrar tu información personal.", 400);
+        if (ufi == null)
+            ufi = new UserFitnessInfoEntity();
         // Actualizar el peso y el IMC de la información fitness del usuario
-        Double imc = calculateIMC(weightKg, userUpi.getHeightCm());
-        userUfi.setImc(imc);
-        userUpi.setWeightKg(weightKg);
+        Double imc = calculateIMC(weightKg, upi.getHeightCm());
+        ufi.setImc(imc);
+        upi.setWeightKg(weightKg);
         userRepository.save(user);
         // Retorna el nuevo IMC calculado y la clasificación del IMC
-        return new IMCDTO("Peso e IMC actualizados correctamente.", 200, imc, getClasification(imc), userUpi.getHeightCm(), weightKg);
+        return new IMCDTO("Peso e IMC actualizados correctamente.", 200, imc, getClasification(imc), upi.getHeightCm(), weightKg);
     }
 
     // ? Funciones auxiliares

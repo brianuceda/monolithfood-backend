@@ -1,7 +1,7 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,15 +24,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
-    // ? Atributos
-    // Inyección de dependencias
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
     // ? Metodos
-    // * Gabriela: Obtener los planes de suscripcion de un usuario
+    // * Gabriela: Obtener los planes de suscripcion de un usuario (roles)
     public ResponseDTO getSubscriptions(String username) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -66,6 +63,7 @@ public class SubscriptionService {
         return new SubscriptionsResponseDTO(null, 200, subscriptionDTOs);
     }
     // * Gabriela: Comprar plan de suscripcion
+    @Transactional
     public ResponseDTO purchaseSubscription(String username, SubscriptionRequestDTO subscriptionPlanDTO) {
         if(subscriptionPlanDTO.getConfirmed() == true) {
             // Verifica que el usuario exista
@@ -99,6 +97,7 @@ public class SubscriptionService {
         }
     }
     // * Gabriela: Cancelar plan de suscripcion
+    @Transactional
     public ResponseDTO cancelSubscription(String username, SubscriptionRequestDTO subscriptionPlanDTO) {
         if(subscriptionPlanDTO.getConfirmed() == true) {
             // Verifica que el usuario exista

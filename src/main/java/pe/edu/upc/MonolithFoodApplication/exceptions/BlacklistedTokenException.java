@@ -10,15 +10,12 @@ public class BlacklistedTokenException extends RuntimeException {
     super(response.getMessage());
     this.response = response;
   }
-
   public BlacklistedTokenException(String response) {
     super(response);
     this.response.setStatusCode(401);
   }
-
   public BlacklistedTokenException() {
   }
-
   public ResponseDTO getResponse() {
     return response;
   }

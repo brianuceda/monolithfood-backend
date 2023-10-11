@@ -53,13 +53,15 @@ public class RecipeEntity {
     @Column(nullable = true)
     private Boolean isFavorite = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_user_id")
     private UserEntity creatorUser;
 
     @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER)
     private List<IngredientEntity> ingredients;
 
+    // Se puede usar para
+    // 1. Conocer la cantidad de personas que han comido una receta
     @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
     private List<EatEntity> eats;
 

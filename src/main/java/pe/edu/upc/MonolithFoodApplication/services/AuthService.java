@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.IpLoginAttemptEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
+import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.IpLoginAttemptRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.RoleRepository;
@@ -38,14 +40,13 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    // ? Atributos
-    // Inyección de dependencias
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final IpLoginAttemptRepository ipLoginAttemptRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     // Variables de entorno
     @Value("${app.security.ip-block-duration-hours}")
     private Integer IP_BLOCK_DURATION_HOURS;
@@ -53,11 +54,9 @@ public class AuthService {
     private Integer RESET_ATTEMPT_DURATION_MINUTES;
     @Value("${app.security.max-attempts-login}")
     private Integer MAX_ATTEMPTS_LOGIN;
-    // Log de errores y eventos
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    // ? Metodos
     // * Brian: Iniciar sesión
+    @Transactional
     public ResponseDTO login(LoginRequestDTO request) {
         try {
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
@@ -87,30 +86,31 @@ public class AuthService {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
             if (userEntity != null)
-                registerFailedAttempt(request.getIpAddress(), userEntity);
+                registerANewFailedAttempt(request.getIpAddress(), userEntity);
             return new ResponseDTO("Nombre de usuario o contraseña inválidos", HttpStatus.UNAUTHORIZED.value());
         }
     }
     // * Brian: Registrar un nuevo usuario
-    public ResponseDTO register(RegisterRequestDTO request, Boolean isOAuth) {
+    @Transactional
+    public ResponseDTO register(RegisterRequestDTO request) {
         try {
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
             if (userRepository.findByUsername(request.getUsername()).isPresent())
                 return new ResponseDTO("El nombre de usuario ya está en uso.", HttpStatus.BAD_REQUEST.value());
             if (userRepository.findByEmail(request.getEmail()).isPresent())
                 return new ResponseDTO("El email ya está en uso.", HttpStatus.BAD_REQUEST.value());
+            if (request.getProfileImg() == null)
+                request.setProfileImg("https://i.ibb.co/28FKMc7/monolithfood-img.png");
             // Obtener la contraseña del request (por oauth2, la contraseña es null)
             String password = request.getPassword();
             // Valida si la contraseña es segura o no, dependiendo de si el registro es por Oauth2 o no
-            if (!isOAuth) {
             // Validar la contraseña segura si el registro no es por Oauth2
-                ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
-                // Si la contraseña no es segura, devolver la respuesta de validación
-                if (respuestaValidacion != null)
-                    return respuestaValidacion;
-                // Genera una contraseña encriptada si el registro no es por Oauth2
-                password = passwordEncoder.encode(request.getPassword());
-            }
+            ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
+            // Si la contraseña no es segura, devolver la respuesta de validación
+            if (respuestaValidacion != null)
+                return respuestaValidacion;
+            // Genera una contraseña encriptada si el registro no es por Oauth2
+            password = passwordEncoder.encode(request.getPassword());
             // Validar formato del correo electrónico
             String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
             Pattern pattern = Pattern.compile(emailRegex);
@@ -118,6 +118,12 @@ public class AuthService {
             if (!matcher.matches()) {
                 return new ResponseDTO("El formato del correo electrónico no es válido.", HttpStatus.BAD_REQUEST.value());
             }
+            UserConfigEntity uc = UserConfigEntity.builder()
+                .notifications(false)
+                .darkMode(true)
+                .lastFoodEntry(null)
+                .lastWeightUpdate(null)
+                .build();
             // Crear el usuario con los datos de la petición y el rol de usuario por defecto (USER) y lo guarda en la BD
             UserEntity user = UserEntity.builder()
                     .username(request.getUsername())
@@ -125,8 +131,8 @@ public class AuthService {
                     .email(request.getEmail())
                     .names(request.getNames())
                     .profileImg(request.getProfileImg())
-                    // .oauthProviderId(null)
-                    // .isOauthRegistered(false)
+                    .isAccountBlocked(false)
+                    .userConfig(uc)
                     .roles(setRoleUser())
                     .build();
             userRepository.save(user);
@@ -159,14 +165,12 @@ public class AuthService {
 
 
     // ? Funciones auxiliares
-    // FUNCIÓN: Devuelve un set con el rol USER para asignarlo a un nuevo usuario
     private Set<RoleEntity> setRoleUser() {
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity USER = roleRepository.findByName(RoleEnum.USER).get();
         roles.add(USER);
         return roles;
     }
-    // FUNCIÓN: Valida que la contraseña sea segura
     public ResponseDTO validarContraseniaSegura(String contrasenia) {
         if (contrasenia.length() < 8) return new ResponseDTO("La contraseña debe tener al menos 8 caracteres.", HttpStatus.BAD_REQUEST.value());
         boolean tieneLetraMayuscula = false;
@@ -184,7 +188,6 @@ public class AuthService {
             else if ("~!@#$%^&*()_+-=[];,./{}|:?><".indexOf(c) >= 0)
                 tieneCaracterEspecial = true;
         }
-        // Si la contraseña no cumple con los requisitos, devolver un mensaje de error
         if (!tieneLetraMayuscula)
             return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula.", HttpStatus.BAD_REQUEST.value());
         if (!tieneLetraMinuscula)
@@ -193,11 +196,10 @@ public class AuthService {
             return new ResponseDTO("La contraseña debe contener al menos un dígito numérico.", HttpStatus.BAD_REQUEST.value());
         if (!tieneCaracterEspecial)
             return new ResponseDTO("La contraseña debe contener al menos un carácter especial.", HttpStatus.BAD_REQUEST.value());
-        // Si la contraseña cumple con los requisitos, devolver null
         return null;
     }
     // FUNCIÓN: Registra un intento fallido de inicio de sesión
-    private void registerFailedAttempt(String ipAddress, UserEntity userEntity) {
+    private void registerANewFailedAttempt(String ipAddress, UserEntity userEntity) {
         IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
         Timestamp now = new Timestamp(System.currentTimeMillis());
         long tenMinutesMillis = this.RESET_ATTEMPT_DURATION_MINUTES * 60 * 1000;
@@ -226,10 +228,8 @@ public class AuthService {
             }
             attempt.setLastAttemptDate(now);
         }
-        // Guarda todos los cambios en la BD
         ipLoginAttemptRepository.save(attempt);
     }
-    // FUNCIÓN: Verifica si la IP está bloqueada o no
     private boolean isIpBlocked(String ipAddress, UserEntity userEntity) {
         IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
         // Si no hay un registro existente en la BD para esta IP y este usuario, la IP

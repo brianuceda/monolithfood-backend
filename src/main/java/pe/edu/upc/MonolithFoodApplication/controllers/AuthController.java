@@ -36,7 +36,7 @@ public class AuthController {
     // Post: Crear cuenta
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
-        ResponseDTO response = authService.register(request, false);
+        ResponseDTO response = authService.register(request);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Brian (OAuth2)

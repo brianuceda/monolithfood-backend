@@ -45,7 +45,7 @@ public class EatEntity {
     @JoinColumn(nullable = true, name = "food_id")
     private FoodEntity food;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = true, name = "recipe_id")
     private RecipeEntity recipe;
 

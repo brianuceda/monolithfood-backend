@@ -12,4 +12,14 @@ public class ObjectiveDTO {
     private String information;
     private Double proteinPerKg;
     private Boolean selected = false;
+    
+    // @Override
+    // public String toString() {
+    //     return "ObjectiveDTO {"
+    //         + "name='" + name + '\''
+    //         + ", information='" + information + '\''
+    //         + ", proteinPerKg=" + proteinPerKg
+    //         + ", selected=" + selected
+    //         + '}';
+    // }
 }
