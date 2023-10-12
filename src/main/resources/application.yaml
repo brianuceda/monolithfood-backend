@@ -11,6 +11,10 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+
   security:
     oauth2:
       client:
@@ -38,20 +42,29 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/microsoft"
             scope: User.Read
             client-name: Microsoft
+
 jwt:
   secret:
     key: 81db10483eac754b379a518496151643a777SAD78A434AS22162d6811d11f303ef
   time:
     expiration: 604800000
+
 app:
   security:
     max-attempts-login: 5
     ip-block-duration-hours: 24
     reset-attempt-duration-minutes: 10
+
 logging:
   level:
     org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
       springframework:
         security: TRACE
+
 server:
   port: 8080

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,12 @@ import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 
 @Repository
 public interface EatRepository extends JpaRepository<EatEntity, Long> {
+
+    // * Heather (JPQL): Elimina un registro de la tabla eat
+    @Modifying
+    @Query("DELETE FROM EatEntity e WHERE e.id = :id")
+    void deleteId(@Param("id") Long id);
+
     // * Willy (JPQL): Retorna el promedio de calorias consumidas en la ultima semana
     @Query(
         "SELECT " +

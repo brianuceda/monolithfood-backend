@@ -223,7 +223,7 @@ public class UserService {
         }
         // Eliminar el registro de ingesta de la lista de ingestas del usuario
         try {
-            eatRepository.delete(eatToDelete);
+            eatRepository.deleteId(eatToDelete.getId());
             logger.info("Registro de ingesta eliminado correctamente para el usuario " + username + ".");
             return new ResponseDTO("Registro eliminado correctamente.", 200);
         } catch (Exception e) {

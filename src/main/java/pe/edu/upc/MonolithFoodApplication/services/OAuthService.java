@@ -37,7 +37,7 @@ public class OAuthService {
     public ResponseDTO joinOAuth2(OAuth2AuthenticationToken authentication) {
         try {
             ResponseDTO response = new ResponseDTO();
-            // Obtener los datos de autenticacion        
+            // Obtener los datos de autenticacion
             String provider = authentication.getAuthorizedClientRegistrationId();
             OAuth2User principal = authentication.getPrincipal();
             // Acceder a los atributos

@@ -20,8 +20,44 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import pe.edu.upc.MonolithFoodApplication.entities.*;
-import pe.edu.upc.MonolithFoodApplication.repositories.*;
+import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.CompositionFoodEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.CompositionFoodKey;
+import pe.edu.upc.MonolithFoodApplication.entities.CompositionRecipeEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.CompositionRecipeKey;
+import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
+import pe.edu.upc.MonolithFoodApplication.entities.IngredientEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.IngredientKey;
+import pe.edu.upc.MonolithFoodApplication.entities.NutrientEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.PrivacityEnum;
+import pe.edu.upc.MonolithFoodApplication.entities.RecipeEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
+import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
+import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.repositories.ActivityLevelRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.CategoryRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.CompositionFoodRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.CompositionRecipeRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.IngredientRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.NutrientRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.RecipeRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.RoleRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserConfigRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonalInfoRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
+
 
 @SpringBootApplication
 public class MonolithFoodApplication {
