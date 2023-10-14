@@ -25,7 +25,7 @@ public class BasicUserProgressReportService {
         List<Object[]> results = eatRepository.AveragecaloriesLastWeek(username);
         if (results.isEmpty()) return new ResponseDTO("No has consumido alimentos en la última semana.", 200);
         Object[] firstResult = results.get(0);
-        return new CaloriesConsumedLastWeekDTO("Cantidad de calorias consumidas en la última semana.", 200,
+        return new CaloriesConsumedLastWeekDTO("Cantidad de calorías consumidas en la última semana.", 200,
             (String) firstResult[0],
             (Double) firstResult[1]
         );
@@ -42,7 +42,7 @@ public class BasicUserProgressReportService {
                 (Double) result[2]
             );
         }).collect(Collectors.toList());
-        ListAvgDayCalDTO listAvgDayCalDTO = new ListAvgDayCalDTO("Promedio de calorias consumidas por el día en la última semana.", 200, averageDailyCaloriesConsumedDTOs);
+        ListAvgDayCalDTO listAvgDayCalDTO = new ListAvgDayCalDTO("Promedio de calorías consumidas por día en la última semana.", 200, averageDailyCaloriesConsumedDTOs);
         return listAvgDayCalDTO;
     }
 

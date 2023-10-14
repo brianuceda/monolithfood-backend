@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -130,14 +130,14 @@ public class OAuthService {
         }
     }
     public ResponseDTO oAuth2Login(String oAuthProviderId) {
-        UserDetails userDetails = userRepository.findByOauthProviderId(oAuthProviderId).get();
-        String generatedToken = jwtService.genToken(userDetails);
-        return new AuthResponseDTO("Inicio de sesion realizado correctamente.", HttpStatus.OK.value(), generatedToken);
+        UserEntity user = userRepository.findByOauthProviderId(oAuthProviderId).get();
+        String generatedToken = jwtService.genToken(user);
+        return new AuthResponseDTO("Inicio de sesion realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
     }
     public ResponseDTO oAuth2Register(UserEntity user) {
         userRepository.save(user);
         String generatedToken = jwtService.genToken(user);
-        return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken);
+        return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
     }
 
     // ? Funciones auxiliares

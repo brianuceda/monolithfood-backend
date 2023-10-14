@@ -3,15 +3,17 @@ package pe.edu.upc.MonolithFoodApplication.services;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodCompositionDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodNutrientDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListFoodNutrientDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListSearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.SearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.CategoryRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,31 +24,37 @@ public class FoodService {
     private final CategoryRepository categoryRepository;
 
     // * Gabriela: Buscar alimentos por nombre
-    public List<SearchFoodDTO> searchFoodsByName(String name) {
-        List<FoodEntity> foodEntities = foodRepository.findByNameContaining(name);
+    public ResponseDTO searchFoodsByName(String foodName) {
+        List<FoodEntity> foodEntities = foodRepository.findByNameContaining(foodName);
         if (foodEntities.isEmpty()) {
-            return Collections.emptyList();
+            return new ResponseDTO("No se encontraron alimentos con ese nombre", 404);
         }
-        return foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
+        List<SearchFoodDTO> searchFoodDTOs = foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
+        return new ListSearchFoodDTO("Alimentos encontrados", 200, searchFoodDTOs);
     }
     // * Gabriela: Buscar alimentos por categoría
-    public List<SearchFoodDTO> searchFoodsByCategory(String name) {
-        CategoryFoodEntity category = categoryRepository.findByName(name);
+    public ResponseDTO searchFoodsByCategory(String categoryName) {
+        CategoryFoodEntity category = categoryRepository.findByName(categoryName);
         if (category == null) {
-            return Collections.emptyList();
+            return new ResponseDTO("No se encontró la categoría", 404);
         }
         List<FoodEntity> foodEntities = category.getFoods();
-        return foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
+        if (foodEntities.isEmpty()) {
+            return new ResponseDTO("No se encontraron alimentos en esa categoría", 404);
+        }
+        List<SearchFoodDTO> searchFoodDTOs = foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
+        return new ListSearchFoodDTO("Alimentos encontrados", 200, searchFoodDTOs);
     }
     // * Gabriela: Buscar alimentos por nutriente
-    public List<FoodNutrientDTO> searchFoodsByNutrient(String nutrient) {
-        List<FoodEntity> foodEntities = foodRepository.findByNutrientName(nutrient);
+    public ResponseDTO searchFoodsByNutrient(String nutrientName) {
+        List<FoodEntity> foodEntities = foodRepository.findByNutrientName(nutrientName);
         if (foodEntities.isEmpty()) {
-            return Collections.emptyList();
+            return new ResponseDTO("No se encontraron alimentos con ese nutriente", 404);
         }
-        return foodEntities.stream()
-            .map(food -> convertToFoodNutrientDTO(food, nutrient))
+        List<FoodNutrientDTO> foodNutrientDTOs = foodEntities.stream()
+            .map(food -> convertToFoodNutrientDTO(food, nutrientName))
             .collect(Collectors.toList());
+        return new ListFoodNutrientDTO("Alimentos encontrados", 200, foodNutrientDTOs);
     }
 
     // ? Funciones auxiliares

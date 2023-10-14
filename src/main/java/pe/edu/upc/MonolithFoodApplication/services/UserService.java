@@ -57,12 +57,13 @@ public class UserService {
         // Mapea el resultado manualmente de una lista de Object[] a una lista de IntakeDTO
         List<IntakeDTO> myIntakes = results.stream().map(result -> {
             return new IntakeDTO(
-                (String) result[0],
+                (Long) result[0],
                 (String) result[1],
-                (UnitOfMeasurementEnum) result[2],
-                (Double) result[3],
+                (String) result[2],
+                (UnitOfMeasurementEnum) result[3],
                 (Double) result[4],
-                (Timestamp) result[5]
+                (Double) result[5],
+                (Timestamp) result[6]
             );
         }).collect(Collectors.toList());
         return new GetIntakesDTO(null, 200, myIntakes);
@@ -84,12 +85,13 @@ public class UserService {
         // Mapea el resultado manualmente de una lista de Object[] a una lista de IntakeDTO
         List<IntakeDTO> myIntakes = results.stream().map(result -> {
             return new IntakeDTO(
-                (String) result[0],
+                (Long) result[0],
                 (String) result[1],
-                (UnitOfMeasurementEnum) result[2],
-                (Double) result[3],
+                (String) result[2],
+                (UnitOfMeasurementEnum) result[3],
                 (Double) result[4],
-                (Timestamp) result[5]
+                (Double) result[5],
+                (Timestamp) result[6]
             );
         }).collect(Collectors.toList());
         return new GetIntakesDTO(null, 200, myIntakes);

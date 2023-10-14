@@ -2,6 +2,7 @@ package pe.edu.upc.MonolithFoodApplication.services;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
@@ -72,8 +73,9 @@ public class AuthService {
             }
             // Si el usuario y la contraseña son válidos, autenticar al usuario en el contexto de Spring Security y generar un token JWT para el usuario
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-            UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
-            String generatedToken = jwtService.genToken(user);
+            Optional<UserEntity> user = userRepository.findByUsername(request.getUsername());
+            UserConfigEntity userConfig = user.get().getUserConfig();
+            String generatedToken = jwtService.genToken(user.get());
             // Reiniciar el contador de intentos fallidos de inicio de sesión
             IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(request.getIpAddress(), request.getUsername()).orElse(null);
             if (attempt != null) {
@@ -81,7 +83,7 @@ public class AuthService {
                 ipLoginAttemptRepository.save(attempt);
             }
             // Retornar el token generado junto con el mensaje de éxito y el código de estado
-            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken);
+            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken, userConfig.getDarkMode());
         } catch (AuthenticationException e) {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
@@ -139,7 +141,7 @@ public class AuthService {
             // Generar el token JWT para el usuario
             String generatedToken = jwtService.genToken(user);
             // Devolver el token generado junto con el mensaje de éxito y el código de estado
-            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken);
+            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, uc.getDarkMode());
         } catch (DataIntegrityViolationException e) {
             return new ResponseDTO("El nombre de usuario o el email ya se están en uso.", HttpStatus.CONFLICT.value());
         } catch (Exception e) {

@@ -59,6 +59,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
     // * (JPQL) Heather: Retorna todos los alimentos consumidos por el usuario
     @Query(
         "SELECT " + 
+            "e.id as id, " +
             "f.name as name, " + 
             "c.name as category, " + 
             "e.unitOfMeasurement as unitOfMeasurement, " + 
@@ -78,6 +79,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
     // * (JPQL) Heather: Retorna todos los alimentos consumidos por el usuario entre dos fechas
     @Query(
         "SELECT " + 
+            "e.id as id, " +
             "f.name as name, " + 
             "c.name as category, " + 
             "e.unitOfMeasurement as unitOfMeasurement, " + 

@@ -1,9 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.controllers;
 
-import java.util.List;
-
-import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodNutrientDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.searches.SearchFoodDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.services.FoodService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,45 +22,39 @@ public class FoodController {
     // ? Metodos
     // * Gabriela (Filtros de búsqueda)
     // Get: Buscar todos los alimentos por nombre
-    @GetMapping("/searchByName")
+    @GetMapping("/search-by-food-name")
     public ResponseEntity<?> searchFoodsByName(@RequestParam String foodName) {
-        try {
-            List<SearchFoodDTO> foundFoods = foodService.searchFoodsByName(foodName);
-            if (foundFoods.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró ningún alimento con ese nombre");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(foundFoods);
-            }
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al buscar alimentos por nombre");
+        ResponseDTO response = foodService.searchFoodsByName(foodName);
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
     // Get: Buscar todos los alimentos por categoría
-    @GetMapping("/searchByCategory")
+    @GetMapping("/search-by-category-name")
     public ResponseEntity<?> searchFoodsByCategory(@RequestParam String categoryName) {
-        try {
-            List<SearchFoodDTO> foundFoods = foodService.searchFoodsByCategory(categoryName);
-            if (foundFoods.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró ningún alimento con esa categoría");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(foundFoods);
-            }
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al buscar alimentos por categoría");
+        ResponseDTO response = foodService.searchFoodsByCategory(categoryName);
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
     // Get: Buscar todos los alimentos por nutrientes
-    @GetMapping("/searchByNutrient")
+    @GetMapping("/search-by-nutrient-name")
     public ResponseEntity<?> searchFoodsByNutrient(@RequestParam String nutrientName) {
-        try {
-            List<FoodNutrientDTO> foundFoods = foodService.searchFoodsByNutrient(nutrientName);
-            if (foundFoods.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró ningún alimento con ese nutriente");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(foundFoods);
-            }
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al buscar alimentos por nutrientes");
+        ResponseDTO response = foodService.searchFoodsByNutrient(nutrientName);
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
 

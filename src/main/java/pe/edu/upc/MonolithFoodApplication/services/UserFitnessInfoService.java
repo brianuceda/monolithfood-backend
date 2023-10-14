@@ -43,33 +43,82 @@ public class UserFitnessInfoService {
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserFitnessInfoService.class);
 
-    // ? Metodos    
-    // * Brian: Obtener todos los objetivos
-    @Transactional(readOnly = true)
-    public ResponseDTO getObjectives(String username) {
+    // ? Metodos
+    // * Brian: Seleccionar nivel de actividad física del usuario
+    @Transactional
+    public ResponseDTO selectActivityLevel(String username, String activityLevelName) {
         // Verificar que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
-        if (allObjectives.isEmpty()) {
-            logger.error("No se encontraron objetivos en el servidor.");
-            return new ResponseDTO("No se encontraron objetivos en el servidor.", 404);
+        // No se encontraron niveles de actividad física en el servidor
+        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
+        if (allActivityLevels.isEmpty()) {
+            logger.error("No se encontraron niveles de actividad física en el servidor.");
+            return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
         }
-        List<ObjectiveEntity> myObjectives = optUser.get().getObjectives();
-        // Obtiene todos los objetivos de la BD y los compara con los del usuario que están en la lista myObjectives,
-        // si el usuario tiene ese objetivo, selected = true, si no, selected = false
-        List<ObjectiveDTO> objectiveDTOs = allObjectives.stream()
-                .map(obj -> {
-                    boolean selected = myObjectives.stream().anyMatch(o -> o.getName().equals(obj.getName()));
-                    return new ObjectiveDTO(obj.getName(), obj.getInformation(), obj.getProteinPerKg(), selected);
-                })
-                .collect(Collectors.toList());
-        return new ObjectivesResponseDTO(null, 200, objectiveDTOs);
+        UserEntity user = optUser.get();
+        // Verifica que el dato que haya enviado el usuario sea valido
+        if (activityLevelName.isEmpty() || activityLevelName == null) {
+            return new ResponseDTO("Debes seleccionar un nivel de actividad física.", 400);
+        }
+        // Verificar que el nivel de actividad física exista en la base de datos
+        Optional<ActivityLevelEntity> optActivityLevel = activityLevelRepository.findByName(activityLevelName);
+        if (!optActivityLevel.isPresent()) {
+            return new ResponseDTO("No se encontró ese nivel de actividad física.", 400);
+        }
+        UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
+        // Si el usuario aun no ha creado un UserPersonalInfoEntity
+        if (userPersonalInfo == null) {
+            return new ResponseDTO("Primero debes completar tu información personal.", 404);
+        }
+        ActivityLevelEntity myActivityLevel = userPersonalInfo.getActivityLevel();
+        // Si el usuario ya tiene un nivel de actividad física seleccionado, los selecciona
+        if(userPersonalInfo != null) {
+            myActivityLevel = userPersonalInfo.getActivityLevel();
+        }
+        // Verificar que el usuario no esté intentando seleccionar el mismo nivel de actividad física que ya tiene
+        if (myActivityLevel != null && myActivityLevel.getName().equals(activityLevelName)) {
+            return new ResponseDTO("Ya tienes seleccionado ese nivel de actividad fisica.", 400);
+        }
+        // userPersonalInfo.setUser(user);
+        userPersonalInfo.setActivityLevel(optActivityLevel.get());
+        user.setUserPersonalInfo(userPersonalInfo);
+        userRepository.save(user);
+        return new ResponseDTO("Nivel de actividad física seleccionado correctamente.", 200);
     }
-    // * Brian: Actualizar los objetivos de un usuario
+    // * Brian: Obtener  nivel de actividad física del usuario
+    public ResponseDTO getActivityLevels(String username) {
+        // Verificar que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
+        if (allActivityLevels.isEmpty()) {
+            logger.error("No se encontraron niveles de actividad física en el servidor.");
+            return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
+        }
+        UserPersonalInfoEntity userPersonalInfo = optUser.get().getUserPersonalInfo();
+        if (userPersonalInfo == null) {
+            return new ResponseDTO("Primero debes completar tu información personal.", 404);
+        }
+        // Obtiene los niveles de actividad física de la BD y los compara con el nivel de actividad física del usuario,
+        // si el usuario tiene ese nivel de actividad física, selected = true, si no, selected = false
+        List<ActivityLevelDTO> activityLevelDTOs = allActivityLevels.stream()
+            .map(obj -> {
+                boolean selected = false;
+                if(userPersonalInfo.getActivityLevel() != null)
+                    selected = userPersonalInfo.getActivityLevel().getName().equals(obj.getName());
+                return new ActivityLevelDTO(obj.getName(), obj.getDays(), obj.getInformation(), obj.getQuotient(), selected);
+            })
+        .collect(Collectors.toList());
+        return new ActivityLevelsResponseDTO(null, 200, activityLevelDTOs);
+    }
+    // * Brian: Seleccionar objetivos de un usuario
     @Transactional
     public ResponseDTO selectObjectives(String username, List<String> objectives) {
         // Verificar que el usuario exista
@@ -117,80 +166,31 @@ public class UserFitnessInfoService {
         user.setObjectives(newUserObjectives);
         userRepository.save(user);
         return new ResponseDTO("Objetivos nutricionales seleccionados correctamente.", 200);
-    }
-    // * Brian: Obtener el nivel de actividad física del usuario, es la misma lógica que getObjectives pero devuelve ActivityLevelsResponseDTO
-    public ResponseDTO getActivityLevels(String username) {
+    }  
+    // * Brian: Obtener todos los objetivos
+    @Transactional(readOnly = true)
+    public ResponseDTO getObjectives(String username) {
         // Verificar que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
-        if (allActivityLevels.isEmpty()) {
-            logger.error("No se encontraron niveles de actividad física en el servidor.");
-            return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
+        List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
+        if (allObjectives.isEmpty()) {
+            logger.error("No se encontraron objetivos en el servidor.");
+            return new ResponseDTO("No se encontraron objetivos en el servidor.", 404);
         }
-        UserPersonalInfoEntity userPersonalInfo = optUser.get().getUserPersonalInfo();
-        if (userPersonalInfo == null) {
-            return new ResponseDTO("Primero debes completar tu información personal.", 404);
-        }
-        // Obtiene los niveles de actividad física de la BD y los compara con el nivel de actividad física del usuario,
-        // si el usuario tiene ese nivel de actividad física, selected = true, si no, selected = false
-        List<ActivityLevelDTO> activityLevelDTOs = allActivityLevels.stream()
-            .map(obj -> {
-                boolean selected = false;
-                if(userPersonalInfo.getActivityLevel() != null)
-                    selected = userPersonalInfo.getActivityLevel().getName().equals(obj.getName());
-                return new ActivityLevelDTO(obj.getName(), obj.getDays(), obj.getInformation(), obj.getQuotient(), selected);
-            })
-        .collect(Collectors.toList());
-        return new ActivityLevelsResponseDTO(null, 200, activityLevelDTOs);
-    }
-    // * Brian: Actualizar el nivel de actividad física del usuario
-    @Transactional
-    public ResponseDTO selectActivityLevel(String username, String activityLevelName) {
-        // Verificar que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        // No se encontraron niveles de actividad física en el servidor
-        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
-        if (allActivityLevels.isEmpty()) {
-            logger.error("No se encontraron niveles de actividad física en el servidor.");
-            return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
-        }
-        UserEntity user = optUser.get();
-        // Verifica que el dato que haya enviado el usuario sea valido
-        if (activityLevelName.isEmpty() || activityLevelName == null) {
-            return new ResponseDTO("No se solicitó ningún cambio.", 400);
-        }
-        // Verificar que el nivel de actividad física exista en la base de datos
-        Optional<ActivityLevelEntity> optActivityLevel = activityLevelRepository.findByName(activityLevelName);
-        if (!optActivityLevel.isPresent()) {
-            return new ResponseDTO("No se encontró ese nivel de actividad física.", 400);
-        }
-        UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
-        // Si el usuario aun no ha creado un UserPersonalInfoEntity
-        if (userPersonalInfo == null) {
-            return new ResponseDTO("Primero debes completar tu información personal.", 404);
-        }
-        ActivityLevelEntity myActivityLevel = userPersonalInfo.getActivityLevel();
-        // Si el usuario ya tiene un nivel de actividad física seleccionado, los selecciona
-        if(userPersonalInfo != null) {
-            myActivityLevel = userPersonalInfo.getActivityLevel();
-        }
-        // Verificar que el usuario no esté intentando seleccionar el mismo nivel de actividad física que ya tiene
-        if (myActivityLevel != null && myActivityLevel.getName().equals(activityLevelName)) {
-            return new ResponseDTO("Ya tienes seleccionado ese nivel de actividad fisica.", 400);
-        }
-        // userPersonalInfo.setUser(user);
-        userPersonalInfo.setActivityLevel(optActivityLevel.get());
-        user.setUserPersonalInfo(userPersonalInfo);
-        userRepository.save(user);
-        return new ResponseDTO("Nivel de actividad física seleccionado correctamente.", 200);
+        List<ObjectiveEntity> myObjectives = optUser.get().getObjectives();
+        // Obtiene todos los objetivos de la BD y los compara con los del usuario que están en la lista myObjectives,
+        // si el usuario tiene ese objetivo, selected = true, si no, selected = false
+        List<ObjectiveDTO> objectiveDTOs = allObjectives.stream()
+                .map(obj -> {
+                    boolean selected = myObjectives.stream().anyMatch(o -> o.getName().equals(obj.getName()));
+                    return new ObjectiveDTO(obj.getName(), obj.getInformation(), obj.getProteinPerKg(), selected);
+                })
+                .collect(Collectors.toList());
+        return new ObjectivesResponseDTO(null, 200, objectiveDTOs);
     }
     // * Willy: Registrar información fitness de un usuario que no es modificable por el sistema
     @Transactional
