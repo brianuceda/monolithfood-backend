@@ -3,6 +3,7 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.AllArgsConstructor;
 
 @Data
@@ -14,11 +15,13 @@ public class CompositionFoodEntity {
     @EmbeddedId
     private CompositionFoodKey id;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("foodId")
     @JoinColumn(nullable = false, name = "food_id")
     private FoodEntity food;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("nutrientId")
     @JoinColumn(nullable = false, name = "nutrient_id")

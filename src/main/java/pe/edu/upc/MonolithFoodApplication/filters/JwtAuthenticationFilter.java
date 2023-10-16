@@ -118,12 +118,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // Si la url es pública, retorna true
     private boolean isPublicUrl(String url) {
-        return url.startsWith("/auth") ||
-                url.startsWith("/oauth") ||
-                url.startsWith("/login") ||
-                url.startsWith("/logout") ||
-                url.startsWith("/error") ||
-                url.contains("/favicon.ico");
+        return
+            url.startsWith("/auth") ||
+            url.startsWith("/oauth") ||
+            url.startsWith("/login") ||
+            url.startsWith("/logout") ||
+            // Oauth2
+            url.startsWith("/error") ||
+            url.contains("/favicon.ico") ||
+            // Swagger
+            url.startsWith("/v3/api-docs") || // Swagger API
+            url.startsWith("/doc/swagger-ui"); // Swagger UI
     }
 
 }

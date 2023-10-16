@@ -12,13 +12,11 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CaloriesConsumedLastWeekDTO extends ResponseDTO {
-    private String username;
     private Double totalCalories;
 
     @Builder
-    public CaloriesConsumedLastWeekDTO(String message, Integer statusCode, String username, Double totalCalories) {
+    public CaloriesConsumedLastWeekDTO(String message, Integer statusCode, Double totalCalories) {
         super(message, statusCode);
-        this.username = username;
         this.totalCalories = totalCalories;
     }
 }

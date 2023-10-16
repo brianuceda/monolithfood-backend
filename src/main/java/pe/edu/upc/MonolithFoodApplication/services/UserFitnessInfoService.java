@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +19,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.activitylevel.ActivityLevelsRespo
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.macronutrients.MacronutrientsDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectiveDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectivesResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
@@ -29,7 +29,9 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.ActivityLevelRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
@@ -40,6 +42,8 @@ public class UserFitnessInfoService {
     private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;
     private final ActivityLevelRepository activityLevelRepository;
+    private final EatRepository eatRepository;
+    private final UserFitnessInfoRepository userFitnessInfoRepository;
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserFitnessInfoService.class);
 
@@ -207,14 +211,40 @@ public class UserFitnessInfoService {
         if (ufi == null) {
             ufi = new UserFitnessInfoEntity();
         }
+        else {
+            return new ResponseDTO("Ya tienes información fitness registrada.", 400);
+        }
         ufi.setTargetWeightKg(fitnessInfoDTO.getTargetWeightKg());
         ufi.setTargetDate(fitnessInfoDTO.getTargetDate());
         // Guarda la información fitness del usuario en la BD
-        // ufi.setUser(user);
         user.setUserFitnessInfo(ufi);
         userRepository.save(user);
         // Retorna la información fitness del usuario
         return new ResponseDTO("Información fitness registrada correctamente.", 200);
+    }
+    // * Willy: Actualizar información fitness de un usuario
+    @Transactional
+    public ResponseDTO updateUserFitnessInfo(String username, FitnessInfoDTO fitnessInfoDTO) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        // Gaurda la información fitness del usuario en una variable
+        UserEntity user = optUser.get();
+        UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
+        if (ufi == null) {
+            ufi = new UserFitnessInfoEntity();
+        }
+
+        ufi.setTargetWeightKg(fitnessInfoDTO.getTargetWeightKg());
+        ufi.setTargetDate(fitnessInfoDTO.getTargetDate());
+        // Guarda la información fitness del usuario en la BD
+        user.setUserFitnessInfo(ufi);
+        userRepository.save(user);
+        // Retorna la información fitness del usuario
+        return new ResponseDTO("Información fitness actualizada correctamente.", 200);
     }
     // * Willy: Calcular la información fitness del usuario
     // Por ahora calcula de forma general, luego los calculos se basarán en los objetivos del usuario
@@ -258,8 +288,9 @@ public class UserFitnessInfoService {
         // Guarda la información de fitness del usuario
         ufi.setImc(imc);
         // Guarda la información de fitness del usuario en la BD
-        // ufi.setUser(user);
+        ufi.setUser(user);
         user.setUserFitnessInfo(ufi);
+        userFitnessInfoRepository.save(ufi);
         userRepository.save(user);
         // Retorna la información de fitness del usuario
         return new FitnessInfoResponseDTO("Información fitness calculada correctamente.", 200,
@@ -279,6 +310,18 @@ public class UserFitnessInfoService {
             ufi.getAvgProteinPerKg(),
             ufi.getTmb()
         );
+    }
+    // * Willy: Obtener los macronutrientes consumidos en el dia de hoy
+    public ResponseDTO getMacrosConsumedToday(String username) {
+        logger.info("Username: " + username);
+        MacronutrientsDTO dto = eatRepository.getMacrosConsumedToday(username);
+        if (dto == null) {
+            return new ResponseDTO("No has consumido alimentos hoy.", 404);
+        }
+        if (dto.getConsumedDailyCaloricIntake() == 0.0 && dto.getConsumedDailyProteinIntake() == 0.0 && dto.getConsumedDailyCarbohydrateIntake() == 0.0 && dto.getConsumedDailyFatIntake() == 0.0) {
+            return new ResponseDTO("No has consumido nada hoy.", 404);
+        }
+        return dto;
     }
 
     // ? Funciones auxiliares

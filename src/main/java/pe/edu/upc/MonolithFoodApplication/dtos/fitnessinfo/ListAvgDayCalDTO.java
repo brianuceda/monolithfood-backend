@@ -10,16 +10,16 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 @Getter
 @Setter
 public class ListAvgDayCalDTO extends ResponseDTO {
-    List<AvgDayCalDTO> avgDayCalDTOList;
+    List<AvgDayCalDTO> consumedList;
 
-    public ListAvgDayCalDTO(List<AvgDayCalDTO> avgDayCalDTOList) {
-        this.avgDayCalDTOList = avgDayCalDTOList;
+    public ListAvgDayCalDTO(List<AvgDayCalDTO> consumedList) {
+        this.consumedList = consumedList;
     }
 
     @Builder
-    public ListAvgDayCalDTO(String message, Integer statusCode, List<AvgDayCalDTO> avgDayCalDTOList) {
+    public ListAvgDayCalDTO(String message, Integer statusCode, List<AvgDayCalDTO> consumedList) {
         super(message, statusCode);
-        this.avgDayCalDTOList = avgDayCalDTOList;
+        this.consumedList = consumedList;
     }
     
 }

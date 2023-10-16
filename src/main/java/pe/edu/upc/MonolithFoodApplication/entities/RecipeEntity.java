@@ -2,6 +2,7 @@ package pe.edu.upc.MonolithFoodApplication.entities;
 
 import java.util.List;
 
+// import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +18,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -53,18 +55,25 @@ public class RecipeEntity {
     @Column(nullable = true)
     private Boolean isFavorite = false;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_user_id")
     private UserEntity creatorUser;
-
+    
+    @ToString.Exclude
     @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER)
     private List<IngredientEntity> ingredients;
 
     // Se puede usar para
     // 1. Conocer la cantidad de personas que han comido una receta
+    @ToString.Exclude
     @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
     private List<EatEntity> eats;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER)
     private List<CompositionRecipeEntity> compositions;
+    
+    // @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    // private List<FavoriteEntity> favorites;
 }

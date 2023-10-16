@@ -10,8 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvgDayCalDTO {
-    private String username;
     private String date;
-    private Double averageCaloriesDay;
+    private Double averageCalories;
     
 }

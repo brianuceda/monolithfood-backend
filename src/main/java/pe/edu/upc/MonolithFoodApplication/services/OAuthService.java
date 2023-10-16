@@ -132,12 +132,12 @@ public class OAuthService {
     public ResponseDTO oAuth2Login(String oAuthProviderId) {
         UserEntity user = userRepository.findByOauthProviderId(oAuthProviderId).get();
         String generatedToken = jwtService.genToken(user);
-        return new AuthResponseDTO("Inicio de sesion realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
+        return new AuthResponseDTO("Inicio de sesion realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode(), false);
     }
     public ResponseDTO oAuth2Register(UserEntity user) {
         userRepository.save(user);
         String generatedToken = jwtService.genToken(user);
-        return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
+        return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode(), true);
     }
 
     // ? Funciones auxiliares

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import pe.edu.upc.MonolithFoodApplication.dtos.macronutrients.MacronutrientsDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 
 @Repository
@@ -22,7 +23,6 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
     // * Willy (JPQL): Retorna el promedio de calorias consumidas en la ultima semana
     @Query(
         "SELECT " +
-            "username, " +
             "SUM(cf.nutrientQuantity) " +
         "FROM EatEntity e " +
         "JOIN e.user u " +
@@ -36,12 +36,13 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "JOIN e2.user u2 " +
         "WHERE u2.username = :username " +
         "GROUP BY u2.username) " +
-        "GROUP BY username")
-    List<Object[]> AveragecaloriesLastWeek(@Param("username") String username);
+        "GROUP BY username"
+    )
+    List<Object[]> getAveragecaloriesLastWeek(@Param("username") String username);
 
     // * (JPQL) Willy: Retorna el promedio de calorias consumidas en el ultimo dia
     @Query(
-        "SELECT u.username as username, " +  
+        "SELECT " +  
             "e.date As date, "+
             "AVG(cf.nutrientQuantity) as averageCaloriesDay " +
         "FROM EatEntity e " +
@@ -53,8 +54,30 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "AND u.username = :username " +
         "AND e.date >= CURRENT_DATE - 7 " +  
         "GROUP BY username, date " +
-        "ORDER BY date")
-    List<Object[]> AverageCalorieConsumptioDay(@Param("username") String username);
+        "ORDER BY date"
+    )
+    List<Object[]> getAverageCalorieConsumptioDay(@Param("username") String username);
+
+    // * (JPQL) Willy: Obtener los macronutrientes (4) consumidos en el dia de hoy, junto a la cantidad de macronutrientes (4) que debe consumir el usuario a diario.
+    @Query(
+        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.macronutrients.MacronutrientsDTO(" +
+            "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyCaloricIntake, " +
+            "u.userFitnessInfo.dailyCaloricIntake as dailyCaloricIntake, " +
+            "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyProteinIntake, " +
+            "u.userFitnessInfo.dailyProteinIntake as dailyProteinIntake, " +
+            "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyCarbohydrateIntake, " +
+            "u.userFitnessInfo.dailyCarbohydrateIntake as dailyCarbohydrateIntake, " +
+            "SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyFatIntake, " +
+            "u.userFitnessInfo.dailyFatIntake as dailyFatIntake) " +
+        "FROM EatEntity e " +
+        "JOIN e.user u " +
+        "JOIN e.food f " +
+        "JOIN f.compositions cf " +
+        "JOIN cf.nutrient n " +
+        "WHERE u.username = :username AND e.date >= CURRENT_DATE " +
+        "GROUP BY username, dailyCaloricIntake, dailyProteinIntake, dailyCarbohydrateIntake, dailyFatIntake"
+    )
+    MacronutrientsDTO getMacrosConsumedToday(@Param("username") String username);
 
     // * (JPQL) Heather: Retorna todos los alimentos consumidos por el usuario
     @Query(

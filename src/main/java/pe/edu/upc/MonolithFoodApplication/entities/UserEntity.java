@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -58,37 +59,68 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<IpLoginAttemptEntity> ipLoginAttempt;
 
+    @ToString.Exclude
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private UserConfigEntity userConfig;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserPersonalInfoEntity userPersonalInfo;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserFitnessInfoEntity userFitnessInfo;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_objective", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "objective_id"), uniqueConstraints = {
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_objective",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "objective_id"),
+        uniqueConstraints = {
             @UniqueConstraint(columnNames = {
-                    "user_id",
-                    "objective_id"
+                "user_id",
+                "objective_id"
             })
-    })
+        }
+    )
     private List<ObjectiveEntity> objectives;
+    
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_favorite_food",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "food_id"),
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {
+                "user_id",
+                "food_id"
+            })
+        }
+    )
+    private List<FoodEntity> favoriteFoods;
 
-    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "creatorUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RecipeEntity> createdRecipes;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<EatEntity> eats;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"), uniqueConstraints = {
+    @JoinTable(
+        name = "user_role",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id"),
+        uniqueConstraints = {
             @UniqueConstraint(columnNames = {
-                    "user_id",
-                    "role_id"
+                "user_id",
+                "role_id"
             })
-    })
+        }
+    )
     private Set<RoleEntity> roles;
 
     @Override

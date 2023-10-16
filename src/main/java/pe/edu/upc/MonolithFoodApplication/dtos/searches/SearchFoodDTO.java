@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchFoodDTO {
+    private Long foodId;
     private String foodName;
-    // private String foodCategory;
     private List<FoodCompositionDTO> composition;
 
 }

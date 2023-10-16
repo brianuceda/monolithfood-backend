@@ -15,7 +15,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.UpdateHeightWeightDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.UpdatePersonalInfoDTO;
-import pe.edu.upc.MonolithFoodApplication.services.BasicUserProgressReportService;
+import pe.edu.upc.MonolithFoodApplication.services.UserReportService;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 
@@ -27,7 +27,7 @@ public class UserPersonalInfoController {
     // Inyección de dependencias
     private final UserPersonalInfoService userPersonalInfoService;
     private final JwtService jwtService;
-    private final BasicUserProgressReportService basicUserProgressReportService;
+    private final UserReportService basicUserProgressReportService;
 
     // ? Metodos
     // * Naydeline: Personal Information
@@ -59,30 +59,23 @@ public class UserPersonalInfoController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Willy (IMC)
-    // Get: Actualizar la altura de un usuario y obtener su IMC
+    // Get: Actualizar la altura o el peso de un usuario y obtener su IMC
     @PutMapping("/update-weight-height")
     public ResponseEntity<?> updateHeightAndGetIMC(@RequestHeader("Authorization") String bearerToken, @RequestBody UpdateHeightWeightDTO uhwDTO) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.updateHeightWeightGetIMC(username, uhwDTO);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-    // Get: Actualizar el peso de un usuario y obtener su IMC
-    // @PutMapping("/weight")
-    // public ResponseEntity<?> updateWeightAndGetIMC(@RequestHeader("Authorization") String bearerToken, @RequestParam Double weightKg) {
-    //     String username = jwtService.getUsernameFromBearerToken(bearerToken);
-    //     ResponseDTO response = userPersonalInfoService.updateWeightAndGetIMC(username, weightKg);
-    //     return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    // }
     // * Willy (Reportes)
     // Get: Obtener el consumo de calorías de la última semana
-    @GetMapping("/lastWeekCalories")
+    @GetMapping("/last-week-calories")
     public ResponseEntity<?> getCaloriesConsumedInTheLastWeek(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = basicUserProgressReportService.getCaloriesConsumedInTheLastWeek(username);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     // Get: Obtener el promedio de consumo de calorías diario
-    @GetMapping("/averageCalories")
+    @GetMapping("/average-calories")
     public ResponseEntity<?> getAverageDailyCaloriesConsumedDTO(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = basicUserProgressReportService.getAverageDailyCaloriesConsumedDTO(username);

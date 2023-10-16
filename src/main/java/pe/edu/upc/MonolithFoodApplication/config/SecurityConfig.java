@@ -33,11 +33,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             // ? Permite o bloquea la conexión a los endpoints ? //
             .authorizeHttpRequests(authRequest -> {
-                authRequest.requestMatchers("/auth/**", "/oauth2/**", "/login/**", "/logout").permitAll();
-                authRequest.requestMatchers("/favicon.ico", "/error").permitAll();
-                // authRequest.requestMatchers("/login").permitAll(); // POR AHORA PARA PROBAR EL OAUTH2
-                // .requestMatchers("/v3/api-docs/**").permitAll() // Swagger API
-                // .requestMatchers("/doc/swagger-ui/**").permitAll() // Swagger UI
+                authRequest.requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll();
+                authRequest.requestMatchers("/favicon.ico", "/error").permitAll(); // OAuth2
+                authRequest.requestMatchers("/v3/api-docs/**").permitAll(); // Swagger API
+                authRequest.requestMatchers("/doc/swagger-ui/**").permitAll(); // Swagger UI
                 authRequest.anyRequest().authenticated();
             })
             // ? Oauth2 Login

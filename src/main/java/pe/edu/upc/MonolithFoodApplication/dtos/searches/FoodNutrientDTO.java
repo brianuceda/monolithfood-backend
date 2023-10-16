@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FoodNutrientDTO {
+    private Long foodId;
     private String foodName;
     private Double nutrientQuantity;
 

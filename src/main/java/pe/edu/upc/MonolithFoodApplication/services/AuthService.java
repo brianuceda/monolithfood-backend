@@ -83,7 +83,7 @@ public class AuthService {
                 ipLoginAttemptRepository.save(attempt);
             }
             // Retornar el token generado junto con el mensaje de éxito y el código de estado
-            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken, userConfig.getDarkMode());
+            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken, userConfig.getDarkMode(), false);
         } catch (AuthenticationException e) {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
@@ -141,7 +141,7 @@ public class AuthService {
             // Generar el token JWT para el usuario
             String generatedToken = jwtService.genToken(user);
             // Devolver el token generado junto con el mensaje de éxito y el código de estado
-            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, uc.getDarkMode());
+            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, uc.getDarkMode(), true);
         } catch (DataIntegrityViolationException e) {
             return new ResponseDTO("El nombre de usuario o el email ya se están en uso.", HttpStatus.CONFLICT.value());
         } catch (Exception e) {
@@ -164,7 +164,6 @@ public class AuthService {
         }
     }
     // * Brian: Manejar la autenticación de Oauth2
-
 
     // ? Funciones auxiliares
     private Set<RoleEntity> setRoleUser() {

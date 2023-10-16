@@ -78,6 +78,14 @@ public class UserFitnessInfoController {
         ResponseDTO response = userFitnessInfoService.setUserFitnessInfo(username, userFitnessInfoDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+    // Put: Actualizar información fitness de un usuario
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDTO>updateUserFitnessInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody FitnessInfoDTO userFitnessInfoDto) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userFitnessInfoService.updateUserFitnessInfo(username, userFitnessInfoDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+    // Get: Obtener información fitness de un usuario
     @GetMapping("/calc")
     public ResponseEntity<?> calcFitnessInfo(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
@@ -90,5 +98,18 @@ public class UserFitnessInfoController {
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
-    
+    // * Willy (Macronutrientes consumidos hoy)
+    // Get: Obtener el consumo de calorias, protes, carbos, grasas de hoy
+    @GetMapping("/today-macronutrients")
+    public ResponseEntity<?> getTodayMacronutrients(@RequestHeader("Authorization") String bearerToken) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userFitnessInfoService.getMacrosConsumedToday(username);
+        if (response.getStatusCode() == 200) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        }
+    }
 }

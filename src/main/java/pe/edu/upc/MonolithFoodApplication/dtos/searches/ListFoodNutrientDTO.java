@@ -10,11 +10,11 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 @Getter
 @Setter
 public class ListFoodNutrientDTO extends ResponseDTO {
-    private List<FoodNutrientDTO> foundFoods;
+    private List<FoodNutrientDTO> foods;
 
     @Builder
-    public ListFoodNutrientDTO(String message, Integer statusCode, List<FoodNutrientDTO> foundFoods) {
+    public ListFoodNutrientDTO(String message, Integer statusCode, List<FoodNutrientDTO> foods) {
         super(message, statusCode);
-        this.foundFoods = foundFoods;
+        this.foods = foods;
     }
 }

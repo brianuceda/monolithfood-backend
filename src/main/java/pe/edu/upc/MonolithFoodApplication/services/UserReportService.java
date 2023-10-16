@@ -17,33 +17,31 @@ import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 
 @Service
 @RequiredArgsConstructor
-public class BasicUserProgressReportService {
+public class UserReportService {
     private final EatRepository eatRepository;
 
     // * Willy: Obtener calorias consumidas en la ultima semana
     public ResponseDTO getCaloriesConsumedInTheLastWeek (String username) {   
-        List<Object[]> results = eatRepository.AveragecaloriesLastWeek(username);
+        List<Object[]> results = eatRepository.getAveragecaloriesLastWeek(username);
         if (results.isEmpty()) return new ResponseDTO("No has consumido alimentos en la última semana.", 200);
         Object[] firstResult = results.get(0);
         return new CaloriesConsumedLastWeekDTO("Cantidad de calorías consumidas en la última semana.", 200,
-            (String) firstResult[0],
-            (Double) firstResult[1]
+            (Double) firstResult[0]
         );
     }
     // * Willy: Obtener un promedio de calorias consumidas por dia en la ultima semana
     public ResponseDTO getAverageDailyCaloriesConsumedDTO (String username) {
-        List<Object[]> results = eatRepository.AverageCalorieConsumptioDay(username);
-        if (results.isEmpty()) return new ResponseDTO("No has consumido alimentos en la última semana.", 200);
+        List<Object[]> results = eatRepository.getAverageCalorieConsumptioDay(username);
+        if (results.isEmpty())
+            return new ResponseDTO("No has consumido alimentos en la última semana.", 200);
         List<AvgDayCalDTO> averageDailyCaloriesConsumedDTOs = results.stream().map(result -> {
-            String formattedDate = convertToFormatDateDdMmYyyy((Timestamp) result[1]);
+            String formattedDate = convertToFormatDateDdMmYyyy((Timestamp) result[0]);
             return new AvgDayCalDTO(
-                (String) result[0],
                 formattedDate,
-                (Double) result[2]
+                (Double) result[1]
             );
         }).collect(Collectors.toList());
-        ListAvgDayCalDTO listAvgDayCalDTO = new ListAvgDayCalDTO("Promedio de calorías consumidas por día en la última semana.", 200, averageDailyCaloriesConsumedDTOs);
-        return listAvgDayCalDTO;
+        return new ListAvgDayCalDTO("Promedio de calorías consumidas por día en la última semana.", 200, averageDailyCaloriesConsumedDTOs);
     }
 
     // ? Funciones auxiliares

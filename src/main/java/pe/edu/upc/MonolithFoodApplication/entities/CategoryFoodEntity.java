@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -37,6 +38,7 @@ public class CategoryFoodEntity {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String disadvantages;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "category", cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE

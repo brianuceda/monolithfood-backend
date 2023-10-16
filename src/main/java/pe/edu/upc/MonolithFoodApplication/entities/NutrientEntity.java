@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -33,9 +34,11 @@ public class NutrientEntity {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String detailed_information;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY)
     private List<CompositionFoodEntity> compositionsFood;
-
+    
+    @ToString.Exclude
     @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY)
     private List<CompositionRecipeEntity> compositionsRecipe;
 

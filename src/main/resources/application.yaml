@@ -43,6 +43,13 @@ spring:
             scope: User.Read
             client-name: Microsoft
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /doc/swagger-ui/index.html
+
 jwt:
   secret:
     key: 81db10483eac754b379a518496151643a777SAD78A434AS22162d6811d11f303ef
