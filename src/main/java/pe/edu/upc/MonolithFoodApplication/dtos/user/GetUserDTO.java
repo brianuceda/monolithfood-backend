@@ -7,25 +7,19 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 
 @Getter
 @Setter
-public class InfoDTO extends ResponseDTO {
+public class GetUserDTO extends ResponseDTO {
     private String username;
-    private String email;
-    private String names;
     private String profileImg;
 
-    public InfoDTO(String username, String email, String names, String profileImg) {
+    public GetUserDTO(String username, String profileImg) {
         this.username = username;
-        this.email = email;
-        this.names = names;
         this.profileImg = profileImg;
     }
 
     @Builder
-    public InfoDTO(String message, Integer statusCode, String username, String email, String names, String profileImg) {
+    public GetUserDTO(String message, Integer statusCode, String username, String profileImg) {
         super(message, statusCode);
         this.username = username;
-        this.email = email;
-        this.names = names;
         this.profileImg = profileImg;
     }
 }

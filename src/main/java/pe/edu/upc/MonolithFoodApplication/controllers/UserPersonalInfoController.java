@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.PersonalInfoDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.UpdateHeightWeightDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.UpdatePersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.PutHeightWeightDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.PutPersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.SetPersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.services.UserReportService;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
@@ -31,6 +31,13 @@ public class UserPersonalInfoController {
 
     // ? Metodos
     // * Naydeline: Personal Information
+    // Post: Registrar información personal de un usuario
+    @PostMapping("/new")
+    public ResponseEntity<ResponseDTO>setUserPersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody SetPersonalInfoDTO userPersonallnfoDto) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userPersonalInfoService.setUserPersonalInfo(username, userPersonallnfoDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
     // Get: Obtener información personal de un usuario
     @GetMapping
     public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
@@ -44,16 +51,9 @@ public class UserPersonalInfoController {
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
-    // Post: Registrar información personal de un usuario
-    @PostMapping("/new")
-    public ResponseEntity<ResponseDTO>setUserPersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PersonalInfoDTO userPersonallnfoDto) {
-        String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userPersonalInfoService.setUserPersonalInfo(username, userPersonallnfoDto);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
     // Put: Actualizar información personal de un usuario
     @PutMapping("/update")
-    public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody UpdatePersonalInfoDTO userPersonallnfoDto) {
+    public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PutPersonalInfoDTO userPersonallnfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.updateUserPersonalInfo(username, userPersonallnfoDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
@@ -61,7 +61,7 @@ public class UserPersonalInfoController {
     // * Willy (IMC)
     // Get: Actualizar la altura o el peso de un usuario y obtener su IMC
     @PutMapping("/update-weight-height")
-    public ResponseEntity<?> updateHeightAndGetIMC(@RequestHeader("Authorization") String bearerToken, @RequestBody UpdateHeightWeightDTO uhwDTO) {
+    public ResponseEntity<?> updateHeightAndGetIMC(@RequestHeader("Authorization") String bearerToken, @RequestBody PutHeightWeightDTO uhwDTO) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.updateHeightWeightGetIMC(username, uhwDTO);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));

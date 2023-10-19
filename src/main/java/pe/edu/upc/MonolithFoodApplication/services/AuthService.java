@@ -60,6 +60,7 @@ public class AuthService {
     @Transactional
     public ResponseDTO login(LoginRequestDTO request) {
         try {
+            
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
             if (userEntity != null) {
                 // Verificar si la IP está bloqueada
@@ -117,9 +118,8 @@ public class AuthService {
             String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
             Pattern pattern = Pattern.compile(emailRegex);
             Matcher matcher = pattern.matcher(request.getEmail());
-            if (!matcher.matches()) {
+            if (!matcher.matches())
                 return new ResponseDTO("El formato del correo electrónico no es válido.", HttpStatus.BAD_REQUEST.value());
-            }
             UserConfigEntity uc = UserConfigEntity.builder()
                 .notifications(false)
                 .darkMode(true)
@@ -133,7 +133,9 @@ public class AuthService {
                     .email(request.getEmail())
                     .names(request.getNames())
                     .profileImg(request.getProfileImg())
+                    .isOauthRegistered(false)
                     .isAccountBlocked(false)
+                    .ipAddress(request.getIpAddress())
                     .userConfig(uc)
                     .roles(setRoleUser())
                     .build();

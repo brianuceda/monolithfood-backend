@@ -1,7 +1,5 @@
 package pe.edu.upc.MonolithFoodApplication.entities;
 
-import java.sql.Timestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,32 +11,32 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
-@Table(name = "user_config")
-public class UserConfigEntity {
+@Table(name="wallet")
+public class WalletEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean notifications;
-
-    @Column(nullable = true)
-    private Timestamp lastFoodEntry;
-
-    @Column(nullable = true)
-    private Timestamp lastWeightUpdate;
-
-    @Column(nullable = false)
-    private Boolean darkMode;
+    private Double balance = 0.0;
+    
+    @Column(nullable = true, length = 10)
+    private String currency;
+    
+    @Column(nullable = true, length = 10)
+    private String currencySymbol;
+    
+    @Column(nullable = true, length = 10)
+    private String currencyName;
 
     // @ToString.Exclude
     // @OneToOne(fetch = FetchType.LAZY)
     // @JoinColumn(name = "user_id")
     // private UserEntity user;
-
 }

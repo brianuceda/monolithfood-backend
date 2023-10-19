@@ -13,14 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.IMCDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.PersonalInfoDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.UpdateHeightWeightDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.UpdatePersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.GetPersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.PutHeightWeightDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.PutPersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.SetPersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.WalletAndLocationDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
@@ -29,58 +32,52 @@ public class UserPersonalInfoService {
     // ? Atributos
     // Inyección de dependencias
     private final UserRepository userRepository;
+    private final ExternalApisService externalApisService;
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserPersonalInfoService.class);
 
     // ? Metodos
-    // * Naydeline: Obtener información personal del usuario
-    public ResponseDTO getInformation(String username) {
-        // Verifica que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        // Retorna la información personal del usuario
-        UserPersonalInfoEntity upi = optUser.get().getUserPersonalInfo();
-        if (upi == null)
-            return new ResponseDTO("Primero debes registrar tu información personal.", 404);
-        // Vuelve a obtener los valores actualizados del usuario
-        upi = optUser.get().getUserPersonalInfo();
-        return new PersonalInfoDTO(null, 200, upi.getGender(), upi.getBorndate(), upi.getHeightCm(), upi.getWeightKg());
-    }
     // * Naydeline: Registrar nueva información de usuario
     @Transactional
-    public ResponseDTO setUserPersonalInfo(String username, PersonalInfoDTO userPersonalInfo) {
+    public ResponseDTO setUserPersonalInfo(String username, SetPersonalInfoDTO request) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        if (userPersonalInfo.getWeightKg() == null && userPersonalInfo.getWeightKg() < 0)
-            return new ResponseDTO("El peso debe ser mayor a 0.", 400);
         // Gaurda la información personal del usuario en una variable
         UserEntity user = optUser.get();
         UserConfigEntity uc = user.getUserConfig();
         UserPersonalInfoEntity upi = user.getUserPersonalInfo();
-        if (uc == null)
-            return new ResponseDTO("Primero debes registrar tu configuración.", 400);
+        // verifica que todos los campos estén completos
+        if (request.getGender() == null || request.getBorndate() == null || request.getWeightKg() == null || request.getHeightCm() == null)
+            return new ResponseDTO("Debes completar todos los campos.", 400);
         if (upi == null)
             upi = new UserPersonalInfoEntity();
         else
             return new ResponseDTO("Ya tienes información personal registrada.", 400);
+        WalletAndLocationDTO walletAndLocation = externalApisService.getLocationAndWalletFromIp(user.getIpAddress());
         // Se actualizan los campos que el usuario haya ingresado
-        upi.setGender(userPersonalInfo.getGender());
-        upi.setBorndate(userPersonalInfo.getBorndate());
-        upi.setHeightCm(userPersonalInfo.getHeightCm());
-        upi.setWeightKg(userPersonalInfo.getWeightKg());
+        upi.setGender(request.getGender());
+        upi.setBorndate(request.getBorndate());
+        upi.setLocation(walletAndLocation.getLocation());
+        upi.setWeightKg(request.getWeightKg());
+        upi.setHeightCm(request.getHeightCm());
         uc.setLastWeightUpdate(new Timestamp(System.currentTimeMillis()));
+        // Genera una nueva billetera para el usuario
+        WalletEntity wallet = WalletEntity.builder()
+            .balance(0.0)
+            .currency(walletAndLocation.getCurrency())
+            .currencySymbol(walletAndLocation.getCurrencySymbol())
+            .currencyName(walletAndLocation.getCurrencyName())
+            .build();
         // Se guarda la información personal del usuario en la BD
         try {
             // upi.setUser(user);
             user.setUserPersonalInfo(upi);
             user.setUserConfig(uc);
+            user.setWallet(wallet);
             userRepository.save(user);
             logger.info("Información personal del usuario {} guardada correctamente.", username);
             // Retorna un mensaje de éxito
@@ -90,9 +87,39 @@ public class UserPersonalInfoService {
             return new ResponseDTO("Error al guardar la informacion en la BD.", 500);
         }
     }
+    // * Naydeline: Obtener información personal del usuario
+    public ResponseDTO getInformation(String username) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        }
+        // Retorna la información personal del usuario
+        UserEntity user = optUser.get();
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+        if (upi == null)
+            return new ResponseDTO("Primero debes registrar tu información personal.", 404);
+        if (upi.getWeightKg() == null || upi.getHeightCm() == null)
+            return new ResponseDTO("Primero debes registrar tu peso y altura.", 404);
+        GetPersonalInfoDTO dto = GetPersonalInfoDTO.builder()
+            .message(null)
+            .statusCode(200)
+            .username(user.getUsername())
+            .email(user.getEmail())
+            .names(user.getNames())
+            .gender(upi.getGender())
+            .borndate(upi.getBorndate())
+            .location(upi.getLocation())
+            .weightKg(upi.getWeightKg())
+            .heightCm(upi.getHeightCm())
+            .imc(String.format("%.2f", calculateIMC(upi.getWeightKg(), upi.getHeightCm())) + " % | " + getClasification(calculateIMC(upi.getWeightKg(), upi.getHeightCm())))
+            .build();
+        return dto;
+    }
     // * Naydeline: Actualizar información personal del usuario
     @Transactional
-    public ResponseDTO updateUserPersonalInfo(String username, UpdatePersonalInfoDTO newUserPersonalInfo) {
+    public ResponseDTO updateUserPersonalInfo(String username, PutPersonalInfoDTO newUserPersonalInfo) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
@@ -105,6 +132,8 @@ public class UserPersonalInfoService {
         if (upi == null)
             return new ResponseDTO("Primero debes registrar tu información personal.", 400);
         // Se actualizan los campos que el usuario haya ingresado
+        if (newUserPersonalInfo.getNames() != null && !newUserPersonalInfo.getNames().isEmpty())
+            user.setNames(newUserPersonalInfo.getNames());
         if (newUserPersonalInfo.getGender() != null && (newUserPersonalInfo.getGender() == GenderEnum.F || newUserPersonalInfo.getGender() == GenderEnum.M))
             upi.setGender(newUserPersonalInfo.getGender());
         if (newUserPersonalInfo.getBorndate() != null && !newUserPersonalInfo.getBorndate().toString().isEmpty())
@@ -113,8 +142,7 @@ public class UserPersonalInfoService {
             user.setUserPersonalInfo(upi);
             userRepository.save(user);
             logger.info("Información personal del usuario {} actualizada correctamente.", username);
-            PersonalInfoDTO dto = mapToPersonalInfoDTO(upi);
-            return new PersonalInfoDTO("Datos actualizados correctamente.", 200, dto.getGender(), dto.getBorndate(), dto.getHeightCm(), dto.getWeightKg());
+            return new ResponseDTO("Datos actualizados correctamente.", 200);
         } catch (DataAccessException e) {
             logger.error("Error al guardar la informacion del usuario en la BD. ", e);
             return new ResponseDTO("Error al guardar la informacion en la BD.", 500);
@@ -122,7 +150,7 @@ public class UserPersonalInfoService {
     }
     // * Willy: Actualiza la altura o el peso del usuario y retorna el IMC y la clasificación del IMC
     @Transactional
-    public ResponseDTO updateHeightWeightGetIMC(String username, UpdateHeightWeightDTO uhwDTO) {
+    public ResponseDTO updateHeightWeightGetIMC(String username, PutHeightWeightDTO uhwDTO) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
@@ -180,13 +208,13 @@ public class UserPersonalInfoService {
         else return "Obesidad grado 3";
     }
     // FUNCIÓN: Convierte la información personal del usuario a un objeto UserPersonalInfoDTO
-    private PersonalInfoDTO mapToPersonalInfoDTO(UserPersonalInfoEntity entity) {
-        return new PersonalInfoDTO(
-            entity.getGender(),
-            entity.getBorndate(),
-            entity.getHeightCm(),
-            entity.getWeightKg()
-        );
-    }
+    // private PersonalInfoDTO mapToPersonalInfoDTO(UserPersonalInfoEntity entity) {
+    //     return new PersonalInfoDTO(
+    //         entity.getGender(),
+    //         entity.getBorndate(),
+    //         entity.getHeightCm(),
+    //         entity.getWeightKg()
+    //     );
+    // }
 
 }

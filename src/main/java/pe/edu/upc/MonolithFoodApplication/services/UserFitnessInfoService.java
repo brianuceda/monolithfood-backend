@@ -93,7 +93,7 @@ public class UserFitnessInfoService {
         userRepository.save(user);
         return new ResponseDTO("Nivel de actividad física seleccionado correctamente.", 200);
     }
-    // * Brian: Obtener  nivel de actividad física del usuario
+    // * Brian: Obtener nivel de actividad física del usuario
     public ResponseDTO getActivityLevels(String username) {
         // Verificar que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -237,7 +237,6 @@ public class UserFitnessInfoService {
         if (ufi == null) {
             ufi = new UserFitnessInfoEntity();
         }
-
         ufi.setTargetWeightKg(fitnessInfoDTO.getTargetWeightKg());
         ufi.setTargetDate(fitnessInfoDTO.getTargetDate());
         // Guarda la información fitness del usuario en la BD
@@ -288,7 +287,6 @@ public class UserFitnessInfoService {
         // Guarda la información de fitness del usuario
         ufi.setImc(imc);
         // Guarda la información de fitness del usuario en la BD
-        ufi.setUser(user);
         user.setUserFitnessInfo(ufi);
         userFitnessInfoRepository.save(ufi);
         userRepository.save(user);

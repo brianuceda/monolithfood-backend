@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.InfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.GetUserDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PhotoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.GetIntakesDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.IntakeDTO;
@@ -243,10 +243,8 @@ public class UserService {
         }
         // Retorna la información del usuario
         UserEntity user = optUser.get();
-        return new InfoDTO(null, 200,
+        return new GetUserDTO(null, 200,
             user.getUsername(),
-            user.getEmail(),
-            user.getNames(),
             user.getProfileImg()
         );
     }

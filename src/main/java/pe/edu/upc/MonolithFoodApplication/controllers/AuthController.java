@@ -6,7 +6,9 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.services.AuthService;
+import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
 
 @RestController
@@ -24,6 +27,7 @@ public class AuthController {
     // Inyección de dependencias
     private final AuthService authService;
     private final OAuthService oAuthService;
+    private final JwtService jwtService;
 
     // ? Metodos
     // * Brian (Auth)
@@ -51,6 +55,19 @@ public class AuthController {
             response = oAuthService.joinOAuth2(authentication);
         }
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        // En el frontent, hacer una solicitud a /auth/set-ip-address(username, ipAddress).
     }
+    @PostMapping("/set-ip-address")
+    public ResponseEntity<?> setIpAddress(@RequestHeader("Authorization") String bearerToken, @RequestParam String ipAddress) {
+        try { 
+            String username = jwtService.getUsernameFromBearerToken(bearerToken);
+            oAuthService.setIpAddress(username, ipAddress);
+            return new ResponseEntity<>(new ResponseDTO("IP guardada correctamente.", 200), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDTO("Ocurrio un error.", 400), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 
 }

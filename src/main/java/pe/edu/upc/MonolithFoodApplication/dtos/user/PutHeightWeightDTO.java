@@ -7,12 +7,12 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 
 @Getter
 @Setter
-public class UpdateHeightWeightDTO extends ResponseDTO {
+public class PutHeightWeightDTO extends ResponseDTO {
     private Double heightCm;
     private Double weightKg;
 
     @Builder
-    public UpdateHeightWeightDTO(String message, Integer statusCode, Double heightCm, Double weightKg) {
+    public PutHeightWeightDTO(String message, Integer statusCode, Double heightCm, Double weightKg) {
         super(message, statusCode);
         this.heightCm = heightCm;
         this.weightKg = weightKg;

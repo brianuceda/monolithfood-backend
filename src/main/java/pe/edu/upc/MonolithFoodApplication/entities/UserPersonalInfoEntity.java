@@ -12,12 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -36,6 +34,9 @@ public class UserPersonalInfoEntity {
     @Column(nullable = true)
     private Timestamp borndate;
 
+    @Column(nullable = true, length = 64)
+    private String location;
+
     @Column(nullable = true)
     private Double heightCm;
 
@@ -46,9 +47,9 @@ public class UserPersonalInfoEntity {
     @JoinColumn(nullable = true, name = "activity_level_id")
     private ActivityLevelEntity activityLevel;
 
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    // @ToString.Exclude
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "user_id")
+    // private UserEntity user;
 
 }

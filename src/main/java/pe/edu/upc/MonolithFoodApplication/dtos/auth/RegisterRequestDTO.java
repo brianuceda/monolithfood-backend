@@ -15,5 +15,6 @@ public class RegisterRequestDTO {
     private String email;
     private String names;
     private String profileImg;
+    private String ipAddress;
 
 }

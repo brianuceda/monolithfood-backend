@@ -107,9 +107,9 @@ public class MonolithFoodApplication {
 
             if(activityLevelRepository.count() == 0) {
                 activityLevels = Arrays.asList(
-                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad fisica.", 1.2, null),
-                    new ActivityLevelEntity(null, "Ejercicio ligero", "1 - 3 dias", "Actividad ligera como caminar casualmente o tareas diarias no exigentes.", 1.375, null),
-                    new ActivityLevelEntity(null, "Ejercicio moderado", "3 - 5 dias", "Actividad moderada que puede incluir trabajos que requieran actividad fisica o ejercicios regulares.", 1.55, null),
+                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad.", 1.2, null),
+                    new ActivityLevelEntity(null, "Ejercicio ligero", "1 - 3 dias", "Actividad ligera como caminatas o tareas diarias no exigentes.", 1.375, null),
+                    new ActivityLevelEntity(null, "Ejercicio moderado", "3 - 5 dias", "Actividad moderada que puede o no incluir ejercicios.", 1.55, null),
                     new ActivityLevelEntity(null, "Ejercicio intenso", "5 - 7 dias", "Ejercicio intenso o trabajos fisicamente demandantes.", 1.725, null),
                     new ActivityLevelEntity(null, "Ejercicio muy intenso", "Atleta profesional", "Atletas o individuos con trabajos extremadamente fisicos.", 1.9, null)
                     // // Mas niveles de actividad fisica
@@ -297,12 +297,12 @@ public class MonolithFoodApplication {
                 RoleEntity ADMIN = getADMIN.get();
                 // Creacion de usuarios
                 users = Arrays.asList(
-                    new UserEntity(null, "kiridepapel", "$2a$10$8YYL6YTawu99l5vFqGTKI.ul/1JoG9FJ9z2HkPRFv6znEb39jvTIe", "brian@gmail.com", "Brian Uceda", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 7), null, null, null, new HashSet<>(Arrays.asList(ADMIN, USER))),
-                    new UserEntity(null, "heatherxvalencia", "$2a$10$Qk5oaC0/Hxlk.vV/CzlcC.plvHOqkiB0qX9ticZy2vexuYnCNigWC", "heather@gmail.com", "Heather Valencia", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 6), null, null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "whoami", "$2a$10$eAs212VvPpG6hkDvS.7nQeY8zrXPW2ZwF6EvJIO5cHigEgRbOSvqi", "willy@gmail.com", "Willy Samata", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 2), null, null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "nayde", "$2a$10$rPmZPIWQxtAXvYqKi75PnuNx6E.oZ6dhSVb5XvP9W7AAbrhDgC8D6", "nayde@gmail.com", "Naydeline Duran", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 5), null, null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "gabi", "$2a$10$NcPc5la3asRhlY8R6bPwJufxND8mK4H9yPphe54VbhXVdNBfOT7NO", "gabriela@gmail.com", "Gabriela Reyes", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 5), null, null, null, new HashSet<>(Arrays.asList(USER))),
-                    new UserEntity(null, "impresora", "$2a$10$WfNOvx0qLnDec/qA1sYGaOvsiII4uKycCMJTHdtiPjdRH8ehw1XIG", "edson@gmail.com", "Edson Linares", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, null, null, null, null, getRandomObjectives(objectives, 2), null, null, null, new HashSet<>(Arrays.asList(USER)))
+                    new UserEntity(null, "kiridepapel", "$2a$10$8YYL6YTawu99l5vFqGTKI.ul/1JoG9FJ9z2HkPRFv6znEb39jvTIe", "brian@gmail.com", "Brian Uceda", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, "179.6.5.75", null, null, null, null, null, getRandomObjectives(objectives, 7), null, null, null, new HashSet<>(Arrays.asList(ADMIN, USER))),
+                    new UserEntity(null, "heatherxvalencia", "$2a$10$Qk5oaC0/Hxlk.vV/CzlcC.plvHOqkiB0qX9ticZy2vexuYnCNigWC", "heather@gmail.com", "Heather Valencia", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, "179.6.5.75", null, null, null, null, null, getRandomObjectives(objectives, 6), null, null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "whoami", "$2a$10$eAs212VvPpG6hkDvS.7nQeY8zrXPW2ZwF6EvJIO5cHigEgRbOSvqi", "willy@gmail.com", "Willy Samata", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, "179.6.5.75", null, null, null, null, null, getRandomObjectives(objectives, 2), null, null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "nayde", "$2a$10$rPmZPIWQxtAXvYqKi75PnuNx6E.oZ6dhSVb5XvP9W7AAbrhDgC8D6", "nayde@gmail.com", "Naydeline Duran", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, "179.6.5.75", null, null, null, null, null, getRandomObjectives(objectives, 5), null, null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "gabi", "$2a$10$NcPc5la3asRhlY8R6bPwJufxND8mK4H9yPphe54VbhXVdNBfOT7NO", "gabriela@gmail.com", "Gabriela Reyes", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, "179.6.5.75", null, null, null, null, null, getRandomObjectives(objectives, 5), null, null, null, new HashSet<>(Arrays.asList(USER))),
+                    new UserEntity(null, "impresora", "$2a$10$WfNOvx0qLnDec/qA1sYGaOvsiII4uKycCMJTHdtiPjdRH8ehw1XIG", "edson@gmail.com", "Edson Linares", "https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png", null, false, false, "179.6.5.75", null, null, null, null, null, getRandomObjectives(objectives, 2), null, null, null, new HashSet<>(Arrays.asList(USER)))
                 );
                 userRepository.saveAll(users);
             }
@@ -394,6 +394,8 @@ public class MonolithFoodApplication {
                     personalInfo.setGender(genders[rand.nextInt(genders.length)]);
                     // Fecha de nacimiento aleatoria entre 1980 y 2010
                     personalInfo.setBorndate(Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay()));
+                    // Localización
+                    personalInfo.setLocation("Lima, Peru");
                     // Altura aleatoria entre 150 y 200 cm
                     personalInfo.setHeightCm(150.0 + rand.nextInt(50));
                     // Peso aleatorio entre 50 y 100 kg
@@ -450,7 +452,6 @@ public class MonolithFoodApplication {
                     config.setLastWeightUpdate(Timestamp.valueOf(LocalDateTime.now().plusDays(-(3 + rand.nextInt(18)))));
                     config.setDarkMode(rand.nextBoolean());
                     // Asignacion de usuario
-                    config.setUser(user);
                     user.setUserConfig(config);
                     usersConfig.add(config);
                 }

@@ -14,18 +14,30 @@ import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonalInfoDTO extends ResponseDTO {
+@Builder
+public class GetPersonalInfoDTO extends ResponseDTO {
+    private String username;
+    private String email;
+    private String names;
     private GenderEnum gender;
     private Timestamp borndate;
-    private Double heightCm;
+    private String location;
     private Double weightKg;
+    private Double heightCm;
+    private String imc;
 
     @Builder
-    public PersonalInfoDTO(String message, Integer statusCode, GenderEnum gender, Timestamp borndate, Double heightCm, Double weightKg) {
+    public GetPersonalInfoDTO(String message, Integer statusCode, String username, String email, String names, GenderEnum gender, Timestamp borndate, String location, Double weightKg, Double heightCm, String imc) {
         super(message, statusCode);
+        this.username = username;
+        this.email = email;
+        this.names = names;
         this.gender = gender;
         this.borndate = borndate;
-        this.heightCm = heightCm;
+        this.location = location;
         this.weightKg = weightKg;
+        this.heightCm = heightCm;
+        this.imc = imc;
+
     }
 }

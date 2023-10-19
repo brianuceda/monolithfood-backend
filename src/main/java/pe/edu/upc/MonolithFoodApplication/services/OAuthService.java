@@ -108,6 +108,7 @@ public class OAuthService {
                 .oauthProviderId(oa2.getOauthProviderId())
                 .isOauthRegistered(oa2.getIsOauthRegistered())
                 .isAccountBlocked(false)
+                .ipAddress(null)
                 .userConfig(uc)
                 .roles(setRoleUser())
                 .build();
@@ -138,6 +139,18 @@ public class OAuthService {
         userRepository.save(user);
         String generatedToken = jwtService.genToken(user);
         return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode(), true);
+    }
+    
+    @Transactional
+    public void setIpAddress(String username, String ipAddress) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent())
+            logger.error("Usuario no encontrado.");
+        // Retorna la información personal del usuario
+        UserEntity user = optUser.get();
+        user.setIpAddress(ipAddress);
+        userRepository.save(user);
     }
 
     // ? Funciones auxiliares
