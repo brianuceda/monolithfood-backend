@@ -39,7 +39,7 @@ public class CategoryFoodEntity {
     private String disadvantages;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "category", cascade = {
+    @OneToMany(mappedBy = "categoryFood", cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
     }, fetch = FetchType.EAGER)

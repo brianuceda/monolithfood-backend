@@ -32,7 +32,7 @@ public class UserFitnessInfoController {
     public ResponseEntity<?> getObjectives(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userFitnessInfoService.getObjectives(username);
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 && response.getMessage() == null) {
             response.setStatusCode(null);
             response.setMessage(null);
             return new ResponseEntity<>(response, HttpStatus.valueOf(200));
@@ -54,7 +54,7 @@ public class UserFitnessInfoController {
     public ResponseEntity<?> getActivityLevels(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userFitnessInfoService.getActivityLevels(username);
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 && response.getMessage() == null) {
             response.setStatusCode(null);
             response.setMessage(null);
             return new ResponseEntity<>(response, HttpStatus.valueOf(200));
@@ -90,21 +90,7 @@ public class UserFitnessInfoController {
     public ResponseEntity<?> calcFitnessInfo(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userFitnessInfoService.calcFitnessInfo(username);
-        if (response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
-    }
-    // * Willy (Macronutrientes consumidos hoy)
-    // Get: Obtener el consumo de calorias, protes, carbos, grasas de hoy
-    @GetMapping("/today-macronutrients")
-    public ResponseEntity<?> getTodayMacronutrients(@RequestHeader("Authorization") String bearerToken) {
-        String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userFitnessInfoService.getMacrosConsumedToday(username);
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 && response.getMessage() == null) {
             response.setStatusCode(null);
             response.setMessage(null);
             return new ResponseEntity<>(response, HttpStatus.valueOf(200));

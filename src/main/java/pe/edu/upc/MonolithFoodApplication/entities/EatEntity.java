@@ -28,6 +28,10 @@ public class EatEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryIntakeEnum categoryIntake;
+
     @Column(nullable = false)
     private Timestamp date;
 

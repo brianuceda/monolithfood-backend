@@ -13,5 +13,6 @@ public class WalletAndLocationDTO {
     private String currency;
     private String currencySymbol;
     private String currencyName;
-    private String location;
+    private String country;
+    private String city;
 }

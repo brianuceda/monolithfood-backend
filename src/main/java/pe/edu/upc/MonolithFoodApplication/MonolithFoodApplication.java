@@ -3,6 +3,7 @@ package pe.edu.upc.MonolithFoodApplication;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 
 import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.CompositionFoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.CompositionFoodKey;
 import pe.edu.upc.MonolithFoodApplication.entities.CompositionRecipeEntity;
@@ -58,7 +60,6 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository
 import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonalInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
-
 @SpringBootApplication
 public class MonolithFoodApplication {
 
@@ -87,7 +88,6 @@ public class MonolithFoodApplication {
         EatRepository eatRepository
     ){
         return args -> {
-
             List<ActivityLevelEntity> activityLevels = new ArrayList<>();
             List<ObjectiveEntity> objectives = new ArrayList<>();
             List<CategoryFoodEntity> categories = new ArrayList<>();
@@ -142,8 +142,9 @@ public class MonolithFoodApplication {
                 nutrients = Arrays.asList(
                     new NutrientEntity(null, "Calorias", "Unidad de medida de energia que se obtiene de los alimentos.", "Las calorías provienen principalmente de los macronutrientes: proteínas, carbohidratos y grasas. El valor calórico indica la cantidad de energía almacenada en los alimentos.", null, null),
                     new NutrientEntity(null, "Proteina", "Macronutriente esencial para la construccion de masa muscular.", "Las proteínas están formadas por aminoácidos. Son importantes para la síntesis y reparación muscular, además de funciones enzimáticas, hormonales e inmunológicas.", null, null),
-                    new NutrientEntity(null, "Grasa", "Macronutriente esencial para la energia.", "Los lípidos o grasas son fuente concentrada de energía. También ayudan en la absorción de vitaminas liposolubles y forman parte de las membranas celulares.", null, null),
                     new NutrientEntity(null, "Carbohidratos", "Principal fuente de energia.", "Los carbohidratos o glucidos proporcionan glucosa que es la principal fuente de energía para las células. Pueden ser simples (azúcares) o complejos (almidones).", null, null),
+                    new NutrientEntity(null, "Grasa", "Macronutriente esencial para la energia.", "Los lípidos o grasas son fuente concentrada de energía. También ayudan en la absorción de vitaminas liposolubles y forman parte de las membranas celulares.", null, null),
+                    new NutrientEntity(null, "Colesterol", "Esencial para la salud celular.", "El colesterol es un lípido necesario para construir membranas celulares y producir hormonas. Existen dos tipos principales: LDL (malo) y HDL (bueno), y mantener un equilibrio es crucial para la salud cardiovascular.", null, null),
                     new NutrientEntity(null, "Vitamina B6", "Vitamina esencial para el metabolismo.", "La vitamina B6 participa en el metabolismo de proteínas, glucidos y grasas. Contribuye a la síntesis de neurotransmisores y hemoglobina.", null, null),
                     new NutrientEntity(null, "Fosforo", "Mineral esencial para la salud osea.", "El fósforo forma parte de huesos y dientes, también participa en el metabolismo energético, la contracción muscular y el equilibrio ácido-base.", null, null),
                     new NutrientEntity(null, "Magnesio", "Mineral esencial para diversas funciones biologicas.", "El magnesio participa en más de 300 reacciones enzimáticas del metabolismo energético, síntesis proteica, contracción muscular y neurotransmisión. Ayuda a regular la glucosa y la presión arterial.", null, null),
@@ -231,34 +232,63 @@ public class MonolithFoodApplication {
             if(compositionFoodRepository.count() == 0) {
                 Map<String, Map<String, Double>> nutrientCompositionFoodMap = new HashMap<String, Map<String, Double>>() {
                     {
-                        put("Pollo", Map.of("Proteina", 31.0, "Grasa", 3.6, "Vitamina B6", 0.5, "Fosforo", 220.0, "Calorias", 239.0, "Carbohidratos", 0.0));
-                        put("Arroz", Map.of("Carbohidratos", 28.0, "Proteina", 2.7, "Grasa", 0.3, "Magnesio", 19.0, "Calorias", 130.0));
-                        put("Brocoli", Map.of("Proteina", 2.4, "Carbohidratos", 7.0, "Vitamina C", 64.0, "Vitamina K", 141.0, "Calorias", 34.0));
-                        put("Platano", Map.of("Carbohidratos", 27.0, "Fibra", 3.1, "Potasio", 422.0, "Calorias", 105.0)); 
-                        put("Lentejas", Map.of("Proteina", 9.0, "Fibra", 8.0, "Hierro", 3.3, "Calorias", 116.0, "Carbohidratos", 20.0));
-                        put("Salmon", Map.of("Proteina", 25.0, "Grasa", 13.6, "Vitamina D", 13.1, "Vitamina B12", 5.0, "Omega 3", 2.0, "Calorias", 208.0));
-                        put("Leche", Map.of("Proteina", 3.3, "Grasa", 3.3, "Calcio", 119.0, "Calorias", 42.0, "Carbohidratos", 5.0));
-                        put("Pescado", Map.of("Proteina", 22.0, "Grasa", 6.5, "Vitamina D", 10.2, "Selenio", 41.0, "Omega 3", 1.8, "Calorias", 111.0));
-                        put("Cebolla", Map.of("Carbohidratos", 9.3, "Fibra", 1.7, "Vitamina C", 7.4, "Folato", 23.0, "Calorias", 40.0));
-                        put("Limon", Map.of("Carbohidratos", 8.2, "Vitamina C", 53.0, "Calcio", 26.0, "Potasio", 138.0, "Calorias", 17.0));
-                        put("Aji", Map.of("Carbohidratos", 6.0, "Fibra", 2.4, "Vitamina A", 1033.0, "Capsaicina", 21.0, "Calorias", 40.0));
-                        put("Carne", Map.of("Proteina", 26.0, "Grasa", 9.0, "Hierro", 2.5, "Zinc", 3.6, "Vitamina B12", 2.0, "Calorias", 165.0));
-                        put("Papa", Map.of("Carbohidratos", 17.5, "Fibra", 2.2, "Vitamina C", 19.0, "Potasio", 429.0, "Calorias", 77.0));
-                        put("Tomate", Map.of("Carbohidratos", 3.9, "Fibra", 1.2, "Vitamina C", 14.0, "Vitamina K", 7.9, "Calorias", 18.0));
-                        put("Ajo", Map.of("Carbohidratos", 33.1, "Fibra", 2.1, "Vitamina C", 31.0, "Selenio", 14.0, "Calorias", 149.0));
-                        put("Queso", Map.of("Proteina", 25.0, "Grasa", 33.0, "Calcio", 721.0, "Fosforo", 509.0, "Calorias", 402.0));
-                        put("Lechuga", Map.of("Carbohidratos", 1.4, "Fibra", 1.0, "Vitamina A", 430.0, "Vitamina K", 74.8, "Calorias", 15.0));
-                        put("Aceituna", Map.of("Grasa", 14.0, "Fibra", 3.0, "Calcio", 88.0, "Sodio", 1462.0, "Calorias", 115.0));
-                        put("Huevo", Map.of("Proteina", 6.3, "Grasa", 4.8, "Vitamina D", 1.1, "Colina", 126.0, "Calorias", 74.0));
-                        put("Mayonesa", Map.of("Grasa", 75.0, "Vitamina K", 2.2, "Vitamina E", 3.0, "acido Graso Omega 6", 22.0, "Calorias", 700.0));
-                        put("Palta", Map.of("Grasa", 14.7, "Fibra", 6.7, "Vitamina K", 21.0, "Folato", 81.0, "Calorias", 160.0));
-                        put("Cecina", Map.of("Proteina", 25.0, "Grasa", 3.0, "Hierro", 3.5, "Sodio", 1100.0, "Calorias", 131.0));
-                        put("Gallina", Map.of("Proteina", 27.0, "Grasa", 3.6, "Hierro", 1.1, "Selenio", 22.0, "Calorias", 190.0));
-                        put("Vino", Map.of("Alcohol", 13.5, "Resveratrol", 0.9, "Antioxidantes", 12.0, "Calorias", 125.0));
-                        put("Azucar", Map.of("Carbohidratos", 99.8, "Calorias", 387.0, "Fructosa", 50.0, "Glucosa", 50.0, "Sacarosa", 50.0));
-                        put("Claras de huevo", Map.of("Proteina", 10.9, "Aminoacidos BCAA", 4.7, "Calcio", 6.0, "Fosfolipidos", 40.0, "Calorias", 52.0));
-                        put("Esencia de vainilla", Map.of("Calorias", 288.0, "Azucares", 71.9, "Alcohol", 35.0, "Vainillina", 200.0));
-                        put("Manjarblanco", Map.of("Carbohidratos", 77.0, "Azucar", 56.0, "Grasa", 7.0, "Calcio", 187.0, "Hierro", 1.2, "Calorias", 379.0));
+                        // put("Pollo", Map.of("Proteina", 31.0, "Grasa", 3.6, "Vitamina B6", 0.5, "Fosforo", 220.0, "Calorias", 239.0, "Carbohidratos", 0.0));
+                        // put("Arroz", Map.of("Carbohidratos", 28.0, "Proteina", 2.7, "Grasa", 0.3, "Magnesio", 19.0, "Calorias", 130.0));
+                        // put("Brocoli", Map.of("Proteina", 2.4, "Carbohidratos", 7.0, "Vitamina C", 64.0, "Vitamina K", 141.0, "Calorias", 34.0));
+                        // put("Platano", Map.of("Carbohidratos", 27.0, "Fibra", 3.1, "Potasio", 422.0, "Calorias", 105.0)); 
+                        // put("Lentejas", Map.of("Proteina", 9.0, "Fibra", 8.0, "Hierro", 3.3, "Calorias", 116.0, "Carbohidratos", 20.0));
+                        // put("Salmon", Map.of("Proteina", 25.0, "Grasa", 13.6, "Vitamina D", 13.1, "Vitamina B12", 5.0, "Omega 3", 2.0, "Calorias", 208.0));
+                        // put("Leche", Map.of("Proteina", 3.3, "Grasa", 3.3, "Calcio", 119.0, "Calorias", 42.0, "Carbohidratos", 5.0));
+                        // put("Pescado", Map.of("Proteina", 22.0, "Grasa", 6.5, "Vitamina D", 10.2, "Selenio", 41.0, "Omega 3", 1.8, "Calorias", 111.0));
+                        // put("Cebolla", Map.of("Carbohidratos", 9.3, "Fibra", 1.7, "Vitamina C", 7.4, "Folato", 23.0, "Calorias", 40.0));
+                        // put("Limon", Map.of("Carbohidratos", 8.2, "Vitamina C", 53.0, "Calcio", 26.0, "Potasio", 138.0, "Calorias", 17.0));
+                        // put("Aji", Map.of("Carbohidratos", 6.0, "Fibra", 2.4, "Vitamina A", 1033.0, "Capsaicina", 21.0, "Calorias", 40.0));
+                        // put("Carne", Map.of("Proteina", 26.0, "Grasa", 9.0, "Hierro", 2.5, "Zinc", 3.6, "Vitamina B12", 2.0, "Calorias", 165.0));
+                        // put("Papa", Map.of("Carbohidratos", 17.5, "Fibra", 2.2, "Vitamina C", 19.0, "Potasio", 429.0, "Calorias", 77.0));
+                        // put("Tomate", Map.of("Carbohidratos", 3.9, "Fibra", 1.2, "Vitamina C", 14.0, "Vitamina K", 7.9, "Calorias", 18.0));
+                        // put("Ajo", Map.of("Carbohidratos", 33.1, "Fibra", 2.1, "Vitamina C", 31.0, "Selenio", 14.0, "Calorias", 149.0));
+                        // put("Queso", Map.of("Proteina", 25.0, "Grasa", 33.0, "Calcio", 721.0, "Fosforo", 509.0, "Calorias", 402.0));
+                        // put("Lechuga", Map.of("Carbohidratos", 1.4, "Fibra", 1.0, "Vitamina A", 430.0, "Vitamina K", 74.8, "Calorias", 15.0));
+                        // put("Aceituna", Map.of("Grasa", 14.0, "Fibra", 3.0, "Calcio", 88.0, "Sodio", 1462.0, "Calorias", 115.0));
+                        // put("Huevo", Map.of("Proteina", 6.3, "Grasa", 4.8, "Vitamina D", 1.1, "Colina", 126.0, "Calorias", 74.0));
+                        // put("Mayonesa", Map.of("Grasa", 75.0, "Vitamina K", 2.2, "Vitamina E", 3.0, "acido Graso Omega 6", 22.0, "Calorias", 700.0));
+                        // put("Palta", Map.of("Grasa", 14.7, "Fibra", 6.7, "Vitamina K", 21.0, "Folato", 81.0, "Calorias", 160.0));
+                        // put("Cecina", Map.of("Proteina", 25.0, "Grasa", 3.0, "Hierro", 3.5, "Sodio", 1100.0, "Calorias", 131.0));
+                        // put("Gallina", Map.of("Proteina", 27.0, "Grasa", 3.6, "Hierro", 1.1, "Selenio", 22.0, "Calorias", 190.0));
+                        // put("Vino", Map.of("Alcohol", 13.5, "Resveratrol", 0.9, "Antioxidantes", 12.0, "Calorias", 125.0));
+                        // put("Azucar", Map.of("Carbohidratos", 99.8, "Calorias", 387.0, "Fructosa", 50.0, "Glucosa", 50.0, "Sacarosa", 50.0));
+                        // put("Claras de huevo", Map.of("Proteina", 10.9, "Aminoacidos BCAA", 4.7, "Calcio", 6.0, "Fosfolipidos", 40.0, "Calorias", 52.0));
+                        // put("Esencia de vainilla", Map.of("Calorias", 288.0, "Azucares", 71.9, "Alcohol", 35.0, "Vainillina", 200.0));
+                        // put("Manjarblanco", Map.of("Carbohidratos", 77.0, "Azucar", 56.0, "Grasa", 7.0, "Calcio", 187.0, "Hierro", 1.2, "Calorias", 379.0));
+
+                        put("Pollo", Map.of("Proteina", 0.31, "Grasa", 0.036, "Calorias", 2.39, "Vitamina B6", 0.005, "Fosforo", 0.022));
+                        put("Arroz", Map.of("Carbohidratos", 0.29, "Proteina", 0.027, "Grasa", 0.003, "Calorias", 1.3, "Fibra", 0.004, "Magnesio", 0.025)); 
+                        put("Brocoli", Map.of("Carbohidratos", 0.06, "Proteina", 0.025, "Fibra", 0.026, "Calorias", 0.34, "Vitamina C", 0.892, "Vitamina K", 1.02, "Calcio", 0.47));
+                        put("Platano", Map.of("Carbohidratos", 0.27, "Proteina", 0.01, "Grasa", 0.005, "Calorias", 1.05, "Fibra", 0.026, "Potasio", 0.358, "Vitamina B6", 0.004, "Vitamina C", 0.1, "Magnesio", 0.27));
+                        put("Lentejas", Map.of("Carbohidratos", 0.2, "Proteina", 0.09, "Fibra", 0.08, "Calorias", 1.16, "Hierro", 0.00015, "Zinc", 0.00019, "Calcio", 0.00019, "Magnesio", 0.00016, "Fosforo", 0.00011));
+                        put("Salmon", Map.of("Proteina", 0.199, "Grasa", 0.136, "Calorias", 2.08, "Omega 3", 0.011, "Vitamina D", 0.071, "Calcio", 0.09, "Fosforo", 0.35));
+                        put("Leche", Map.of("Carbohidratos", 0.05, "Proteina", 0.033, "Grasa", 0.033, "Calorias", 0.42, "Lactosa", 0.048, "Calcio", 1.19, "Fosforo", 0.93, "Potasio", 1.51));
+                        put("Pescado", Map.of("Proteina", 0.17, "Grasa", 0.022, "Carbohidratos", 0.002, "Calorias", 0.82, "Omega 3", 0.003, "Calcio", 0.15, "Fosforo", 0.88, "Potasio", 2.5));
+                        put("Cebolla", Map.of("Carbohidratos", 0.093, "Calorias", 0.4, "Fibra", 0.02, "Folato", 0.19, "Potasio", 1.46, "Vitamina C", 0.092));
+                        put("Limon", Map.of("Carbohidratos", 0.093, "Calorias", 0.17, "Fibra", 0.028, "Vitamina C", 0.53, "Potasio", 1.38, "Calcio", 0.26));
+                        put("Aji", Map.of("Carbohidratos", 0.088, "Calorias", 0.4, "Fibra", 0.017, "Vitamina C", 1.4, "Vitamina A", 4.16, "Potasio", 3.22));
+                        put("Carne", Map.of("Proteina", 0.2, "Grasa", 0.055, "Calorias", 1.04, "Hierro", 0.012, "Zinc", 0.029));  
+                        put("Papa", Map.of("Carbohidratos", 0.17, "Calorias", 0.77, "Fibra", 0.022, "Potasio", 4.21, "Vitamina C", 0.197));
+                        put("Tomate", Map.of("Carbohidratos", 0.039, "Calorias", 0.18, "Fibra", 0.012, "Potasio", 2.37, "Vitamina C", 0.137));
+                        put("Ajo", Map.of("Carbohidratos", 0.331, "Calorias", 1.49, "Fibra", 0.021, "Calcio", 1.81, "Fosforo", 1.53));
+                        put("Queso", Map.of("Proteina", 0.25, "Grasa", 0.33, "Calorias", 4.02, "Calcio", 7.21, "Fosforo", 5.12, "Sodio", 6.21));
+                        put("Lechuga", Map.of("Carbohidratos", 0.033, "Calorias", 0.15, "Fibra", 0.013, "Folato", 0.384, "Vitamina A", 3.61));
+                        put("Aceituna", Map.of("Grasa", 0.15, "Calorias", 1.15, "Fibra", 0.031, "Calcio", 0.52, "Magnesio", 0.04));
+                        put("Huevo", Map.of("Proteina", 0.063, "Grasa", 0.048, "Calorias", 0.74, "Colesterol", 1.86));
+                        put("Mayonesa", Map.of("Grasa", 0.832, "Calorias", 7.2, "Sodio", 0.067)); 
+                        put("Palta", Map.of("Grasa", 0.238, "Calorias", 2.33, "Fibra", 0.101, "Potasio", 7.3));
+                        put("Cecina", Map.of("Proteina", 0.29, "Grasa", 0.02, "Calorias", 1.22, "Sodio", 15.75));
+                        put("Gallina", Map.of("Proteina", 0.2085, "Grasa", 0.05, "Calorias", 1.1, "Hierro", 0.01));
+                        put("Vino", Map.of("Alcohol", 0.125, "Calorias", 0.85, "Sodio", 0.058));
+                        put("Azucar", Map.of("Carbohidratos", 0.998, "Calorias", 3.85, "Fructosa", 0.5, "Glucosa", 0.5, "Sacarosa", 0.5));
+                        put("Claras de huevo", Map.of("Proteina", 0.109, "Calorias", 0.52, "Riboflavina", 0.00367));
+                        put("Esencia de vainilla", Map.of("Alcohol", 0.35, "Calorias", 2.88, "Azucares", 0.719));
+                        put("Manjarblanco", Map.of("Carbohidratos", 0.77, "Grasa", 0.057, "Calorias", 3.36, "Calcio", 1.4, "Fosforo", 0.95, "Hierro", 0.012));
                     }
                 };
                 // Crear un mapa para buscar FoodEntity por nombre
@@ -395,7 +425,8 @@ public class MonolithFoodApplication {
                     // Fecha de nacimiento aleatoria entre 1980 y 2010
                     personalInfo.setBorndate(Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay()));
                     // Localización
-                    personalInfo.setLocation("Lima, Peru");
+                    personalInfo.setCity("Lima");
+                    personalInfo.setCountry("Peru");
                     // Altura aleatoria entre 150 y 200 cm
                     personalInfo.setHeightCm(150.0 + rand.nextInt(50));
                     // Peso aleatorio entre 50 y 100 kg
@@ -461,18 +492,27 @@ public class MonolithFoodApplication {
                 for(UserEntity user : users) {
                     for(int i = 0; i < new Random().nextInt(11) + 4; i++) {
                         EatEntity eat = new EatEntity();
-                        eat.setDate(new Timestamp(new Random().nextLong(System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000, System.currentTimeMillis() - 3 * 60 * 60 * 1000)));
+                        Timestamp sendTime = new Timestamp(new Random().nextLong(System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000, System.currentTimeMillis() - 3 * 60 * 60 * 1000));
+                        eat.setDate(sendTime);
+                        // Calculo de fecha
+                        LocalTime timeOfEat = sendTime.toLocalDateTime().toLocalTime();
+                        if (timeOfEat.isAfter(LocalTime.of(2, 0)) && timeOfEat.isBefore(LocalTime.of(12, 0)))
+                            eat.setCategoryIntake(CategoryIntakeEnum.DESAYUNO);
+                        else if (timeOfEat.isAfter(LocalTime.of(11, 59, 59, 999)) && timeOfEat.isBefore(LocalTime.of(19, 0)))
+                            eat.setCategoryIntake(CategoryIntakeEnum.ALMUERZO);
+                        else eat.setCategoryIntake(CategoryIntakeEnum.CENA);
                         eat.setUser(user);
                         if(new Random().nextBoolean()) {
                             eat.setFood(getRandomObject(foods));
                             eat.setRecipe(null);
-                            eat.setUnitOfMeasurement(getRandomUnitOfMeasurement());
+                            eat.setUnitOfMeasurement(UnitOfMeasurementEnum.G);
+                            // eat.setUnitOfMeasurement(getRandomUnitOfMeasurement());
                             if (eat.getUnitOfMeasurement() == UnitOfMeasurementEnum.UN) {
                                 // Genera un entero aleatorio entre 1 y 3
                                 eat.setEatQuantity(1.0 + (double) new Random().nextInt(3));
                             } else {
-                                // Genera un decimal aleatorio entre 1 y 15
-                                eat.setEatQuantity(Math.round((1 + new Random().nextDouble() * 14) * 10.0) / 10.0);
+                                // Genera un decimal aleatorio entre 1 y 400
+                                eat.setEatQuantity(Math.round((1 + new Random().nextDouble() * 399) * 10.0) / 10.0);
                             }
                         } else {
                             eat.setRecipe(getRandomObject(recipes));

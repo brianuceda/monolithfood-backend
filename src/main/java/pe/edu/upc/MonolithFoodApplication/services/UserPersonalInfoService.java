@@ -61,7 +61,9 @@ public class UserPersonalInfoService {
         // Se actualizan los campos que el usuario haya ingresado
         upi.setGender(request.getGender());
         upi.setBorndate(request.getBorndate());
-        upi.setLocation(walletAndLocation.getLocation());
+        upi.setCity(walletAndLocation.getCity());
+        upi.setCountry(walletAndLocation.getCountry());
+        upi.setStartWeightKg(request.getWeightKg());
         upi.setWeightKg(request.getWeightKg());
         upi.setHeightCm(request.getHeightCm());
         uc.setLastWeightUpdate(new Timestamp(System.currentTimeMillis()));
@@ -110,7 +112,7 @@ public class UserPersonalInfoService {
             .names(user.getNames())
             .gender(upi.getGender())
             .borndate(upi.getBorndate())
-            .location(upi.getLocation())
+            .location(upi.getCity() + ", " + upi.getCountry())
             .weightKg(upi.getWeightKg())
             .heightCm(upi.getHeightCm())
             .imc(String.format("%.2f", calculateIMC(upi.getWeightKg(), upi.getHeightCm())) + " % | " + getClasification(calculateIMC(upi.getWeightKg(), upi.getHeightCm())))

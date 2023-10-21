@@ -30,7 +30,8 @@ public class ExternalApisService {
         // Retorna la ciudad y el país del usuario
         if (result != null) {
             WalletAndLocationDTO dto = WalletAndLocationDTO.builder()
-                .location((String) result.get("city") + ", " + (String) result.get("country_name"))
+                .city((String) result.get("city"))
+                .country((String) result.get("country_name"))
                 .currency((String) result.get("currency"))
                 .currencyName((String) result.get("currency_name"))
                 .currencySymbol(CurrencySymbolMapper.getCurrencySymbol((String) result.get("currency")))

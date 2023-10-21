@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import pe.edu.upc.MonolithFoodApplication.dtos.macronutrients.MacronutrientsDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosDetailedDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosPerCategoryDTO;
+import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 
 @Repository
@@ -58,64 +60,76 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
     )
     List<Object[]> getAverageCalorieConsumptioDay(@Param("username") String username);
 
-    // * (JPQL) Willy: Obtener los macronutrientes (4) consumidos en el dia de hoy, junto a la cantidad de macronutrientes (4) que debe consumir el usuario a diario.
+    // asd
     @Query(
-        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.macronutrients.MacronutrientsDTO(" +
-            "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyCaloricIntake, " +
+        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosDetailedDTO(" +
+            "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedCalories, " +
             "u.userFitnessInfo.dailyCaloricIntake as dailyCaloricIntake, " +
-            "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyProteinIntake, " +
+            "(SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyCaloricIntake) as percentageCaloricConsumed, " +
+            "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedProteins, " +
             "u.userFitnessInfo.dailyProteinIntake as dailyProteinIntake, " +
-            "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyCarbohydrateIntake, " +
+            "(SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyProteinIntake) as percentageProteinConsumed, " +
+            "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedCarbohydrates, " +
             "u.userFitnessInfo.dailyCarbohydrateIntake as dailyCarbohydrateIntake, " +
-            "SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedDailyFatIntake, " +
-            "u.userFitnessInfo.dailyFatIntake as dailyFatIntake) " +
+            "(SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyCarbohydrateIntake) as percentageCarbohydrateConsumed, " +
+            "SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedFats, " +
+            "u.userFitnessInfo.dailyFatIntake as dailyFatIntake, " +
+            "(SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyFatIntake) as percentageFatConsumed) " +
         "FROM EatEntity e " +
         "JOIN e.user u " +
         "JOIN e.food f " +
         "JOIN f.compositions cf " +
         "JOIN cf.nutrient n " +
-        "WHERE u.username = :username AND e.date >= CURRENT_DATE " +
+        "WHERE u.username = :username AND e.date BETWEEN :startDate AND :endDate " +
         "GROUP BY username, dailyCaloricIntake, dailyProteinIntake, dailyCarbohydrateIntake, dailyFatIntake"
     )
-    MacronutrientsDTO getMacrosConsumedToday(@Param("username") String username);
+    MacrosDetailedDTO getMacrosDetailed(
+        @Param("username") String username,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
 
-    // * (JPQL) Heather: Retorna todos los alimentos consumidos por el usuario
+    @Query(
+        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosPerCategoryDTO(" +
+            "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END), " +
+            "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END), " +
+            "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END), " +
+            "SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END)) " +
+        "FROM EatEntity e " +
+        "JOIN e.user u " +
+        "JOIN e.food f " +
+        "JOIN f.compositions cf " +
+        "JOIN cf.nutrient n " +
+        "WHERE u.username = :username AND e.categoryIntake = :category AND e.date BETWEEN :startDate AND :endDate " +
+        "GROUP BY u.username"
+    )
+    MacrosPerCategoryDTO findMacrosPerCategory(
+        @Param("username") String username,
+        @Param("category") CategoryIntakeEnum category,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+
     @Query(
         "SELECT " + 
             "e.id as id, " +
             "f.name as name, " + 
-            "c.name as category, " + 
+            "c.name as categoryFood, " + 
             "e.unitOfMeasurement as unitOfMeasurement, " + 
             "e.eatQuantity as quantity, " + 
-            "(e.eatQuantity * cf.nutrientQuantity) as calories, " + 
             "e.date as date " +
         "FROM EatEntity e " +
         "JOIN e.user u " +
         "JOIN e.food f " +
-        "JOIN f.category c " +
-        "LEFT JOIN f.compositions cf " +
-        "JOIN cf.nutrient n " +
-        "WHERE u.username = :username AND n.name = 'Calorias'"
+        "JOIN f.categoryFood c " +
+        "WHERE u.username = :username AND e.categoryIntake = :category AND e.date BETWEEN :startDate AND :endDate"
     )
-    List<Object[]> findAllIntakesByUsername(@Param("username") String username);
+    List<Object[]> findIntakesPerCategory(
+        @Param("username") String username,
+        @Param("category") CategoryIntakeEnum category,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
 
-    // * (JPQL) Heather: Retorna todos los alimentos consumidos por el usuario entre dos fechas
-    @Query(
-        "SELECT " + 
-            "e.id as id, " +
-            "f.name as name, " + 
-            "c.name as category, " + 
-            "e.unitOfMeasurement as unitOfMeasurement, " + 
-            "e.eatQuantity as quantity, " + 
-            "(e.eatQuantity * cf.nutrientQuantity) as calories, " + 
-            "e.date as date " +
-        "FROM EatEntity e " +
-        "JOIN e.user u " +
-        "JOIN e.food f " +
-        "JOIN f.category c " +
-        "LEFT JOIN f.compositions cf " +
-        "JOIN cf.nutrient n " +
-        "WHERE u.username = :username AND n.name = 'Calorias' AND e.date BETWEEN :startDate AND :endDate"
-    )
-    List<Object[]> findAllIntakesByUsernameBetweenDates(@Param("username") String username, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
+ 

@@ -53,7 +53,7 @@ public class FoodEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = true, name = "category_food_id")
-    private CategoryFoodEntity category;
+    private CategoryFoodEntity categoryFood;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "food", fetch = FetchType.EAGER)

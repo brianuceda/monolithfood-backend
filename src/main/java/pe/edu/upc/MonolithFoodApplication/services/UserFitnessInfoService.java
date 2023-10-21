@@ -19,7 +19,6 @@ import pe.edu.upc.MonolithFoodApplication.dtos.activitylevel.ActivityLevelsRespo
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.macronutrients.MacronutrientsDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectiveDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectivesResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
@@ -29,7 +28,6 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.ActivityLevelRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
@@ -42,7 +40,6 @@ public class UserFitnessInfoService {
     private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;
     private final ActivityLevelRepository activityLevelRepository;
-    private final EatRepository eatRepository;
     private final UserFitnessInfoRepository userFitnessInfoRepository;
     // Log de errores y eventos
     private static final Logger logger = LoggerFactory.getLogger(UserFitnessInfoService.class);
@@ -252,7 +249,6 @@ public class UserFitnessInfoService {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
         // Variables para verificar que el usuario tenga la información necesaria para calcular su información fitness
@@ -308,18 +304,6 @@ public class UserFitnessInfoService {
             ufi.getAvgProteinPerKg(),
             ufi.getTmb()
         );
-    }
-    // * Willy: Obtener los macronutrientes consumidos en el dia de hoy
-    public ResponseDTO getMacrosConsumedToday(String username) {
-        logger.info("Username: " + username);
-        MacronutrientsDTO dto = eatRepository.getMacrosConsumedToday(username);
-        if (dto == null) {
-            return new ResponseDTO("No has consumido alimentos hoy.", 404);
-        }
-        if (dto.getConsumedDailyCaloricIntake() == 0.0 && dto.getConsumedDailyProteinIntake() == 0.0 && dto.getConsumedDailyCarbohydrateIntake() == 0.0 && dto.getConsumedDailyFatIntake() == 0.0) {
-            return new ResponseDTO("No has consumido nada hoy.", 404);
-        }
-        return dto;
     }
 
     // ? Funciones auxiliares

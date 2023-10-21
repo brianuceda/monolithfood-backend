@@ -35,10 +35,16 @@ public class UserPersonalInfoEntity {
     private Timestamp borndate;
 
     @Column(nullable = true, length = 64)
-    private String location;
+    private String city;
+
+    @Column(nullable = true, length = 64)
+    private String country;
 
     @Column(nullable = true)
     private Double heightCm;
+
+    @Column(nullable = true)
+    private Double startWeightKg;
 
     @Column(nullable = true)
     private Double weightKg;

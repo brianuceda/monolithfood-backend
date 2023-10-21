@@ -165,7 +165,6 @@ public class AuthService {
                     HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
-    // * Brian: Manejar la autenticación de Oauth2
 
     // ? Funciones auxiliares
     private Set<RoleEntity> setRoleUser() {

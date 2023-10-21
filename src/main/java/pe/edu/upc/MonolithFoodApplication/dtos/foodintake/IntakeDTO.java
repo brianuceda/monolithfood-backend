@@ -1,21 +1,38 @@
 package pe.edu.upc.MonolithFoodApplication.dtos.foodintake;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class IntakeDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class IntakeDTO extends ResponseDTO {
     private Long id;
     private String name;
-    private String category;
+    private String categoryFood;
     private UnitOfMeasurementEnum unitOfMeasurement;
     private Double quantity;
-    private Double calories;
-    private Timestamp date;
+    private LocalDateTime date;
+// e.id, f.name, c.name, e.unitOfMeasurement, e.eatQuantity, e.date)
+    public IntakeDTO(Long id, String name, String categoryFood, UnitOfMeasurementEnum unitOfMeasurement, Double quantity, LocalDateTime date) {
+        super(null, null);
+        this.id = id;
+        this.name = name;
+        this.categoryFood = categoryFood;
+        this.unitOfMeasurement = unitOfMeasurement;
+        this.quantity = quantity;
+        this.date = date;
+    }
+
+    public IntakeDTO(String message) {
+        super(message, null);
+    }
 }

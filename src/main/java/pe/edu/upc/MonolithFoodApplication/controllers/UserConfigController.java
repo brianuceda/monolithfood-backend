@@ -30,7 +30,7 @@ public class UserConfigController {
     public ResponseEntity<?> getConfig(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userConfigService.getConfig(username);
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 && response.getMessage() == null) {
             response.setStatusCode(null);
             response.setMessage(null);
             return new ResponseEntity<>(response, HttpStatus.valueOf(200));
