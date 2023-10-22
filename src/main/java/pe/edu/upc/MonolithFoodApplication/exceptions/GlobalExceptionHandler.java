@@ -35,4 +35,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
+    // Se ejecuta cuando se intenta convertir un valor no válido en un valor de un enum
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
+        if (ex.getMessage().contains("No enum constant")) {
+            ResponseDTO response = new ResponseDTO("El valor proporcionado no es un valor permitido.", 400);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            ResponseDTO response = new ResponseDTO("Error en el formato de los datos enviados.", 400);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

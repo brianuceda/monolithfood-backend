@@ -1,14 +1,21 @@
 package pe.edu.upc.MonolithFoodApplication.dtos.foodintake;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AllCategoriesIntakesDTO {
     private CategoryIntakeDTO desayuno;
     private CategoryIntakeDTO almuerzo;
     private CategoryIntakeDTO cena;
+
+    public AllCategoriesIntakesDTO() {
+        this.desayuno = null;
+        this.almuerzo = null;
+        this.cena = null;
+    }
 }

@@ -21,7 +21,7 @@ public class IntakeDTO extends ResponseDTO {
     private UnitOfMeasurementEnum unitOfMeasurement;
     private Double quantity;
     private LocalDateTime date;
-// e.id, f.name, c.name, e.unitOfMeasurement, e.eatQuantity, e.date)
+    
     public IntakeDTO(Long id, String name, String categoryFood, UnitOfMeasurementEnum unitOfMeasurement, Double quantity, LocalDateTime date) {
         super(null, null);
         this.id = id;

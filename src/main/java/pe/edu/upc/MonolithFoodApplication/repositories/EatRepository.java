@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosDetailedDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosPerCategoryDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
@@ -129,6 +130,35 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         @Param("category") CategoryIntakeEnum category,
         @Param("startDate") LocalDateTime startDate,
         @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query(
+        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO(" + 
+            "e.id as id, " +
+            "f.name as name, " + 
+            "e.categoryIntake as categoryIntake, " + 
+            "c.name as categoryFood, " + 
+            "e.unitOfMeasurement as unitOfMeasurement, " + 
+            "e.eatQuantity as quantity, " + 
+            "e.date as date, " +
+            "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as calories, " +
+            "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as proteins, " +
+            "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as carbohydrates, " +
+            "SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as fats) " +
+        "FROM EatEntity e " +
+            "JOIN e.user u " +
+            "JOIN e.food f " +
+            "JOIN f.compositions cf " +
+            "JOIN cf.nutrient n " +
+            "JOIN f.categoryFood c " +
+        "WHERE u.username = :username " +
+            "AND e.id = :id " +
+        "GROUP BY "+
+            "e.id, f.name, c.name, e.categoryIntake, e.unitOfMeasurement, e.eatQuantity, e.date"
+    )
+    DetailedIntakeDTO findDetailedIntake(
+        @Param("username") String username,
+        @Param("id") Long id
     );
 
 }

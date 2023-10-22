@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -68,12 +69,57 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
     // * Heather (Alimentos consumidos)
+    @GetMapping("/intakes/macros")
+    public ResponseEntity<?> getMacrosDetailed(
+        @RequestHeader("Authorization") String bearerToken, 
+        @RequestParam(required = false) LocalDateTime startDate, 
+        @RequestParam(required = false) LocalDateTime endDate
+    ) {
+        // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
+        if (startDate == null || endDate == null) {
+            LocalDate today = LocalDate.now();
+            startDate = today.atStartOfDay();
+            endDate = today.atTime(23, 59, 59, 999_000_000);
+        }
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = eatService.getMacrosDetailed(username, startDate, endDate, true);
+        if (response.getStatusCode() == 200 && response.getMessage() == null) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        }
+    }
+    @GetMapping("/intakes/category")
+    public ResponseEntity<?> getSpecificMacrosAndIntakes(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestParam(required = true) CategoryIntakeEnum category,
+            @RequestParam(required = false) LocalDateTime startDate, 
+            @RequestParam(required = false) LocalDateTime endDate
+    ) {
+        // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
+        if (startDate == null || endDate == null) {
+            LocalDate today = LocalDate.now();
+            startDate = today.atStartOfDay();
+            endDate = today.atTime(23, 59, 59, 999_000_000);
+        }
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = eatService.getSpecificMacrosAndIntakes(username, category, startDate, endDate);
+        if (response.getStatusCode() == 200 && response.getMessage() == null) {
+            response.setStatusCode(null);
+            response.setMessage(null);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        }
+    }
     @GetMapping("/intakes/category/all")
     public ResponseEntity<?> getAllCategoryMacrosAndIntakes(
             @RequestHeader("Authorization") String bearerToken,
             @RequestParam(required = false) LocalDateTime startDate, 
             @RequestParam(required = false) LocalDateTime endDate
-        ) {
+    ) {
         // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
         if (startDate == null || endDate == null) {
             LocalDate today = LocalDate.now();
@@ -90,43 +136,11 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         }
     }
-    @GetMapping("/intakes/category")
-    public ResponseEntity<?> getCatMacrosAndIntakes(
-            @RequestHeader("Authorization") String bearerToken,
-            @RequestParam(required = true) CategoryIntakeEnum category,
-            @RequestParam(required = false) LocalDateTime startDate, 
-            @RequestParam(required = false) LocalDateTime endDate
-        ) {
-        // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
-        if (startDate == null || endDate == null) {
-            LocalDate today = LocalDate.now();
-            startDate = today.atStartOfDay();
-            endDate = today.atTime(23, 59, 59, 999_000_000);
-        }
+    @GetMapping("/intakes/{id}")
+    public ResponseEntity<?> getDetailedIntake(@RequestHeader("Authorization") String bearerToken,
+            @PathVariable("id") Long id) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = eatService.getCatMacrosAndIntakes(username, category, startDate, endDate, true);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
-    }
-    @GetMapping("/intakes/macros")
-    public ResponseEntity<?> getMacrosDetailed(
-        @RequestHeader("Authorization") String bearerToken, 
-        @RequestParam(required = false) LocalDateTime startDate, 
-        @RequestParam(required = false) LocalDateTime endDate
-    ) {
-        // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
-        if (startDate == null || endDate == null) {
-            LocalDate today = LocalDate.now();
-            startDate = today.atStartOfDay();
-            endDate = today.atTime(23, 59, 59, 999_000_000);
-        }
-        String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = eatService.getMacrosDetailed(username, startDate, endDate, true);
+        ResponseDTO response = eatService.getDetailedIntake(username, id);
         if (response.getStatusCode() == 200 && response.getMessage() == null) {
             response.setStatusCode(null);
             response.setMessage(null);

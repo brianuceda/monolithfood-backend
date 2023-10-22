@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.AllCategoriesIntakesDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.CategoryIntakeDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.IntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.IntakesResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosDetailedDTO;
@@ -40,58 +41,6 @@ public class EatService {
     private final FoodRepository foodRepository;
     private static final Logger logger = LoggerFactory.getLogger(EatService.class);
     
-    // * Heather: Obtener todos los macronutrientes consumidos, por consumir, su porcentaje de consumo actual y los alimentos consumidos en un rango de fechas
-    public ResponseDTO getAllMacrosAndIntakes(String username, LocalDateTime startDate, LocalDateTime endDate) {
-        // Verifica que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if(!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        return new IntakesResponseDTO(
-            null, 200,
-            (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false),
-            new AllCategoriesIntakesDTO(
-                (CategoryIntakeDTO) getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate, false),
-                (CategoryIntakeDTO) getCatMacrosAndIntakes(username, CategoryIntakeEnum.ALMUERZO, startDate, endDate, false),
-                (CategoryIntakeDTO) getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate, false)
-            )
-        );
-    }
-    // * Heather: Obtener los macronutrientes consumidos y los alimentos consumidos en un rango de fechas
-    public ResponseDTO getCatMacrosAndIntakes(String username, CategoryIntakeEnum category, LocalDateTime startDate, LocalDateTime endDate, Boolean isSpecificCategory) {
-        // Verifica que el usuario exista
-        if (isSpecificCategory == true) {
-            Optional<UserEntity> optUser = userRepository.findByUsername(username);
-            if(!optUser.isPresent())
-                return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        MacrosPerCategoryDTO macrosConsumedPerCategory = eatRepository.findMacrosPerCategory(username, category, startDate, endDate);
-        if (macrosConsumedPerCategory == null)
-            macrosConsumedPerCategory = new MacrosPerCategoryDTO(0.0, 0.0, 0.0, 0.0);
-        macrosConsumedPerCategory.roundAllValues();
-        List<Object[]> results = eatRepository.findIntakesPerCategory(username, category, startDate, endDate);
-        List<IntakeDTO> myIntakes = new ArrayList<>();
-        if (results.isEmpty()) {
-            myIntakes.add(new IntakeDTO("No has registrado ningun alimento."));
-        }
-        else {
-            myIntakes = results.stream().map(result -> {
-                return new IntakeDTO(
-                    (Long) result[0],
-                    (String) result[1],
-                    (String) result[2],
-                    (UnitOfMeasurementEnum) result[3],
-                    (Double) result[4],
-                    ((Timestamp) result[5]).toLocalDateTime()
-                );
-            }).collect(Collectors.toList());
-        }
-        if (isSpecificCategory == true)
-            return new CategoryIntakeDTO(null, 200, macrosConsumedPerCategory, myIntakes);
-        else
-            return new CategoryIntakeDTO(null, null, macrosConsumedPerCategory, myIntakes);
-    }
     // * Heather: Obtener todos los macronutrientes consumidos, por consumir y su porcentaje de consumo actual
     public ResponseDTO getMacrosDetailed(String username, LocalDateTime startDate, LocalDateTime endDate, Boolean isSeparatedSearch) {
         // Verifica que el usuario exista
@@ -111,7 +60,54 @@ public class EatService {
         dto.setStatusCode(isSeparatedSearch ? 200 : null);
         return dto;
     }
-    // * Heather: Agregar un alimento a la lista de alimentos consumidos por un usuario
+    // * Heather: Obtener todos los macronutrientes consumidos, por consumir, su porcentaje de consumo actual y los alimentos consumidos en un rango de fechas de UNA categoría de ingesta (desayuno, almuerzo o cena)
+    public ResponseDTO getSpecificMacrosAndIntakes(String username, CategoryIntakeEnum category, LocalDateTime startDate, LocalDateTime endDate) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if(!optUser.isPresent())
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        AllCategoriesIntakesDTO specificCategory = new AllCategoriesIntakesDTO();
+        if (category == CategoryIntakeEnum.DESAYUNO)
+            specificCategory.setDesayuno(getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate));
+        else if (category == CategoryIntakeEnum.ALMUERZO)
+            specificCategory.setAlmuerzo(getCatMacrosAndIntakes(username, CategoryIntakeEnum.ALMUERZO, startDate, endDate));
+        else if (category == CategoryIntakeEnum.CENA)
+            specificCategory.setCena(getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate));
+        return new IntakesResponseDTO(
+            null, 200,
+            (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false), specificCategory
+        );
+    }
+    // * Heather: Obtener todos los macronutrientes consumidos, por consumir, su porcentaje de consumo actual y los alimentos consumidos en un rango de fechas de TODAS las categorías de ingestas (desayuno, almuerzo y cena)
+    public ResponseDTO getAllMacrosAndIntakes(String username, LocalDateTime startDate, LocalDateTime endDate) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if(!optUser.isPresent())
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        return new IntakesResponseDTO(
+            null, 200,
+            (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false),
+            new AllCategoriesIntakesDTO(
+                getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate),
+                getCatMacrosAndIntakes(username, CategoryIntakeEnum.ALMUERZO, startDate, endDate),
+                getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate)
+            )
+        );
+    }
+    // * Heather: Obtener la información de un alimento consumido
+    public ResponseDTO getDetailedIntake(String username, Long id) {
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if(!optUser.isPresent())
+            return new ResponseDTO("Usuario no encontrado.", 404);
+        DetailedIntakeDTO dto = eatRepository.findDetailedIntake(username, id);
+        if (dto == null)
+            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+        dto.minusHours(5);
+        dto.roundAllValues();
+        dto.noMessageAndStatusCode();
+        return dto;
+    }
+    // * Heather: Agregar un alimento a la lista de alimentos consumidos
     @Transactional
     public ResponseDTO addFoodIntake(String username, NewIntakeDTO foodIntakeDTO) {
         // Verifica que el usuario exista
@@ -157,14 +153,11 @@ public class EatService {
     public ResponseDTO updateFoodIntake(String username, UpdateIntakeDTO newFoodIntakeDTO) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if(!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
+        if(!optUser.isPresent())
             return new ResponseDTO("Usuario no encontrado.", 404);
-        }
         // Verifica que el registro de ingesta exista
         Optional<EatEntity> getEat = eatRepository.findById(newFoodIntakeDTO.getEatId());
-        if(!getEat.isPresent()) {
-            logger.error("Registro de ingesta no encontrado.");
+        if(!getEat.isPresent() || !getEat.get().getUser().getUsername().equals(username)) {
             return new ResponseDTO("Registro de ingesta no encontrado.", 404);
         }
         // Verifica que el alimento exista
@@ -173,15 +166,9 @@ public class EatService {
             logger.error("Alimento no encontrado.");
             return new ResponseDTO("Alimento no encontrado.", 404);
         }
-        // Si la solicitud realizada pertenece al usuario que la realizó
+        // Es receta
         EatEntity newEat = getEat.get();
-        if(!newEat.getUser().getUsername().equals(username)) {
-            logger.error("El usuario " + username + " no tiene permisos para actualizar el registro " + newFoodIntakeDTO.getEatId() + ".");
-            return new ResponseDTO("No tienes permisos para actualizar este registro.", 403);
-        }
-        // Si el elemento de eat tiene .getFood() == null, significa que es un registro de ingesta de una receta
         if(newEat.getFood() == null) {
-            logger.error("Aún no se puede actualizar el registro de ingesta de una receta para el usuario " + username + ".");
             return new ResponseDTO("Aún no se puede actualizar el registro de ingesta de una receta.", 400);
         }
         // Lista para guardar los campos que el usuario haya actualizado
@@ -234,30 +221,46 @@ public class EatService {
     public ResponseDTO deleteFoodIntake(String username, Long eatId) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
+        if (!optUser.isPresent())
             return new ResponseDTO("Usuario no encontrado.", 404);
-        }
         // Verificar que el registro de ingesta exista
         Optional<EatEntity> getEat = eatRepository.findById(eatId);
-        if (!getEat.isPresent()) {
-            logger.error("Registro de ingesta no encontrado.");
+        if (!getEat.isPresent() || !getEat.get().getUser().getUsername().equals(username))
             return new ResponseDTO("Registro de ingesta no encontrado.", 404);
-        }
-        // Si la solicitud realizada pertenece al usuario que la realizó
-        EatEntity eatToDelete = getEat.get();
-        if (!eatToDelete.getUser().getUsername().equals(username)) {
-            logger.error("El usuario " + username + " no tiene permisos para eliminar el registro " + eatId + ".");
-            return new ResponseDTO("No tienes permisos para eliminar este registro.", 403);
-        }
-        // Eliminar el registro de ingesta de la lista de ingestas del usuario
         try {
-            eatRepository.deleteId(eatToDelete.getId());
+            eatRepository.deleteId(getEat.get().getId());
             logger.info("Registro de ingesta eliminado correctamente para el usuario " + username + ".");
             return new ResponseDTO("Registro eliminado correctamente.", 200);
         } catch (Exception e) {
             logger.error("Error al eliminar el registro de ingesta del usuario " + username + ": " + e.getMessage());
             return new ResponseDTO("Error al eliminar el registro de ingesta.", 500);
         }
+    }
+
+    // ? Funciones
+    // Obtener los macronutrientes consumidos y los alimentos consumidos en un rango de fechas
+    public CategoryIntakeDTO getCatMacrosAndIntakes(String username, CategoryIntakeEnum category, LocalDateTime startDate, LocalDateTime endDate) {
+        MacrosPerCategoryDTO macrosConsumedPerCategory = eatRepository.findMacrosPerCategory(username, category, startDate, endDate);
+        if (macrosConsumedPerCategory == null)
+            macrosConsumedPerCategory = new MacrosPerCategoryDTO(0.0, 0.0, 0.0, 0.0);
+        macrosConsumedPerCategory.roundAllValues();
+        List<Object[]> results = eatRepository.findIntakesPerCategory(username, category, startDate, endDate);
+        List<IntakeDTO> myIntakes = new ArrayList<>();
+        if (results.isEmpty()) {
+            myIntakes.add(new IntakeDTO("No has registrado ningun alimento."));
+        }
+        else {
+            myIntakes = results.stream().map(result -> {
+                return new IntakeDTO(
+                    (Long) result[0],
+                    (String) result[1],
+                    (String) result[2],
+                    (UnitOfMeasurementEnum) result[3],
+                    (Double) result[4],
+                    ((Timestamp) result[5]).toLocalDateTime()
+                );
+            }).collect(Collectors.toList());
+        }
+        return new CategoryIntakeDTO(null, null, macrosConsumedPerCategory, myIntakes);
     }
 }
