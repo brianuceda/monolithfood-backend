@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class FoodNutrientDTO {
     private Long foodId;
     private String foodName;
+    private String information;
+    private String imgUrl;
     private Double nutrientQuantity;
 
 }

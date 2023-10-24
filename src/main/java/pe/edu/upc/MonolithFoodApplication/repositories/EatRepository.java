@@ -18,6 +18,8 @@ import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 @Repository
 public interface EatRepository extends JpaRepository<EatEntity, Long> {
 
+    boolean existsByIdAndUserUsername(Long id, String username);
+
     // * Heather (JPQL): Elimina un registro de la tabla eat
     @Modifying
     @Query("DELETE FROM EatEntity e WHERE e.id = :id")

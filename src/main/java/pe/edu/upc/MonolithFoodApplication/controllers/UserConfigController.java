@@ -18,39 +18,47 @@ import pe.edu.upc.MonolithFoodApplication.services.UserConfigService;
 @RequiredArgsConstructor
 @RequestMapping("/user/config")
 public class UserConfigController {
-    // ? Atributos
-    // Inyección de dependencias
     private final UserConfigService userConfigService;
     private final JwtService jwtService;
 
-    // ? Metodos
     // * Naydeline (Configuración general)
     // Get: Obtener la configuración de un usuario
     @GetMapping
     public ResponseEntity<?> getConfig(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userConfigService.getConfig(username);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
     // Put: Activar/desactivar modo oscuro
     @PutMapping("/darkmode/update")
-    public ResponseEntity<?> changeDarkMode(@RequestHeader("Authorization") String bearerToken, @RequestParam Boolean darkMode) {
+    public ResponseEntity<?> changeDarkMode(@RequestHeader("Authorization") String bearerToken,
+        @RequestParam Boolean darkMode) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userConfigService.changeDarkMode(username, darkMode);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
     // Put: Activar/desactivar notificaciones
     @PutMapping("/notifications/update")
-    public ResponseEntity<?> changeNotifications(@RequestHeader("Authorization") String bearerToken, @RequestParam Boolean notifications) {
+    public ResponseEntity<?> changeNotifications(@RequestHeader("Authorization") String bearerToken,
+        @RequestParam Boolean notifications) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userConfigService.changeNotifications(username, notifications);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
+    }
+
+    // * Responder a la petición con el código de estado y el mensaje correspondiente
+    private ResponseEntity<?> validateResponse(ResponseDTO response) {
+        try {  
+            if (response.getStatusCode() == 200 && response.getMessage() == null) {
+                response.setStatusCode(null);
+                response.setMessage(null);
+                return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+            }
+        } catch (Exception e) {
+                return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
+        }
     }
 
 }

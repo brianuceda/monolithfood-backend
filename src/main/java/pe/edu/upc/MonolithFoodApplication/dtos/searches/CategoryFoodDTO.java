@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FoodCompositionDTO {
-    private String nutrientName;
-    private Double nutrientQuantity;
+public class CategoryFoodDTO {
+    private String categoryName;
+    private String information;
+    private String benefits;
+    private String disadvantages;
 }

@@ -15,8 +15,8 @@ import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 public class UpdateIntakeDTO extends NewIntakeDTO {
     private Long eatId;
 
-    public UpdateIntakeDTO(String name, Double quantity, UnitOfMeasurementEnum unitOfMeasurement, Timestamp date, Long eatId) {
-        super(name, quantity, unitOfMeasurement, date);
+    public UpdateIntakeDTO(Long foodId, Double quantity, UnitOfMeasurementEnum unitOfMeasurement, Timestamp date, Long eatId) {
+        super(foodId, quantity, unitOfMeasurement, date);
         this.eatId = eatId;
     }
 }

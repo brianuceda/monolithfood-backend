@@ -5,8 +5,6 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,20 +34,20 @@ public class FoodEntity {
     @Column(nullable = false, length = 256)
     private String information;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PrivacityEnum privacity = PrivacityEnum.PRIVATE;
-
-    @Column(nullable = true)
-    private Boolean isFavorite = false;
-
     @Column(nullable = true, columnDefinition = "TEXT")
     private String sourceOfOrigin;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String imgUrl;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "food_id")
+    private List<FoodImagesEntity> images;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, name = "creator_user_id")
-    private UserEntity creatorUser; 
+    private UserEntity creatorUser;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = true, name = "category_food_id")

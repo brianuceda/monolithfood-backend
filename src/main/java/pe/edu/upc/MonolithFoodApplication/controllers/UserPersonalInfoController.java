@@ -23,48 +23,42 @@ import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 @RequiredArgsConstructor
 @RequestMapping("/user/info")
 public class UserPersonalInfoController {
-    // ? Atributos
-    // Inyección de dependencias
     private final UserPersonalInfoService userPersonalInfoService;
     private final JwtService jwtService;
     private final UserReportService basicUserProgressReportService;
 
-    // ? Metodos
     // * Naydeline: Personal Information
     // Post: Registrar información personal de un usuario
     @PostMapping("/new")
-    public ResponseEntity<ResponseDTO>setUserPersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody SetPersonalInfoDTO userPersonallnfoDto) {
+    public ResponseEntity<?>setUserPersonalInfo(@RequestHeader("Authorization") String bearerToken,
+        @RequestBody SetPersonalInfoDTO userPersonallnfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.setUserPersonalInfo(username, userPersonallnfoDto);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
     // Get: Obtener información personal de un usuario
     @GetMapping
     public ResponseEntity<?> getInformation(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.getInformation(username);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
     // Put: Actualizar información personal de un usuario
     @PutMapping("/update")
-    public ResponseEntity<ResponseDTO>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken, @RequestBody PutPersonalInfoDTO userPersonallnfoDto) {
+    public ResponseEntity<?>updatePersonalInfo(@RequestHeader("Authorization") String bearerToken,
+        @RequestBody PutPersonalInfoDTO userPersonallnfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.updateUserPersonalInfo(username, userPersonallnfoDto);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
     // * Willy (IMC)
     // Get: Actualizar la altura o el peso de un usuario y obtener su IMC
     @PutMapping("/update-weight-height")
-    public ResponseEntity<?> updateHeightAndGetIMC(@RequestHeader("Authorization") String bearerToken, @RequestBody PutHeightWeightDTO uhwDTO) {
+    public ResponseEntity<?> updateHeightAndGetIMC(@RequestHeader("Authorization") String bearerToken,
+        @RequestBody PutHeightWeightDTO uhwDTO) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.updateHeightWeightGetIMC(username, uhwDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
     // * Willy (Reportes)
     // Get: Obtener el consumo de calorías de la última semana
@@ -72,14 +66,29 @@ public class UserPersonalInfoController {
     public ResponseEntity<?> getCaloriesConsumedInTheLastWeek(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = basicUserProgressReportService.getCaloriesConsumedInTheLastWeek(username);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return validateResponse(response);
     }
     // Get: Obtener el promedio de consumo de calorías diario
     @GetMapping("/average-calories")
     public ResponseEntity<?> getAverageDailyCaloriesConsumedDTO(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = basicUserProgressReportService.getAverageDailyCaloriesConsumedDTO(username);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return validateResponse(response);
+    }
+
+    // * Responder a la petición con el código de estado y el mensaje correspondiente
+    private ResponseEntity<?> validateResponse(ResponseDTO response) {
+        try {  
+            if (response.getStatusCode() == 200 && response.getMessage() == null) {
+                response.setStatusCode(null);
+                response.setMessage(null);
+                return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+            }
+        } catch (Exception e) {
+                return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
+        }
     }
 
 }

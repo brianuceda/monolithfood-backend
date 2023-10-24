@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodCompositionDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListSearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.SearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
@@ -82,13 +81,15 @@ public class FavoriteService {
 
     // ? Funciones auxiliares
     private SearchFoodDTO convertToSearchFoodDTO(FoodEntity foodEntity) {
-        List<FoodCompositionDTO> compositions = foodEntity.getCompositions().stream()
-            .map(c -> new FoodCompositionDTO(c.getNutrient().getName(), c.getNutrientQuantity()))
-            .collect(Collectors.toList());
+        // List<FoodCompositionDTO> compositions = foodEntity.getCompositions().stream()
+        //     .map(c -> new FoodCompositionDTO(c.getNutrient().getName(), c.getNutrientQuantity()))
+        //     .collect(Collectors.toList());
         return SearchFoodDTO.builder()
             .foodId(foodEntity.getId())
             .foodName(foodEntity.getName())
-            .composition(compositions)
+            .information(foodEntity.getInformation())
+            .imgUrl(foodEntity.getImgUrl())
+            // .composition(compositions)
             .build();
     }
 }

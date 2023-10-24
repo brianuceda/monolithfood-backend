@@ -44,7 +44,7 @@ public class UserController {
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         String realToken = jwtService.getRealToken(token);
         ResponseDTO response = authService.logout(realToken);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
     // * Naydeline (Información general)
     // Get: Obtener información general de un usuario
@@ -52,159 +52,130 @@ public class UserController {
     public ResponseEntity<?> getGeneralInformation(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.getGeneralInformation(username);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
     // Put: Actualizar la foto de perfil de un usuario
     @PutMapping("/general-info/photo")
-    public ResponseEntity<ResponseDTO>updatePhoto(@RequestHeader("Authorization") String bearerToken,
-            @RequestParam String photoUrl) {
+    public ResponseEntity<?>updatePhoto(@RequestHeader("Authorization") String bearerToken,
+        @RequestParam String photoUrl) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userService.updatePhoto(username, photoUrl);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
-    // * Heather (Alimentos consumidos)
+    // * Brian (Macro y micro nutrientes)
+    // Get: Obtener los macronutrientes consumidos en un rango de fechas
     @GetMapping("/intakes/macros")
     public ResponseEntity<?> getMacrosDetailed(
-        @RequestHeader("Authorization") String bearerToken, 
-        @RequestParam(required = false) LocalDateTime startDate, 
+        @RequestHeader("Authorization") String bearerToken,
+        @RequestParam(required = false) LocalDateTime startDate,
         @RequestParam(required = false) LocalDateTime endDate
     ) {
-        // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
-        if (startDate == null || endDate == null) {
-            LocalDate today = LocalDate.now();
-            startDate = today.atStartOfDay();
-            endDate = today.atTime(23, 59, 59, 999_000_000);
-        }
+        validateDates(startDate, endDate);
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.getMacrosDetailed(username, startDate, endDate, true);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
+    // Get: Obtener los macronutrientes y alimentos consumidos en una categoría específica en un rango de fechas
     @GetMapping("/intakes/category")
     public ResponseEntity<?> getSpecificMacrosAndIntakes(
-            @RequestHeader("Authorization") String bearerToken,
-            @RequestParam(required = true) CategoryIntakeEnum category,
-            @RequestParam(required = false) LocalDateTime startDate, 
-            @RequestParam(required = false) LocalDateTime endDate
+        @RequestHeader("Authorization") String bearerToken,
+        @RequestParam(required = true) CategoryIntakeEnum category,
+        @RequestParam(required = false) LocalDateTime startDate,
+        @RequestParam(required = false) LocalDateTime endDate
     ) {
-        // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
-        if (startDate == null || endDate == null) {
-            LocalDate today = LocalDate.now();
-            startDate = today.atStartOfDay();
-            endDate = today.atTime(23, 59, 59, 999_000_000);
-        }
+        validateDates(startDate, endDate);
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.getSpecificMacrosAndIntakes(username, category, startDate, endDate);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
+    // Get: Obtener los macronutrientes y alimentos consumidos en todas las categorías en un rango de fechas
     @GetMapping("/intakes/category/all")
     public ResponseEntity<?> getAllCategoryMacrosAndIntakes(
-            @RequestHeader("Authorization") String bearerToken,
-            @RequestParam(required = false) LocalDateTime startDate, 
-            @RequestParam(required = false) LocalDateTime endDate
+        @RequestHeader("Authorization") String bearerToken,
+        @RequestParam(required = false) LocalDateTime startDate,
+        @RequestParam(required = false) LocalDateTime endDate
     ) {
-        // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
-        if (startDate == null || endDate == null) {
-            LocalDate today = LocalDate.now();
-            startDate = today.atStartOfDay();
-            endDate = today.atTime(23, 59, 59, 999_000_000);
-        }
+        validateDates(startDate, endDate);
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.getAllMacrosAndIntakes(username, startDate, endDate);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
+    // * Heather (Alimentos consumidos)
+    // Get: Obtener los detalles de un alimento consumido
     @GetMapping("/intakes/{id}")
     public ResponseEntity<?> getDetailedIntake(@RequestHeader("Authorization") String bearerToken,
-            @PathVariable("id") Long id) {
+        @PathVariable("id") Long id) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.getDetailedIntake(username, id);
-        if (response.getStatusCode() == 200 && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
+    // Post: Agregar un alimento a la lista de alimentos consumidos
     @PostMapping("/intakes/add")
     public ResponseEntity<?> addFoodIntake(@RequestHeader("Authorization") String bearerToken,
-            @RequestBody NewIntakeDTO foodIntakeDTO) {
+        @RequestBody NewIntakeDTO foodIntakeDTO) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.addFoodIntake(username, foodIntakeDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
+    // Put: Actualizar un alimento consumido
     @PutMapping("/intakes/update")
     public ResponseEntity<?> updateFoodIntake(@RequestHeader("Authorization") String bearerToken,
-            @RequestBody UpdateIntakeDTO newFoodIntakeDTO) {
+        @RequestBody UpdateIntakeDTO newFoodIntakeDTO) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.updateFoodIntake(username, newFoodIntakeDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
+    // Delete: Eliminar un alimento consumido
     @DeleteMapping("/intakes/delete")
     public ResponseEntity<?> deleteFoodIntake(@RequestHeader("Authorization") String bearerToken,
-            @RequestParam Long foodId) {
+        @RequestParam Long foodId) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.deleteFoodIntake(username, foodId);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
     }
     // * Brian (Favoritos)
     @GetMapping("/favorites")
     public ResponseEntity<?> getAllFavoriteFoods(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = favoriteService.getAllFavoriteFoods(username);
-        if (response.getStatusCode() == 200 && response.getMessage() == null && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
     @PostMapping("/favorites/add")
-    public ResponseEntity<?> addFavoriteFood(@RequestHeader("Authorization") String bearerToken, @RequestParam Long foodId) {
+    public ResponseEntity<?> addFavoriteFood(@RequestHeader("Authorization") String bearerToken,
+        @RequestParam Long foodId) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = favoriteService.addFavoriteFood(username, foodId);
-        if (response.getStatusCode() == 200 && response.getMessage() == null && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        }
+        return validateResponse(response);
     }
     @DeleteMapping("/favorites/delete")
-    public ResponseEntity<?> deleteFavoriteFood(@RequestHeader("Authorization") String bearerToken, @RequestParam Long foodId) {
+    public ResponseEntity<?> deleteFavoriteFood(@RequestHeader("Authorization") String bearerToken,
+        @RequestParam Long foodId) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = favoriteService.deleteFavoriteFood(username, foodId);
-        if (response.getStatusCode() == 200 && response.getMessage() == null && response.getMessage() == null) {
-            response.setStatusCode(null);
-            response.setMessage(null);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        return validateResponse(response);
+    }
+
+    // ? Funciones
+    // Si no se mandan fechas, se obtienen todos los alimentos consumidos entre el inicio del día de hoy y el final del día de hoy
+    private void validateDates(LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate == null || endDate == null) {
+            LocalDate today = LocalDate.now();
+            startDate = today.atStartOfDay();
+            endDate = today.atTime(23, 59, 59, 999_000_000);
+        }
+    }
+    // Responder a la petición con el código de estado y el mensaje correspondiente
+    private ResponseEntity<?> validateResponse(ResponseDTO response) {
+        try {  
+            if (response.getStatusCode() == 200 && response.getMessage() == null) {
+                response.setStatusCode(null);
+                response.setMessage(null);
+                return new ResponseEntity<>(response, HttpStatus.valueOf(200));
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+            }
+        } catch (Exception e) {
+                return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
         }
     }
 

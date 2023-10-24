@@ -11,7 +11,7 @@ import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewIntakeDTO {
-    private String name;
+    private Long foodId;
     private Double quantity;
     private UnitOfMeasurementEnum unitOfMeasurement;
     private Timestamp date;

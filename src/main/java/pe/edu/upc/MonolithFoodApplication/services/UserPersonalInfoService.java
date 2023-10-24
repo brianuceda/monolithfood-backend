@@ -209,14 +209,5 @@ public class UserPersonalInfoService {
         else if(imc >= 35 && imc < 40) return "Obesidad grado 2";
         else return "Obesidad grado 3";
     }
-    // FUNCIÓN: Convierte la información personal del usuario a un objeto UserPersonalInfoDTO
-    // private PersonalInfoDTO mapToPersonalInfoDTO(UserPersonalInfoEntity entity) {
-    //     return new PersonalInfoDTO(
-    //         entity.getGender(),
-    //         entity.getBorndate(),
-    //         entity.getHeightCm(),
-    //         entity.getWeightKg()
-    //     );
-    // }
 
 }

@@ -113,12 +113,10 @@ public class EatService {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if(!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        Optional<FoodEntity> getFood = foodRepository.findByName(foodIntakeDTO.getName());
+        Optional<FoodEntity> getFood = foodRepository.findById(foodIntakeDTO.getFoodId());
         if(!getFood.isPresent()) {
-            logger.error("Alimento no encontrado.");
             return new ResponseDTO("Alimento no encontrado.", 404);
         }
         UserEntity user = optUser.get();
@@ -127,19 +125,9 @@ public class EatService {
         newEat.setFood(getFood.get());
         newEat.setEatQuantity(foodIntakeDTO.getQuantity());
         newEat.setUnitOfMeasurement(foodIntakeDTO.getUnitOfMeasurement());
-        // Fecha de la ingesta
         LocalDateTime dateTimeOfEat = foodIntakeDTO.getDate().toLocalDateTime().plusHours(5);
-        foodIntakeDTO.setDate(Timestamp.valueOf(dateTimeOfEat));
-        newEat.setDate(foodIntakeDTO.getDate());
-        // Calculo de fecha
-        LocalTime timeOfEat = dateTimeOfEat.toLocalTime();
-        if (timeOfEat.isAfter(LocalTime.of(2, 0)) && timeOfEat.isBefore(LocalTime.of(12, 0)))
-            newEat.setCategoryIntake(CategoryIntakeEnum.DESAYUNO);
-        else if (timeOfEat.isAfter(LocalTime.of(11, 59, 59, 999)) && timeOfEat.isBefore(LocalTime.of(19, 0)))
-            newEat.setCategoryIntake(CategoryIntakeEnum.ALMUERZO);
-        else
-            newEat.setCategoryIntake(CategoryIntakeEnum.CENA);
-        // else return new ResponseDTO("Fecha de registro invalida.", 400);
+        newEat.setDate(Timestamp.valueOf(dateTimeOfEat));
+        newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
         // Guardar EatEntity en la lista de Alimentos del usuario
         user.getEats().add(newEat);
         // Guardar cambios en la base de datos
@@ -150,70 +138,44 @@ public class EatService {
     }
     // * Heather: Actualizar un alimento de la lista de alimentos consumidos por un usuario
     @Transactional
-    public ResponseDTO updateFoodIntake(String username, UpdateIntakeDTO newFoodIntakeDTO) {
-        // Verifica que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if(!optUser.isPresent())
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        // Verifica que el registro de ingesta exista
-        Optional<EatEntity> getEat = eatRepository.findById(newFoodIntakeDTO.getEatId());
-        if(!getEat.isPresent() || !getEat.get().getUser().getUsername().equals(username)) {
+    public ResponseDTO updateFoodIntake(String username, UpdateIntakeDTO niDTO) {
+        // Verifica que todos los campos estén completos
+        if(
+            niDTO.getEatId() == null ||
+            niDTO.getFoodId() == null ||
+            (niDTO.getQuantity() == null || niDTO.getQuantity() <= 0.0) ||
+            niDTO.getUnitOfMeasurement() == null ||
+            niDTO.getDate() == null
+        ) {
+            return new ResponseDTO("Faltan campos por completar.", 400);
+        }
+        // Verifica que el registro de ingesta que se está intentando actualizar, exista y sea del usuario
+        Optional<EatEntity> eat = eatRepository.findById(niDTO.getEatId());
+        if(!eat.isPresent() || eat.get().getUser().getUsername() != username)
             return new ResponseDTO("Registro de ingesta no encontrado.", 404);
-        }
-        // Verifica que el alimento exista
-        Optional<FoodEntity> getFood = foodRepository.findByName(newFoodIntakeDTO.getName());
-        if(!getFood.isPresent()) {
-            logger.error("Alimento no encontrado.");
+        // Obtiene el registro de ingesta actual del usuario
+        Optional<EatEntity> getEat = eatRepository.findById(niDTO.getEatId());
+        // Obtiene el nuevo alimento que se quiere consumir
+        Optional<FoodEntity> getFood = foodRepository.findById(niDTO.getFoodId());
+        if(!getFood.isPresent())
             return new ResponseDTO("Alimento no encontrado.", 404);
-        }
         // Es receta
         EatEntity newEat = getEat.get();
         if(newEat.getFood() == null) {
             return new ResponseDTO("Aún no se puede actualizar el registro de ingesta de una receta.", 400);
         }
-        // Lista para guardar los campos que el usuario haya actualizado
-        List<String> updatedFields = new ArrayList<>();
-        // Actualizar los campos que el usuario haya ingresado
-        newEat.setUser(optUser.get());
-        if(newFoodIntakeDTO.getName() != null && !newFoodIntakeDTO.getName().isEmpty()) {
-            if(!newEat.getFood().getName().equals(newFoodIntakeDTO.getName())) {
-                newEat.setFood(getFood.get());
-                updatedFields.add("Alimento");
-            }
-        }
-        if(newFoodIntakeDTO.getQuantity() != null && newFoodIntakeDTO.getQuantity() > 0) {
-            if(!newEat.getEatQuantity().equals(newFoodIntakeDTO.getQuantity())) {
-                newEat.setEatQuantity(newFoodIntakeDTO.getQuantity());
-                updatedFields.add("Cantidad");
-            }
-        }
-        if(newFoodIntakeDTO.getUnitOfMeasurement() != null) {
-            if(!newEat.getUnitOfMeasurement().equals(newFoodIntakeDTO.getUnitOfMeasurement())) {
-                newEat.setUnitOfMeasurement(newFoodIntakeDTO.getUnitOfMeasurement());
-                updatedFields.add("Unidad de medida");
-            }
-        }
-        if(newFoodIntakeDTO.getDate() != null) {
-            if(!newEat.getDate().equals(newFoodIntakeDTO.getDate())) {
-                newEat.setDate(newFoodIntakeDTO.getDate());
-                updatedFields.add("Fecha");
-            }
-        }
+        // Actualizar TODOS los campos
+        newEat.setFood(getFood.get());
+        newEat.setEatQuantity(niDTO.getQuantity());
+        newEat.setUnitOfMeasurement(niDTO.getUnitOfMeasurement());
+        LocalDateTime dateTimeOfEat = niDTO.getDate().toLocalDateTime().plusHours(5);
+        newEat.setDate(Timestamp.valueOf(dateTimeOfEat));
+        newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
         try {
-            // Si la lista de campos actualizados no está vacía, se guarda en la BD
-            if(updatedFields.size() != 0) {
-                eatRepository.save(getEat.get());
-                logger.info("Registro de ingesta actualizado correctamente para el usuario " + username + ".");
-            }
-            // Si no se actualizó ningún campo, no se guarda en la BD
-            else {
-                logger.info("No se eactualizó ningún campo para el usuario " + username + ".");
-                return new ResponseDTO("No se actualizó ningún campo.", 200);
-            }
-            return new ResponseDTO("Registro de ingesta actualizado correctamente.", 200);
+            eatRepository.save(newEat);
+            return new ResponseDTO("Registro actualizado correctamente.", 200);
         } catch (Exception e) {
-            logger.error("Error al actualizar el registro de ingesta del usuario " + username + ": " + e.getMessage());
-            return new ResponseDTO("Error al actualizar el registro de ingesta.", 500);
+            return new ResponseDTO("Error al actualizar el registro.", 500);
         }
     }
     // * Heather: Quitar un alimento de la lista de alimentos consumidos por un usuario
@@ -229,10 +191,8 @@ public class EatService {
             return new ResponseDTO("Registro de ingesta no encontrado.", 404);
         try {
             eatRepository.deleteId(getEat.get().getId());
-            logger.info("Registro de ingesta eliminado correctamente para el usuario " + username + ".");
             return new ResponseDTO("Registro eliminado correctamente.", 200);
         } catch (Exception e) {
-            logger.error("Error al eliminar el registro de ingesta del usuario " + username + ": " + e.getMessage());
             return new ResponseDTO("Error al eliminar el registro de ingesta.", 500);
         }
     }
@@ -262,5 +222,15 @@ public class EatService {
             }).collect(Collectors.toList());
         }
         return new CategoryIntakeDTO(null, null, macrosConsumedPerCategory, myIntakes);
+    }
+    // Calcular fecha de ingesta
+    public CategoryIntakeEnum calculateCategory(LocalDateTime dateTimeOfEat) {
+        LocalTime timeOfEat = dateTimeOfEat.toLocalTime();
+        if (timeOfEat.isAfter(LocalTime.of(2, 0)) && timeOfEat.isBefore(LocalTime.of(12, 0)))
+            return CategoryIntakeEnum.DESAYUNO;
+        else if (timeOfEat.isAfter(LocalTime.of(11, 59, 59, 999)) && timeOfEat.isBefore(LocalTime.of(19, 0)))
+            return CategoryIntakeEnum.ALMUERZO;
+        else
+            return CategoryIntakeEnum.CENA;
     }
 }
