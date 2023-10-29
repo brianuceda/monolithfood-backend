@@ -1,14 +1,11 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpStatus;
-// import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -18,19 +15,16 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.OAuth2PrincipalDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
-import pe.edu.upc.MonolithFoodApplication.repositories.RoleRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final JwtService jwtService;
+    private final AuthService authService;
     private static final Logger logger = LoggerFactory.getLogger(OAuthService.class);
     
     @Transactional
@@ -110,7 +104,7 @@ public class OAuthService {
                 .isAccountBlocked(false)
                 .ipAddress(null)
                 .userConfig(uc)
-                .roles(setRoleUser())
+                .roles(authService.setRoleUser())
                 .build();
             // Iniciar sesion o registrar
             Optional<UserEntity> oAuthUser = userRepository.findByOauthProviderId(oa2.getOauthProviderId());
@@ -132,13 +126,15 @@ public class OAuthService {
     }
     public ResponseDTO oAuth2Login(String oAuthProviderId) {
         UserEntity user = userRepository.findByOauthProviderId(oAuthProviderId).get();
-        String generatedToken = jwtService.genToken(user);
-        return new AuthResponseDTO("Inicio de sesion realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode(), false);
+        String profileStage = authService.determineProfileStage(user);
+        String generatedToken = jwtService.genToken(user, profileStage);
+        return new AuthResponseDTO("Inicio de sesion realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
     }
     public ResponseDTO oAuth2Register(UserEntity user) {
         userRepository.save(user);
-        String generatedToken = jwtService.genToken(user);
-        return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode(), true);
+        String profileStage = "personalInfo";
+        String generatedToken = jwtService.genToken(user, profileStage);
+        return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
     }
     
     @Transactional
@@ -153,12 +149,4 @@ public class OAuthService {
         userRepository.save(user);
     }
 
-    // ? Funciones auxiliares
-    // FUNCIÓN: Devuelve un set con el rol USER para asignarlo a un nuevo usuario
-    private Set<RoleEntity> setRoleUser() {
-        Set<RoleEntity> roles = new HashSet<>();
-        RoleEntity USER = roleRepository.findByName(RoleEnum.USER).get();
-        roles.add(USER);
-        return roles;
-    }
 }

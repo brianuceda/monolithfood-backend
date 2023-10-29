@@ -44,8 +44,9 @@ public class JwtService {
         }
     }
     // Generar un Token JWT en los datos de un usuario
-    public String genToken(UserDetails user) {
+    public String genToken(UserDetails user, String profileStage) {
         Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("profileStage", profileStage);
         return genToken(extraClaims, user);
     }
     private String genToken(Map<String, Object> extraClaims, UserDetails user) {

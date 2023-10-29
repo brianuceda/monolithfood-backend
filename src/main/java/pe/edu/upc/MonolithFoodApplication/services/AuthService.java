@@ -2,7 +2,6 @@ package pe.edu.upc.MonolithFoodApplication.services;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,9 +73,8 @@ public class AuthService {
             }
             // Si el usuario y la contraseña son válidos, autenticar al usuario en el contexto de Spring Security y generar un token JWT para el usuario
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-            Optional<UserEntity> user = userRepository.findByUsername(request.getUsername());
-            UserConfigEntity userConfig = user.get().getUserConfig();
-            String generatedToken = jwtService.genToken(user.get());
+            UserEntity user = userRepository.findByUsername(request.getUsername()).get();
+            UserConfigEntity userConfig = user.getUserConfig();
             // Reiniciar el contador de intentos fallidos de inicio de sesión
             IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(request.getIpAddress(), request.getUsername()).orElse(null);
             if (attempt != null) {
@@ -84,7 +82,9 @@ public class AuthService {
                 ipLoginAttemptRepository.save(attempt);
             }
             // Retornar el token generado junto con el mensaje de éxito y el código de estado
-            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken, userConfig.getDarkMode(), false);
+            String profileStage = determineProfileStage(user);
+            String generatedToken = jwtService.genToken(user, profileStage);
+            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken, userConfig.getDarkMode());
         } catch (AuthenticationException e) {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
@@ -141,9 +141,10 @@ public class AuthService {
                     .build();
             userRepository.save(user);
             // Generar el token JWT para el usuario
-            String generatedToken = jwtService.genToken(user);
+            String profileStage = "personalInfo";
+            String generatedToken = jwtService.genToken(user, profileStage);
             // Devolver el token generado junto con el mensaje de éxito y el código de estado
-            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, uc.getDarkMode(), true);
+            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, uc.getDarkMode());
         } catch (DataIntegrityViolationException e) {
             return new ResponseDTO("El nombre de usuario o el email ya se están en uso.", HttpStatus.CONFLICT.value());
         } catch (Exception e) {
@@ -167,13 +168,21 @@ public class AuthService {
     }
 
     // ? Funciones auxiliares
-    private Set<RoleEntity> setRoleUser() {
+    public Set<RoleEntity> setRoleUser() {
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity USER = roleRepository.findByName(RoleEnum.USER).get();
         roles.add(USER);
         return roles;
     }
-    public ResponseDTO validarContraseniaSegura(String contrasenia) {
+    public String determineProfileStage(UserEntity user) {
+        return
+            user.getUserPersonalInfo() == null ? "personalInfo" :
+            user.getObjectives() == null || user.getObjectives().isEmpty() ? "objectives" :
+            user.getUserPersonalInfo().getActivityLevel() == null ? "activityLevel" :
+            user.getUserFitnessInfo() == null ? "fitnessInfo" :
+            "completed";
+    }
+    private ResponseDTO validarContraseniaSegura(String contrasenia) {
         if (contrasenia.length() < 8) return new ResponseDTO("La contraseña debe tener al menos 8 caracteres.", HttpStatus.BAD_REQUEST.value());
         boolean tieneLetraMayuscula = false;
         boolean tieneLetraMinuscula = false;
