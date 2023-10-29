@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/monolithfooddb
     username: postgres
-    password: 40se02j7
+    password: whoami1729
     driver-class-name: org.postgresql.Driver
     hikari:
       maxLifetime: 150000

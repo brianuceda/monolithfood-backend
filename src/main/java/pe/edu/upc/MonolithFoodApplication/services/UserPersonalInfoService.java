@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.IMCDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ProgressWeightDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.GetPersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PutHeightWeightDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PutPersonalInfoDTO;
@@ -65,6 +66,8 @@ public class UserPersonalInfoService {
         upi.setCountry(walletAndLocation.getCountry());
         upi.setStartWeightKg(request.getWeightKg());
         upi.setWeightKg(request.getWeightKg());
+        //peso actual
+        upi.setStartWeightKg(request.getWeightKg());
         upi.setHeightCm(request.getHeightCm());
         uc.setLastWeightUpdate(new Timestamp(System.currentTimeMillis()));
         // Genera una nueva billetera para el usuario
@@ -191,6 +194,41 @@ public class UserPersonalInfoService {
         return new IMCDTO("Datos actualizados correctamente.", 200, imc, imc != null ? getClasification(imc) : null, upi.getHeightCm(), upi.getWeightKg());
     }
 
+        //FUNCION Willy: Calcular el progreso del peso del usuario
+        @Transactional
+        public ResponseDTO progressWeight(String username) {
+            // Verifica que el usuario exista
+            Optional<UserEntity> optUser = userRepository.findByUsername(username);
+            if (!optUser.isPresent()) {
+                logger.error("Usuario no encontrado.");
+                return new ResponseDTO("Usuario no encontrado.", 404);
+            }
+            UserEntity user = optUser.get();
+            UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+            UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
+            Double porcentaje =null;
+             //Calcular el porcentaje de progreso
+            if (ufi ==null)
+                return new ResponseDTO("debes de ingresar tu información fitness", 404);
+            if (ufi.getTargetWeightKg()!=null && upi.getStartWeightKg()!=null && upi.getWeightKg()!=null) {
+                porcentaje = calculateProgress(upi.getStartWeightKg(),upi.getWeightKg(), ufi.getTargetWeightKg());
+            }
+            // return new ProgressWeightDTO("Porcentaje de progreso calculado correctamente", 200, 
+            //         porcentaje, 
+            //         upi.getWeightKg(), 
+            //         upi.getStartWeightKg(), 
+            //         ufi.getTargetWeightKg());
+            ProgressWeightDTO responseDTO = new ProgressWeightDTO("Porcentaje de progreso calculado correctamente", 200,
+                    ufi.getTargetDate(),
+                    porcentaje, 
+                    upi.getWeightKg(), 
+                    upi.getStartWeightKg(), 
+                    ufi.getTargetWeightKg());
+            responseDTO.minusHours(5);
+    
+            return responseDTO;
+        }
+
     // ? Funciones auxiliares
     // FUNCIÓN: Calcula el IMC
     public static Double calculateIMC(Double weight, Double height)
@@ -208,6 +246,15 @@ public class UserPersonalInfoService {
         else if(imc >= 30 && imc < 35) return "Obesidad grado 1";
         else if(imc >= 35 && imc < 40) return "Obesidad grado 2";
         else return "Obesidad grado 3";
+    }
+
+
+     //FUNCIÓN:  calular el porcentaje de progreso de su peso, (target- start/actual- start )*100
+    public Double calculateProgress(Double start, Double actual, Double target) {
+        Double diferencia = target - start;
+        Double diferenciaActual = actual - start;
+        Double porcentaje = (diferenciaActual / diferencia) * 100;
+        return porcentaje;
     }
 
 }

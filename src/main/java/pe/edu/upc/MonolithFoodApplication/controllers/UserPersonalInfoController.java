@@ -90,5 +90,11 @@ public class UserPersonalInfoController {
                 return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
         }
     }
-
+    //GET: obtener el progreso de peso
+    @GetMapping("/progress-weight")
+    public ResponseEntity<?> getProgressWeight(@RequestHeader("Authorization") String bearerToken) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userPersonalInfoService.progressWeight(username);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
