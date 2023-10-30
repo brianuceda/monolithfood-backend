@@ -32,7 +32,10 @@ public class NutrientEntity {
     private String information;
 
     @Column(nullable = true, columnDefinition = "TEXT")
-    private String detailed_information;
+    private String detailedInformation;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String imgUrl;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY)

@@ -24,6 +24,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosPerCategoryDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.NewIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.UpdateIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.NutrientDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
@@ -49,7 +50,7 @@ public class EatService {
             if(!optUser.isPresent())
                 return new ResponseDTO("Usuario no encontrado.", 404);
         }
-        MacrosDetailedDTO dto = eatRepository.getMacrosDetailed(username, startDate, endDate);        
+        MacrosDetailedDTO dto = eatRepository.getMacrosDetailed(username, startDate, endDate);
         if (dto == null)
             if (isSeparatedSearch == true)
                 return new MacrosDetailedDTO(null, 200, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -103,7 +104,20 @@ public class EatService {
         if (dto == null)
             return new ResponseDTO("Registro de ingesta no encontrado.", 404);
         dto.minusHours(5);
-        dto.roundAllValues();
+        List<Object[]> nutrients = foodRepository.findNutrientsOfFood(dto.getFoodId(), dto.getQuantity());
+        if (nutrients.isEmpty())
+            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+        dto.setFoodId(null);
+        // Convierte la tupla a una lista de DTOs
+        List<NutrientDTO> nutrientsOfFood = nutrients.stream()
+            .map(n -> new NutrientDTO(
+                (String) n[0],
+                this.round((Double) n[1]),
+                (UnitOfMeasurementEnum) n[2],
+                (String) n[3]
+            ))
+            .collect(Collectors.toList());
+        dto.setNutrients(nutrientsOfFood);
         dto.noMessageAndStatusCode();
         return dto;
     }
@@ -151,7 +165,7 @@ public class EatService {
         }
         // Verifica que el registro de ingesta que se está intentando actualizar, exista y sea del usuario
         Optional<EatEntity> eat = eatRepository.findById(niDTO.getEatId());
-        if(!eat.isPresent() || eat.get().getUser().getUsername() != username)
+        if(!eat.isPresent() || !eat.get().getUser().getUsername().equals(username))
             return new ResponseDTO("Registro de ingesta no encontrado.", 404);
         // Obtiene el registro de ingesta actual del usuario
         Optional<EatEntity> getEat = eatRepository.findById(niDTO.getEatId());
@@ -198,6 +212,11 @@ public class EatService {
     }
 
     // ? Funciones
+    // Método para redondear un valor de forma concisa
+    public Double round(Double value) {
+        if (value == null) return null;
+        return Double.valueOf(String.format("%.2f", value));
+    }
     // Obtener los macronutrientes consumidos y los alimentos consumidos en un rango de fechas
     public CategoryIntakeDTO getCatMacrosAndIntakes(String username, CategoryIntakeEnum category, LocalDateTime startDate, LocalDateTime endDate) {
         MacrosPerCategoryDTO macrosConsumedPerCategory = eatRepository.findMacrosPerCategory(username, category, startDate, endDate);

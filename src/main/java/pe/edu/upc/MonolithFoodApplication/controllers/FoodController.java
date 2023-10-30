@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,9 +44,10 @@ public class FoodController {
         return validateResponse(response);
     }
     // Get: Obtener toda la información de un alimento a partir de su id
-    @GetMapping("/search")
-    public ResponseEntity<?> searchFood(@RequestParam Long id) {
-        ResponseDTO response = foodService.getDetailedIntake(id);
+    @GetMapping("/search/{id}")
+    public ResponseEntity<?> getDetailedFoodById(@PathVariable("id") Long id,
+        @RequestParam(required = false, defaultValue = "1") Double quantity) {
+        ResponseDTO response = foodService.getDetailedFoodById(id, quantity);
         return validateResponse(response);
     }
     

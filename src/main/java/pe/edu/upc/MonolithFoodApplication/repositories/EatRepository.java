@@ -143,15 +143,10 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
             "e.unitOfMeasurement as unitOfMeasurement, " + 
             "e.eatQuantity as quantity, " + 
             "e.date as date, " +
-            "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as calories, " +
-            "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as proteins, " +
-            "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as carbohydrates, " +
-            "SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as fats) " +
+            "f.id as foodId) " +
         "FROM EatEntity e " +
             "JOIN e.user u " +
             "JOIN e.food f " +
-            "JOIN f.compositions cf " +
-            "JOIN cf.nutrient n " +
             "JOIN f.categoryFood c " +
         "WHERE u.username = :username " +
             "AND e.id = :id " +

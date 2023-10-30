@@ -14,5 +14,4 @@ public class SearchFoodDTO {
     private String foodName;
     private String information;
     private String imgUrl;
-
 }

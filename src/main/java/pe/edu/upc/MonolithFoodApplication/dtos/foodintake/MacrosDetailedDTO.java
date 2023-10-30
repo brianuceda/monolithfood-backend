@@ -68,4 +68,9 @@ public class MacrosDetailedDTO extends ResponseDTO {
         this.dailyFatIntake = round(this.dailyFatIntake);
         this.percentageFatConsumed = round(this.percentageFatConsumed);
     }
+
+    public void noMessageAndStatusCode() {
+        this.setMessage(null);
+        this.setStatusCode(200);
+    }
 }

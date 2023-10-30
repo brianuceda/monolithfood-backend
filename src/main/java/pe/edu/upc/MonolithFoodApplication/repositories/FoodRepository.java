@@ -21,13 +21,33 @@ public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
             "JOIN c.nutrient n " +
         "WHERE n.name LIKE :nutrientName " +
         "ORDER BY f.id ASC")
-    List<FoodEntity> findByNutrientName(@Param("nutrientName") String nutrientName);
+    List<FoodEntity> findByNutrientName(
+        @Param("nutrientName") String nutrientName
+    );
+
+    @Query(
+        "SELECT " +
+            "n.name, " +
+            "(cf.nutrientQuantity * CAST(:quantity AS float)) as nutrientQuantity, " +
+            "cf.unitOfMeasurement, " +
+            "n.imgUrl " +
+        "FROM FoodEntity f " +
+            "JOIN f.compositions cf " +
+            "JOIN cf.nutrient n " +
+        "WHERE f.id = :id " +
+        "GROUP BY n.name, cf.nutrientQuantity, cf.unitOfMeasurement, n.imgUrl"
+    )
+    List<Object[]> findNutrientsOfFood(
+        @Param("id") Long id,
+        @Param("quantity") Double quantity
+    );
 
     @Query("SELECT " + 
             "f.id, " +
             "f.name, " + 
             "f.information, " + 
             "f.imgUrl, " + 
+            "f.sourceOfOrigin, " +
             "cf.name, " + 
             "cf.information, " + 
             "cf.benefits, " + 
