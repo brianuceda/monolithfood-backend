@@ -26,6 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.exceptions.BlacklistedTokenException;
 import pe.edu.upc.MonolithFoodApplication.exceptions.NoTokenException;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
@@ -43,33 +44,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException, java.io.IOException {
-
         try {
-            // Obtener el token de la cabecera
             final String username;
             final String token = jwtService.getTokenFromRequest(request);
-            // Si no se manda un token y la URL es pública, se continúa (está iniciando sesión o registrándose)
-            // logger.info("URI: " + request.getRequestURI());
+            // Está iniciando sesión o registrándose
             if (token == null && isPublicUrl(request.getRequestURI())) {
                 filterChain.doFilter(request, response);
                 return;
             } else if (token == null) {
                 throw new NoTokenException();
             }
-            // Si el token está en la lista negra, se rechaza la solicitud
+            // Token en blacklist
             if (jwtService.isTokenBlacklisted(token)) {
                 throw new BlacklistedTokenException();
             }
-            // Obtener el username del token
             username = jwtService.getUsernameFromToken(token);
-            // Validar si el username es nulo o si el usuario ya está autenticado
+            // Validar si el usuario existe
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtService.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities());
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
@@ -78,42 +75,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (NoTokenException e) {
             saveAndShowInfoError(e, response,
-                    new ResponseDTO("Se necesita un token.", HttpStatus.UNAUTHORIZED.value()));
+                new ResponseDTO("Se necesita un token", HttpStatus.UNAUTHORIZED.value(), ResponseType.ERROR));
         } catch (BlacklistedTokenException e) {
             saveAndShowInfoError(e, response,
-                    new ResponseDTO("El token fue inhabilitado.", HttpStatus.UNAUTHORIZED.value()));
+                new ResponseDTO("Es token fue inhabilitado", HttpStatus.UNAUTHORIZED.value(), ResponseType.ERROR));
         } catch (SignatureException | MalformedJwtException e) {
             saveAndShowInfoError(e, response,
-                    new ResponseDTO("El token es invalido.", HttpStatus.UNAUTHORIZED.value()));
+                new ResponseDTO("El token es invalido", HttpStatus.UNAUTHORIZED.value(), ResponseType.ERROR));
         } catch (ExpiredJwtException e) {
             saveAndShowInfoError(e, response,
-                    new ResponseDTO("El token ha expirado.", HttpStatus.UNAUTHORIZED.value()));
+                new ResponseDTO("El token expiradó", HttpStatus.UNAUTHORIZED.value(), ResponseType.ERROR));
         } catch (UsernameNotFoundException e) {
             saveAndShowInfoError(e, response,
-                    new ResponseDTO("Nombre de usuario o contraseña inválidos.", HttpStatus.UNAUTHORIZED.value()));
+                new ResponseDTO("Datos inválidos", HttpStatus.UNAUTHORIZED.value(), ResponseType.ERROR));
         } catch (Exception e) {
             saveAndShowInfoError(e, response,
-                    new ResponseDTO("Ocurrió un error interno.", HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                new ResponseDTO("Ocurrió un error interno", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR));
         }
-    }
-
-    // Reemplazar por el Entry Point cuando se haga
-    private void sendErrorResponseInJSON(HttpServletResponse response, ResponseDTO responseDTO)
-            throws IOException, java.io.IOException {
-        response.setStatus(responseDTO.getStatusCode());
-        response.setContentType("application/json");
-        response.getWriter().write("{\"message\":\"" + responseDTO.getMessage() + "\",\"statusCode\":"
-                + responseDTO.getStatusCode() + "}");
-        response.getWriter().flush();
     }
 
     // Guarda el error en el log, muestra el mensaje
     private void saveAndShowInfoError(Exception e, HttpServletResponse response, ResponseDTO responseDTO)
-            throws IOException, java.io.IOException {
+        throws IOException, java.io.IOException
+    {
         logger.error("Entrando al bloque Exception: " + e.getClass().getName());
         logger.error("Causa exacta: " + e.getCause());
         logger.error("Error detallado: ", e);
         sendErrorResponseInJSON(response, responseDTO);
+    }
+    // Reemplazar por el Entry Point cuando se haga
+    private void sendErrorResponseInJSON(HttpServletResponse response, ResponseDTO responseDTO)
+        throws IOException, java.io.IOException
+    {
+        response.setStatus(responseDTO.getStatusCode());
+        response.setContentType("application/json");
+        response.getWriter().write("{\"message\":\"" + responseDTO.getMessage() + "\",\"statusCode\":"
+            + responseDTO.getStatusCode() + ",\"type\":\"" + responseDTO.getType() + "\"}");
+        response.getWriter().flush();
     }
 
     // Si la url es pública, retorna true
@@ -127,8 +125,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             url.startsWith("/error") ||
             url.contains("/favicon.ico") ||
             // Swagger
-            url.startsWith("/v3/api-docs") || // Swagger API
-            url.startsWith("/doc/swagger-ui"); // Swagger UI
+            url.startsWith("/v3/api-docs") ||
+            url.startsWith("/doc/swagger-ui");
     }
 
 }

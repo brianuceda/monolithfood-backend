@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -17,8 +18,8 @@ public class GetUserDTO extends ResponseDTO {
     }
 
     @Builder
-    public GetUserDTO(String message, Integer statusCode, String username, String profileImg) {
-        super(message, statusCode);
+    public GetUserDTO(String message, Integer statusCode, ResponseType type, String username, String profileImg) {
+        super(message, statusCode, type);
         this.username = username;
         this.profileImg = profileImg;
     }

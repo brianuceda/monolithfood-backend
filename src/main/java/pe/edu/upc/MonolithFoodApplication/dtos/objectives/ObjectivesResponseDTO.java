@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -17,8 +18,8 @@ public class ObjectivesResponseDTO extends ResponseDTO {
     }
 
     @Builder
-    public ObjectivesResponseDTO(String message, Integer statusCode, List<ObjectiveDTO> objectives) {
-        super(message, statusCode);
+    public ObjectivesResponseDTO(String message, Integer statusCode, ResponseType type, List<ObjectiveDTO> objectives) {
+        super(message, statusCode, type);
         this.objectives = objectives;
     }
 }

@@ -15,8 +15,11 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.OAuth2PrincipalDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.external.WalletDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
@@ -25,6 +28,7 @@ public class OAuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthService authService;
+    private final ExternalApisService externalApisService;
     private static final Logger logger = LoggerFactory.getLogger(OAuthService.class);
     
     @Transactional
@@ -47,7 +51,8 @@ public class OAuthService {
                 oa2.setOauthProviderId(authentication.getName());
                 oa2.setIsOauthRegistered(true);
                 // Restricciones
-                if (oa2.getUsername() == null) return new ResponseDTO("No se pudo obtener el nombre de usuario.", 400);
+                if (oa2.getUsername() == null)
+                    return new ResponseDTO("Error durante la autenticacion", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
                 if (oa2.getNames() == null) oa2.setNames(oa2.getUsername().substring(0, 1).toUpperCase() + oa2.getUsername().substring(1));
                 // if (oa2.getEmail() == null) oa2.setEmail((oa2.getUsername() + "@gmail.com").substring(0).toLowerCase());
                 if (oa2.getProfileImg() == null) oa2.setProfileImg("https://i.ibb.co/c1vgK6T/google-img.png");
@@ -62,7 +67,8 @@ public class OAuthService {
                 oa2.setOauthProviderId(authentication.getName());
                 oa2.setIsOauthRegistered(true);
                 // Restricciones
-                if (oa2.getUsername() == null) return new ResponseDTO("No se pudo obtener el nombre de usuario.", 400);
+                if (oa2.getUsername() == null)
+                    return new ResponseDTO("Error durante la autenticacion", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
                 if (oa2.getNames() == null) oa2.setNames(oa2.getUsername().substring(0, 1).toUpperCase() + oa2.getUsername().substring(1));
                 // if (oa2.getEmail() == null) oa2.setEmail((oa2.getUsername() + "@hotmail.com").substring(0).toLowerCase());
                 if (oa2.getProfileImg() == null) oa2.setProfileImg("https://i.ibb.co/vvBKFjR/github-img.png");
@@ -79,12 +85,13 @@ public class OAuthService {
                 oa2.setOauthProviderId(authentication.getName());
                 oa2.setIsOauthRegistered(true);
                 // Restricciones
-                if (oa2.getUsername() == null) return new ResponseDTO("No se pudo obtener el nombre de usuario.", 400);
+                if (oa2.getUsername() == null)
+                    return new ResponseDTO("Error durante la autenticacion", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
                 if (oa2.getNames() == null) oa2.setNames(oa2.getUsername().substring(0, 1).toUpperCase() + oa2.getUsername().substring(1));
                 if (oa2.getProfileImg() == null) oa2.setProfileImg("https://i.ibb.co/8B1kpZC/microsoft-img.png");
                 oa2.setUsername("MS_" + (oa2.getUsername().substring(0, 1).toUpperCase() + (oa2.getUsername().substring(1)).toLowerCase()));
             } else {
-                return new ResponseDTO("Proveedor de autenticación aún no configurado.", 400);
+                return new ResponseDTO("El proveedor no es válido", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
             }
             UserConfigEntity uc = UserConfigEntity.builder()
                 .notifications(false)
@@ -113,40 +120,50 @@ public class OAuthService {
             else if (!oAuthUser.isPresent())
                 response = oAuth2Register(user);
             else {
-                logger.error("Error al registrar el usuario.");
-                return new ResponseDTO("Ocurrió algo inesperado.", 500);
+                return new ResponseDTO("Ocurrió un error", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
             }
             return response;
         } catch (Exception e) {
-            // guardar en el log el error exacto
             logger.error("Entrando al bloque Exception: " + e.getClass().getName());
             logger.error("Causa exacta: " + e.getCause());
-            return new ResponseDTO("Ocurrió un error interno.", 500);
+            return new ResponseDTO("Ocurrió un error", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
     public ResponseDTO oAuth2Login(String oAuthProviderId) {
         UserEntity user = userRepository.findByOauthProviderId(oAuthProviderId).get();
-        String profileStage = authService.determineProfileStage(user);
+        String profileStage = jwtService.determineProfileStage(user);
         String generatedToken = jwtService.genToken(user, profileStage);
-        return new AuthResponseDTO("Inicio de sesion realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
+        return new AuthResponseDTO("Inicio de sesión exitoso", HttpStatus.OK.value(), ResponseType.SUCCESS, generatedToken, user.getUserConfig().getDarkMode());
     }
     public ResponseDTO oAuth2Register(UserEntity user) {
         userRepository.save(user);
         String profileStage = "personalInfo";
         String generatedToken = jwtService.genToken(user, profileStage);
-        return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, user.getUserConfig().getDarkMode());
+        return new AuthResponseDTO("Registro exitoso", HttpStatus.OK.value(), ResponseType.SUCCESS, generatedToken, user.getUserConfig().getDarkMode());
     }
     
     @Transactional
-    public void setIpAddress(String username, String ipAddress) {
+    public ResponseDTO setBasicOauth2Data(String username, String ipAddress) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent())
-            logger.error("Usuario no encontrado.");
-        // Retorna la información personal del usuario
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         UserEntity user = optUser.get();
+        if (user.getIpAddress() != null)
+        return new ResponseDTO("Ya tienes una IP registrada", HttpStatus.OK.value(), ResponseType.INFO);
+        // Guarda la ip
         user.setIpAddress(ipAddress);
+        // Genera una nueva billetera para el usuario
+        WalletDTO walletDTO = externalApisService.getWalletFromIp(ipAddress);
+        WalletEntity wallet = WalletEntity.builder()
+            .balance(0.0)
+            .currency(walletDTO.getCurrency())
+            .currencySymbol(walletDTO.getCurrencySymbol())
+            .currencyName(walletDTO.getCurrencyName())
+            .build();
+        user.setWallet(wallet);
         userRepository.save(user);
+        return new ResponseDTO(null, 200, null);
     }
 
 }

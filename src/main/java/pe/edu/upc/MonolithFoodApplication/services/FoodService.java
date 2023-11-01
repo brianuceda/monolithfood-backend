@@ -1,5 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.CategoryRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
 
@@ -30,53 +32,50 @@ public class FoodService {
     public ResponseDTO getAllFoods() {
         List<FoodEntity> foodEntities = foodRepository.findAllByOrderByIdAsc();
         if (foodEntities.isEmpty()) {
-            return new ResponseDTO("No se encontraron alimentos", 404);
+            return new ResponseDTO("No se encontraron alimentos", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
         }
         List<SearchFoodDTO> searchFoodDTOs = foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
-        return new ListSearchFoodDTO(null, 200, searchFoodDTOs);
+        return new ListSearchFoodDTO(null, 200, null, searchFoodDTOs);
     }
     // * Gabriela: Buscar alimentos por nombre
     public ResponseDTO searchFoodsByName(String foodName) {
         List<FoodEntity> foodEntities = foodRepository.findByNameContaining(foodName);
         if (foodEntities.isEmpty()) {
-            return new ResponseDTO("No se encontraron alimentos con ese nombre", 404);
+            return new ResponseDTO("No se encontraron alimentos con ese nombre", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
         }
         List<SearchFoodDTO> searchFoodDTOs = foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
-        return new ListSearchFoodDTO(null, 200, searchFoodDTOs);
+        return new ListSearchFoodDTO(null, 200, null, searchFoodDTOs);
     }
     // * Gabriela: Buscar alimentos por categoría
     public ResponseDTO searchFoodsByCategory(String categoryName) {
         CategoryFoodEntity category = categoryRepository.findByName(categoryName);
         if (category == null) {
-            return new ResponseDTO("No se encontró la categoría", 404);
+            return new ResponseDTO("No se encontró la categoría", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         List<FoodEntity> foodEntities = category.getFoods();
         if (foodEntities.isEmpty()) {
-            return new ResponseDTO("No se encontraron alimentos en esa categoría", 404);
+            return new ResponseDTO("No se encontraron alimentos en esa categoría", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
         }
         List<SearchFoodDTO> searchFoodDTOs = foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
-        return new ListSearchFoodDTO(null, 200, searchFoodDTOs);
+        return new ListSearchFoodDTO(null, 200, null, searchFoodDTOs);
     }
     // * Gabriela: Buscar alimentos por nutriente
     public ResponseDTO searchFoodsByNutrient(String nutrientName) {
         List<FoodEntity> foodEntities = foodRepository.findByNutrientName(nutrientName);
         if (foodEntities.isEmpty()) {
-            return new ResponseDTO("No se encontraron alimentos con ese nutriente", 404);
+            return new ResponseDTO("No se encontraron alimentos con ese nutriente", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
         }
         List<SearchFoodDTO> searchFoodDTOs = foodEntities.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
-        // List<SearchFoodDTO> foodNutrientDTOs = foodEntities.stream()
-        //     .map(food -> convertToSearchFoodDTO(food, nutrientName))
-        //     .collect(Collectors.toList());
-        return new ListSearchFoodDTO(null, 200, searchFoodDTOs);
+        return new ListSearchFoodDTO(null, 200, null, searchFoodDTOs);
     }
     // * Gabriela: Buscar todos los detalles de un alimento a partir de su id
     public ResponseDTO getDetailedFoodById(Long id, Double quantity) {
         List<Object[]> dto = foodRepository.findDetailedFood(id);
         if (dto.isEmpty())
-            return new ResponseDTO("Alimento no encontrado.", 404);
+            return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         List<Object[]> nutrients = foodRepository.findNutrientsOfFood(id, quantity);
         if (nutrients.isEmpty())
-            return new ResponseDTO("Alimento no encontrado.", 404);
+            return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         // Convierte la tupla a una lista de DTOs
         List<NutrientDTO> nutrientsOfFood = nutrients.stream()
             .map(n -> new NutrientDTO(

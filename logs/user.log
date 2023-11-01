@@ -1338,3 +1338,66 @@ pe.edu.upc.MonolithFoodApplication.exceptions.NoTokenException: null
 05:37:11.888 [http-nio-8080-exec-6] INFO  p.e.u.M.s.UserPersonalInfoService - Información personal del usuario kiridepapel actualizada correctamente.
 05:37:16.645 [http-nio-8080-exec-7] INFO  p.e.u.M.s.UserPersonalInfoService - Información personal del usuario kiridepapel actualizada correctamente.
 05:41:51.687 [http-nio-8080-exec-9] INFO  p.e.u.M.services.EatService - Alimento registrado correctamente para el usuario kiridepapel.
+06:50:33.101 [http-nio-8080-exec-8] INFO  p.e.u.M.s.UserPersonalInfoService - Información personal del usuario kiwigod guardada correctamente.
+07:04:17.114 [http-nio-8080-exec-4] INFO  p.e.u.M.s.UserPersonalInfoService - Información personal del usuario kiwigod guardada correctamente.
+08:59:39.297 [http-nio-8080-exec-8] INFO  p.e.u.M.services.EatService - Alimento registrado correctamente para el usuario kiwigod.
+16:26:03.334 [http-nio-8080-exec-4] INFO  p.e.u.M.services.SubscriptionService - El usuario kiwigod ha comprado el plan de suscripción VIP
+16:26:13.920 [http-nio-8080-exec-6] INFO  p.e.u.M.services.SubscriptionService - El usuario kiwigod suspendió su plan de suscripción VIP correctamente.
+16:27:08.192 [http-nio-8080-exec-8] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:31:37.821 [http-nio-8080-exec-3] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:31:51.269 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:32:37.014 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:33:32.066 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:34:37.442 [http-nio-8080-exec-10] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:34:51.039 [http-nio-8080-exec-3] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:35:36.272 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:35:47.603 [http-nio-8080-exec-8] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:35:51.668 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:37:01.579 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:37:07.575 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:38:07.238 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:39:00.491 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:42:48.467 [http-nio-8080-exec-5] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:43:03.176 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:43:11.318 [http-nio-8080-exec-8] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:43:12.990 [http-nio-8080-exec-10] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:43:13.981 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:43:14.902 [http-nio-8080-exec-3] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:43:15.811 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+16:43:16.666 [http-nio-8080-exec-4] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:04:25.296 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:04:26.746 [http-nio-8080-exec-9] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:04:27.568 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:04:28.848 [http-nio-8080-exec-3] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:04:29.577 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:05:24.390 [http-nio-8080-exec-4] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:05:28.876 [http-nio-8080-exec-5] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:06:04.430 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:06:11.866 [http-nio-8080-exec-9] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:06:50.198 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:16:17.331 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:16:52.298 [http-nio-8080-exec-5] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:16:54.999 [http-nio-8080-exec-6] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:17:09.666 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:18:29.849 [http-nio-8080-exec-9] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:18:39.564 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:19:14.026 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:19:22.778 [http-nio-8080-exec-5] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:19:34.056 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:19:40.166 [http-nio-8080-exec-9] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:20:07.285 [http-nio-8080-exec-10] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:20:21.581 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:20:35.469 [http-nio-8080-exec-3] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:20:47.755 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:21:03.941 [http-nio-8080-exec-4] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:21:41.501 [http-nio-8080-exec-5] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:21:44.038 [http-nio-8080-exec-6] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:21:45.132 [http-nio-8080-exec-7] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:21:45.770 [http-nio-8080-exec-8] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:21:47.152 [http-nio-8080-exec-9] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:25:18.597 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:26:53.647 [http-nio-8080-exec-2] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:27:22.619 [http-nio-8080-exec-3] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:27:23.842 [http-nio-8080-exec-4] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:27:24.584 [http-nio-8080-exec-6] INFO  p.e.u.M.services.EatService - Usuario encontrado
+17:28:07.538 [http-nio-8080-exec-1] INFO  p.e.u.M.services.EatService - Usuario encontrado

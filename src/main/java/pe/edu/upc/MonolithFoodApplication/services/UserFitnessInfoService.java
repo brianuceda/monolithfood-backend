@@ -10,12 +10,14 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.activitylevel.ActivityLevelDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.activitylevel.ActivityLevelsResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
@@ -27,6 +29,7 @@ import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.ActivityLevelRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.ObjectiveRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
@@ -35,80 +38,29 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class UserFitnessInfoService {
-    // ? Atributos
-    // Inyección de dependencias
     private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;
     private final ActivityLevelRepository activityLevelRepository;
     private final UserFitnessInfoRepository userFitnessInfoRepository;
-    // Log de errores y eventos
+    private final JwtService jwtService;
     private static final Logger logger = LoggerFactory.getLogger(UserFitnessInfoService.class);
 
-    // ? Metodos
-    // * Brian: Seleccionar nivel de actividad física del usuario
-    @Transactional
-    public ResponseDTO selectActivityLevel(String username, String activityLevelName) {
-        // Verificar que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        // No se encontraron niveles de actividad física en el servidor
-        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
-        if (allActivityLevels.isEmpty()) {
-            logger.error("No se encontraron niveles de actividad física en el servidor.");
-            return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
-        }
-        UserEntity user = optUser.get();
-        // Verifica que el dato que haya enviado el usuario sea valido
-        if (activityLevelName.isEmpty() || activityLevelName == null) {
-            return new ResponseDTO("Debes seleccionar un nivel de actividad física.", 400);
-        }
-        // Verificar que el nivel de actividad física exista en la base de datos
-        Optional<ActivityLevelEntity> optActivityLevel = activityLevelRepository.findByName(activityLevelName);
-        if (!optActivityLevel.isPresent()) {
-            return new ResponseDTO("No se encontró ese nivel de actividad física.", 400);
-        }
-        UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
-        // Si el usuario aun no ha creado un UserPersonalInfoEntity
-        if (userPersonalInfo == null) {
-            return new ResponseDTO("Primero debes completar tu información personal.", 404);
-        }
-        ActivityLevelEntity myActivityLevel = userPersonalInfo.getActivityLevel();
-        // Si el usuario ya tiene un nivel de actividad física seleccionado, los selecciona
-        if(userPersonalInfo != null) {
-            myActivityLevel = userPersonalInfo.getActivityLevel();
-        }
-        // Verificar que el usuario no esté intentando seleccionar el mismo nivel de actividad física que ya tiene
-        if (myActivityLevel != null && myActivityLevel.getName().equals(activityLevelName)) {
-            return new ResponseDTO("Ya tienes seleccionado ese nivel de actividad fisica.", 400);
-        }
-        // userPersonalInfo.setUser(user);
-        userPersonalInfo.setActivityLevel(optActivityLevel.get());
-        user.setUserPersonalInfo(userPersonalInfo);
-        userRepository.save(user);
-        return new ResponseDTO("Nivel de actividad física seleccionado correctamente.", 200);
-    }
     // * Brian: Obtener nivel de actividad física del usuario
     public ResponseDTO getActivityLevels(String username) {
-        // Verificar que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
-        if (allActivityLevels.isEmpty()) {
-            logger.error("No se encontraron niveles de actividad física en el servidor.");
-            return new ResponseDTO("No se encontraron niveles de actividad física en el servidor.", 404);
+            logger.error("Usuario no encontrado");
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         UserPersonalInfoEntity userPersonalInfo = optUser.get().getUserPersonalInfo();
         if (userPersonalInfo == null) {
-            return new ResponseDTO("Primero debes completar tu información personal.", 404);
+            return new ResponseDTO("Completa tu información personal", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         }
-        // Obtiene los niveles de actividad física de la BD y los compara con el nivel de actividad física del usuario,
-        // si el usuario tiene ese nivel de actividad física, selected = true, si no, selected = false
+        // Obtiene todos los niveles de actividad física y marca como seleccionado el nivel del usuario
+        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
+        if (allActivityLevels.isEmpty()) {
+            return new ResponseDTO("No se encontraron resultados", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
         List<ActivityLevelDTO> activityLevelDTOs = allActivityLevels.stream()
             .map(obj -> {
                 boolean selected = false;
@@ -117,47 +69,150 @@ public class UserFitnessInfoService {
                 return new ActivityLevelDTO(obj.getName(), obj.getDays(), obj.getInformation(), obj.getQuotient(), selected);
             })
         .collect(Collectors.toList());
-        return new ActivityLevelsResponseDTO(null, 200, activityLevelDTOs);
+        return new ActivityLevelsResponseDTO(null, 200, null, activityLevelDTOs);
     }
-    // * Brian: Seleccionar objetivos de un usuario
+    // * Brian: Establecer nivel de actividad física del usuario
     @Transactional
-    public ResponseDTO selectObjectives(String username, List<String> objectives) {
-        // Verificar que el usuario exista
+    public ResponseDTO setActivityLevel(String username, String activityLevelName) {
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        // Obtener todos los objetivos de la base de datos
-        List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
-        // Verificar si la lista de objetivos de la base de datos está vacía
-        if (allObjectives.isEmpty()) {
-            logger.error("No se encontraron objetivos en el servidor.");
-            return new ResponseDTO("No se encontraron objetivos en el servidor.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         UserEntity user = optUser.get();
-        // Verificar si la lista de objetivos está vacía
-        if (objectives.isEmpty() || objectives == null) {
-            logger.error("El usuario " + username + " realizó una petición con una lista de objetivos vacía o nula.");
-            return new ResponseDTO("Debes seleccionar al menos un objetivo.", 400);
+        UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
+        if (userPersonalInfo == null) {
+            return new ResponseDTO("Completa tu información personal", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         }
-        // Validar que todos los objetivos enviados existen en la base de datos
+        if (user.getUserPersonalInfo().getActivityLevel() != null) {
+            return new ResponseDTO("Ya tienes un nivel registrado", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
+        }
+        ResponseDTO response = this.defineActivityLevel(user, activityLevelName);
+        if (response.getStatusCode() == 200) {
+            String profileStage = jwtService.determineProfileStage(user);
+            String generatedToken = jwtService.genToken(user, profileStage);
+            return new AuthResponseDTO(response.getMessage(), HttpStatus.OK.value(), response.getType(), generatedToken, user.getUserConfig().getDarkMode());
+        }
+        return response;
+    }
+    // * Brian: Actualizar nivel de actividad física del usuario
+    @Transactional
+    public ResponseDTO updateActivityLevel(String username, String activityLevelName) {
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        UserEntity user = optUser.get();
+        UserPersonalInfoEntity userPersonalInfo = user.getUserPersonalInfo();
+        if (userPersonalInfo == null) {
+            return new ResponseDTO("Completa tu información personal", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
+        }
+        if (user.getUserPersonalInfo().getActivityLevel() == null) {
+            return new ResponseDTO("Debes seleccionar tu actividad física", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }
+        ActivityLevelEntity myActivityLevel = userPersonalInfo.getActivityLevel();
+        if (myActivityLevel != null && myActivityLevel.getName().equals(activityLevelName)) {
+            return new ResponseDTO("Nivel de actividad ya seleccionado", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }
+        this.calcFitnessInfo(user.getUsername(), true);
+        return this.defineActivityLevel(user, activityLevelName);
+    }
+    // ? Metodo comun de nivel de actividad física
+    private ResponseDTO defineActivityLevel(UserEntity user, String activityLevelName) {
+        if (activityLevelName.isEmpty() || activityLevelName == null) {
+            return new ResponseDTO("Debes seleccionar un nivel de actividad", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }
+        List<ActivityLevelEntity> allActivityLevels = activityLevelRepository.findAll();
+        if (allActivityLevels.isEmpty()) {
+            return new ResponseDTO("No se encontraron niveles de actividad", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        Optional<ActivityLevelEntity> optActivityLevel = allActivityLevels.stream()
+            .filter(level -> level.getName().equals(activityLevelName)).findFirst();
+        if (!optActivityLevel.isPresent()) {
+            return new ResponseDTO("No se encontró ese nivel de actividad", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+        // Guardar el nivel de actividad física en el usuario
+        upi.setActivityLevel(optActivityLevel.get());
+        user.setUserPersonalInfo(upi);
+        userRepository.save(user);
+        return new ResponseDTO("Nivel seleccionado correctamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
+    }
+
+    // * Brian: Obtener todos los objetivos de un usuario
+    @Transactional(readOnly = true)
+    public ResponseDTO getObjectives(String username) {
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        // Obtiene todos los objetivos y marca como seleccionados los objetivos del usuario
+        List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
+        if (allObjectives.isEmpty()) {
+            return new ResponseDTO("No se encontraron resultados", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        List<ObjectiveEntity> myObjectives = optUser.get().getObjectives();
+        List<ObjectiveDTO> objectiveDTOs = allObjectives.stream()
+                .map(obj -> {
+                    boolean selected = myObjectives.stream().anyMatch(o -> o.getName().equals(obj.getName()));
+                    return new ObjectiveDTO(obj.getName(), obj.getInformation(), obj.getProteinPerKg(), selected);
+                })
+                .collect(Collectors.toList());
+        return new ObjectivesResponseDTO(null, 200, null, objectiveDTOs);
+    }
+    // * Brian: Establecer nuevos objetivos de un usuario
+    @Transactional
+    public ResponseDTO setObjectives(String username, List<String> objectives) {
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        UserEntity user = optUser.get();
+        if (user.getObjectives() != null && !user.getObjectives().isEmpty()) {
+            return new ResponseDTO("Ya tienes objetivos registrados", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }        
+        String msg = "Objetivos registrados correctamente";
+        ResponseDTO response = this.defineObjectives(user, objectives, msg);
+        // Retornar el token generado junto con el mensaje de éxito y el código de estado
+        if (response.getStatusCode() == 200) {
+            String profileStage = jwtService.determineProfileStage(user);
+            String generatedToken = jwtService.genToken(user, profileStage);
+            return new AuthResponseDTO(msg, 200, null, generatedToken, user.getUserConfig().getDarkMode());
+        }
+        return response;
+    }
+    // * Brian: Actualizar objetivos de un usuario
+    @Transactional
+    public ResponseDTO updateObjectives(String username, List<String> objectives) {
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        UserEntity user = optUser.get();
+        if (user.getObjectives().isEmpty() || user.getObjectives() == null) {
+            return new ResponseDTO("Debes establecer tus objetivos", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }
+        return this.defineObjectives(user, objectives, "Objetivos actualizados correctamente");
+    }
+    // ? Metodo comun de objetivos
+    private ResponseDTO defineObjectives(UserEntity user, List<String> objectives, String msg) {
+        List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
+        if (allObjectives.isEmpty()) {
+            return new ResponseDTO("No se encontraron objetivos", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+        if (objectives.isEmpty() || objectives == null) {
+            return new ResponseDTO("Selecciona al menos un objetivo", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }
         for (String objective : objectives) {
             boolean exists = allObjectives.stream().anyMatch(o -> o.getName().equals(objective));
             if (!exists) {
-                logger.error("El usuario " + username + " está intentando seleccionar un objetivo que no existe.");
-                return new ResponseDTO("No se encontro uno de los objetivos seleccionados.", 404);
+                return new ResponseDTO("Objetivos no encontrados", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
             }
         }
-        // Valida que el usuario no intente enviar el mismo objetivo dos veces o más en la lista
         if (objectives.stream().distinct().count() != objectives.size()) {
-            logger.error("El usuario " + username + " está intentando seleccionar el mismo objetivo más de una vez.");
-            return new ResponseDTO("No puedes seleccionar el mismo objetivo más de una vez.", 400);
+            return new ResponseDTO("No selecciones el mismo objetivo dos veces", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         }
-        // Valida que el usuario no intente seleccionar más de 3 objetivos
         if (objectives.size() > 3) {
-            logger.error("El usuario " + username + " está intentando seleccionar más de 3 objetivos.");
-            return new ResponseDTO("No puedes seleccionar más de 3 objetivos.", 400);
+            return new ResponseDTO("No puedes seleccionar más de 3 objetivos", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         }
         // Filtrar los objetivos de la BD que coinciden con los enviados por el usuario
         List<ObjectiveEntity> newUserObjectives = allObjectives.stream()
@@ -166,69 +221,16 @@ public class UserFitnessInfoService {
         // Guardar los objetivos en el usuario
         user.setObjectives(newUserObjectives);
         userRepository.save(user);
-        return new ResponseDTO("Objetivos nutricionales seleccionados correctamente.", 200);
-    }  
-    // * Brian: Obtener todos los objetivos
-    @Transactional(readOnly = true)
-    public ResponseDTO getObjectives(String username) {
-        // Verificar que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        List<ObjectiveEntity> allObjectives = objectiveRepository.findAll();
-        if (allObjectives.isEmpty()) {
-            logger.error("No se encontraron objetivos en el servidor.");
-            return new ResponseDTO("No se encontraron objetivos en el servidor.", 404);
-        }
-        List<ObjectiveEntity> myObjectives = optUser.get().getObjectives();
-        // Obtiene todos los objetivos de la BD y los compara con los del usuario que están en la lista myObjectives,
-        // si el usuario tiene ese objetivo, selected = true, si no, selected = false
-        List<ObjectiveDTO> objectiveDTOs = allObjectives.stream()
-                .map(obj -> {
-                    boolean selected = myObjectives.stream().anyMatch(o -> o.getName().equals(obj.getName()));
-                    return new ObjectiveDTO(obj.getName(), obj.getInformation(), obj.getProteinPerKg(), selected);
-                })
-                .collect(Collectors.toList());
-        return new ObjectivesResponseDTO(null, 200, objectiveDTOs);
-    }
-    // * Willy: Registrar información fitness de un usuario que no es modificable por el sistema
-    @Transactional
-    public ResponseDTO setUserFitnessInfo(String username, FitnessInfoDTO fitnessInfoDTO) {
-        // Verifica que el usuario exista
-        Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
-        }
-        // Gaurda la información fitness del usuario en una variable
-        UserEntity user = optUser.get();
-        UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
-        if (ufi == null) {
-            ufi = new UserFitnessInfoEntity();
-        }
-        else {
-            return new ResponseDTO("Ya tienes información fitness registrada.", 400);
-        }
-        ufi.setTargetWeightKg(fitnessInfoDTO.getTargetWeightKg());
-        ufi.setTargetDate(fitnessInfoDTO.getTargetDate());
-        // Guarda la información fitness del usuario en la BD
-        user.setUserFitnessInfo(ufi);
-        userRepository.save(user);
-        // Retorna la información fitness del usuario
-        return new ResponseDTO("Información fitness registrada correctamente.", 200);
+        this.calcFitnessInfo(user.getUsername(), true);
+        return new ResponseDTO(msg, HttpStatus.OK.value(), ResponseType.SUCCESS);
     }
     // * Willy: Actualizar información fitness de un usuario
     @Transactional
-    public ResponseDTO updateUserFitnessInfo(String username, FitnessInfoDTO fitnessInfoDTO) {
-        // Verifica que el usuario exista
+    public ResponseDTO updateFitnessInfo(String username, FitnessInfoDTO fitnessInfoDTO) {
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
-        // Gaurda la información fitness del usuario en una variable
         UserEntity user = optUser.get();
         UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
         if (ufi == null) {
@@ -236,85 +238,76 @@ public class UserFitnessInfoService {
         }
         ufi.setTargetWeightKg(fitnessInfoDTO.getTargetWeightKg());
         ufi.setTargetDate(fitnessInfoDTO.getTargetDate());
-        // Guarda la información fitness del usuario en la BD
+        // Guarda la información fitness del usuario
         user.setUserFitnessInfo(ufi);
         userRepository.save(user);
-        // Retorna la información fitness del usuario
-        return new ResponseDTO("Información fitness actualizada correctamente.", 200);
+        return new ResponseDTO("Información actualizada", HttpStatus.OK.value(), ResponseType.SUCCESS);
     }
     // * Willy: Calcular la información fitness del usuario
     // Por ahora calcula de forma general, luego los calculos se basarán en los objetivos del usuario
     @Transactional
-    public ResponseDTO calcFitnessInfo(String username) {
-        // Verifica que el usuario exista
+    public ResponseDTO calcFitnessInfo(String username, boolean isCalledFromMethod) {
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
-        // Variables para verificar que el usuario tenga la información necesaria para calcular su información fitness
         UserEntity user = optUser.get();
         UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
-        // Verifica que el usuario tenga información personal
-        if (upi == null) {
-            return new ResponseDTO("No cuentas con la información personal necesaria para calcular tu información fitness.", 404);
+        if (upi == null || upi.getWeightKg() == null || upi.getHeightCm() == null) {
+            return new ResponseDTO("Completa tu información personal", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         }
         if (upi.getActivityLevel() == null) {
-            return new ResponseDTO("Primero debes seleccionar un nivel de actividad física.", 404);
+            return new ResponseDTO("Debes seleccionar un nivel de actividad", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         }
         if (user.getObjectives().isEmpty()) {
-            return new ResponseDTO("Primero debes seleccionar tus objetivos nutricionales.", 404);
+            return new ResponseDTO("Debes seleccionar al menos un objetivo", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         }
         if (ufi == null || ufi.getTargetWeightKg() == null || ufi.getTargetDate() == null) {
-            return new ResponseDTO("Primero debes especificar tu fecha y peso objetivos.", 404);
-        }
-        if(upi.getWeightKg() == null || upi.getHeightCm() == null) {
-            return new ResponseDTO("Primero debes especificar tu peso y altura en tu información personal.", 404);
+            return new ResponseDTO("Completa tu información fitness", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         }
         // Calcula el IMC
         Double bigImc = calculateIMC(upi.getWeightKg(), upi.getHeightCm());
         Double imc = Double.valueOf(String.format("%.3f", bigImc));
-        // Clasifica el IMC
         String clasification = getClasification(imc);
-        // Calcula la edad del usuario
         Integer age = calculateAge(upi.getBorndate());
-        // Calcula la ingesta diaria de macronutrientes basada en las necesidades diarias de energía
-        calculateMacronutrientIntake(user, upi, ufi, age);
+        this.calculateMacronutrientIntake(user, upi, ufi, age);
         // Guarda la información de fitness del usuario
         ufi.setImc(imc);
-        // Guarda la información de fitness del usuario en la BD
         user.setUserFitnessInfo(ufi);
         userFitnessInfoRepository.save(ufi);
         userRepository.save(user);
-        // Retorna la información de fitness del usuario
-        return new FitnessInfoResponseDTO("Información fitness calculada correctamente.", 200,
-            upi.getGender(),
-            age,
-            upi.getHeightCm(),
-            upi.getWeightKg(),
-            ufi.getTargetWeightKg(),
-            ufi.getTargetDate(),
-            upi.getActivityLevel().getName(),
-            upi.getActivityLevel().getQuotient(),
-            ufi.getImc(), clasification,
-            ufi.getDailyCaloricIntake(),
-            ufi.getDailyProteinIntake(),
-            ufi.getDailyCarbohydrateIntake(),
-            ufi.getDailyFatIntake(),
-            ufi.getAvgProteinPerKg(),
-            ufi.getTmb()
-        );
+        if (!isCalledFromMethod) {
+            return new FitnessInfoResponseDTO(
+                "Información fitness calculada", HttpStatus.OK.value(), ResponseType.SUCCESS,
+                upi.getGender(), age,
+                upi.getHeightCm(),
+                upi.getWeightKg(),
+                ufi.getTargetWeightKg(),
+                ufi.getTargetDate(),
+                upi.getActivityLevel().getName(),
+                upi.getActivityLevel().getQuotient(),
+                ufi.getImc(), clasification,
+                ufi.getDailyCaloricIntake(),
+                ufi.getDailyProteinIntake(),
+                ufi.getDailyCarbohydrateIntake(),
+                ufi.getDailyFatIntake(),
+                ufi.getAvgProteinPerKg(),
+                ufi.getTmb()
+            );
+        }
+        return null;
     }
 
     // ? Funciones auxiliares
-    // FUNCIÓN: Calcula el IMC
+    // Calcula el IMC
     public static Double calculateIMC(Double weight, Double height)
     {
         Double newHeight = height / 100;
         Double imc = weight / (newHeight*newHeight);
         return imc;
     }
-    // FUNCIÓN: Classifica el IMC
+    // Classifica el IMC
     public String getClasification(Double imc)
     {
         if(imc < 18.5) return "Bajo peso";
@@ -326,52 +319,51 @@ public class UserFitnessInfoService {
     }
     // Calcula la edad del usuario
     private Integer calculateAge(Timestamp birthdate) {
-        // Calcula la edad del usuario basado en la fecha de nacimiento
         LocalDate birthDate = birthdate.toLocalDateTime().toLocalDate();
         LocalDate currentDate = LocalDate.now();
         return Period.between(birthDate, currentDate).getYears();
     }
+    // Calcula la cantidad de macronutrientes que debe consumir el usuario diariamente
     private void calculateMacronutrientIntake(UserEntity user, UserPersonalInfoEntity upi, UserFitnessInfoEntity ufi, Integer age) {
-        // Calcula la TMB según la fórmula proporcionada
         double tmb = 0;
         if (upi.getGender() == GenderEnum.M)
             tmb = (10 * upi.getWeightKg()) + (6.25 * upi.getHeightCm()) + (5 * age) + 5; 
         else if (upi.getGender() == GenderEnum.F)
             tmb = (10 * upi.getWeightKg()) + (6.25 * upi.getHeightCm()) + (5 * age) - 161;
-        // Multiplica la TMB por el factor de nivel de actividad física
-        double dailyEnergyNeeds = tmb * upi.getActivityLevel().getQuotient();
-        // Establece grams de proteína por kg de peso
+        // Calorías diarias
+        double dailyCaloricIntake = (tmb * upi.getActivityLevel().getQuotient());
+        // Promedio de proteína por kg
         double avgProteinPerKg = calculateAverageProteinPerKg(user);
-        System.out.println("Proteína por kg: " + avgProteinPerKg);
-        // Calcula ingesta de proteína
+        // Gramos de proteína diarios
         double dailyProteinIntake = avgProteinPerKg * upi.getWeightKg();
-        // Calcula calorías de proteínas 
+        // Valor calórico de la cantidad de gramos de proteína diarios
         double kCalDailyProteinIntake = dailyProteinIntake * 4;
-        // Calcula calorías restantes
-        double remainingCalories = dailyEnergyNeeds - kCalDailyProteinIntake;
-        // Define porcentajes de macros
+        // Cantidad de calorías restantes para completar el requerimiento calórico diario
+        double remainingCalories = dailyCaloricIntake - kCalDailyProteinIntake;
+        // Porcentajes de ingesta de carbs y grasas
         double carbPercentage = 0.55;
         double fatPercentage = 0.30;
-        // Calcula ingesta de carbs y grasas
-        double carbIntake = (remainingCalories * carbPercentage) / 4;
-        double fatIntake = (remainingCalories * fatPercentage) / 9;
-        // Almacena la información calculada en la entidad UserFitnessInfo
-        ufi.setDailyCaloricIntake(round(dailyEnergyNeeds));
+        // Gramos de carbs y grasas diarios
+        double dailyCarbohydratesIntake = (remainingCalories * carbPercentage) / 4;
+        double dailyFatsIntake = (remainingCalories * fatPercentage) / 9;
+        // Almacena la información calculada
+        ufi.setDailyCaloricIntake(round(dailyCaloricIntake));
         ufi.setDailyProteinIntake(round(dailyProteinIntake));
-        ufi.setDailyCarbohydrateIntake(round(carbIntake));
-        ufi.setDailyFatIntake(round(fatIntake));
+        ufi.setDailyCarbohydrateIntake(round(dailyCarbohydratesIntake));
+        ufi.setDailyFatIntake(round(dailyFatsIntake));
         ufi.setAvgProteinPerKg(round(avgProteinPerKg));
         ufi.setTmb(round(tmb));
     }
-    public double calculateAverageProteinPerKg(UserEntity user) {
+    // Calcula el promedio de proteína por kg de los objetivos del usuario
+    private double calculateAverageProteinPerKg(UserEntity user) {
         List<ObjectiveEntity> objectives = user.getObjectives();
         OptionalDouble averageProteinPerKg = objectives.stream()
             .mapToDouble(ObjectiveEntity::getProteinPerKg)
             .average();
-        // Devuelve 0 si no hay objetivos
         return averageProteinPerKg.orElse(0);
     }
+    // Redondea un número a 0 decimales
     private Double round(Double value) {
-        return Double.valueOf(String.format("%.2f", value));
+        return (double) Math.round(value);
     }
 }

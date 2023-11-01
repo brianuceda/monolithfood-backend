@@ -3,7 +3,6 @@ package pe.edu.upc.MonolithFoodApplication.exceptions;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 
 public class BlacklistedTokenException extends RuntimeException {
-
   private ResponseDTO response;
 
   public BlacklistedTokenException(ResponseDTO response) {

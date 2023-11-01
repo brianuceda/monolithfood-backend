@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -27,8 +28,8 @@ public class GetPersonalInfoDTO extends ResponseDTO {
     private String imc;
 
     @Builder
-    public GetPersonalInfoDTO(String message, Integer statusCode, String username, String email, String names, GenderEnum gender, Timestamp borndate, String location, Double weightKg, Double heightCm, String imc) {
-        super(message, statusCode);
+    public GetPersonalInfoDTO(String message, Integer statusCode, ResponseType type, String username, String email, String names, GenderEnum gender, Timestamp borndate, String location, Double weightKg, Double heightCm, String imc) {
+        super(message, statusCode, type);
         this.username = username;
         this.email = email;
         this.names = names;

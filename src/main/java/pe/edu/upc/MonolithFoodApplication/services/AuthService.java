@@ -28,11 +28,14 @@ import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.external.WalletDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.IpLoginAttemptEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.IpLoginAttemptRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.RoleRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
@@ -44,6 +47,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final IpLoginAttemptRepository ipLoginAttemptRepository;
+    private final ExternalApisService externalApisService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
@@ -59,16 +63,15 @@ public class AuthService {
     @Transactional
     public ResponseDTO login(LoginRequestDTO request) {
         try {
-            
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
             if (userEntity != null) {
                 // Verificar si la IP está bloqueada
                 if (isIpBlocked(request.getIpAddress(), userEntity)) {
                     logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", request.getIpAddress(), request.getUsername());
-                    return new ResponseDTO("Acceso bloqueado desde esta dirección IP", HttpStatus.FORBIDDEN.value());
+                    return new ResponseDTO("Tu acceso fue bloqueado", 403, ResponseType.ERROR);
                 }
                 if (userEntity.getIsOauthRegistered()) {
-                    return new ResponseDTO("Este usuario se registró con un proveedor externo.", HttpStatus.BAD_REQUEST.value());
+                    return new ResponseDTO("Usuario autenticado via OAuth", 401, ResponseType.ERROR);
                 }
             }
             // Si el usuario y la contraseña son válidos, autenticar al usuario en el contexto de Spring Security y generar un token JWT para el usuario
@@ -82,15 +85,15 @@ public class AuthService {
                 ipLoginAttemptRepository.save(attempt);
             }
             // Retornar el token generado junto con el mensaje de éxito y el código de estado
-            String profileStage = determineProfileStage(user);
+            String profileStage = jwtService.determineProfileStage(user);
             String generatedToken = jwtService.genToken(user, profileStage);
-            return new AuthResponseDTO("Inicio de sesión realizado correctamente.", HttpStatus.OK.value(), generatedToken, userConfig.getDarkMode());
+            return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, generatedToken, userConfig.getDarkMode());
         } catch (AuthenticationException e) {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
             if (userEntity != null)
                 registerANewFailedAttempt(request.getIpAddress(), userEntity);
-            return new ResponseDTO("Nombre de usuario o contraseña inválidos", HttpStatus.UNAUTHORIZED.value());
+            return new ResponseDTO("Usuario no encontrado", 401, ResponseType.ERROR);
         }
     }
     // * Brian: Registrar un nuevo usuario
@@ -99,57 +102,72 @@ public class AuthService {
         try {
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
             if (userRepository.findByUsername(request.getUsername()).isPresent())
-                return new ResponseDTO("El nombre de usuario ya está en uso.", HttpStatus.BAD_REQUEST.value());
+                return new ResponseDTO("Nombre de usuario no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
             if (userRepository.findByEmail(request.getEmail()).isPresent())
-                return new ResponseDTO("El email ya está en uso.", HttpStatus.BAD_REQUEST.value());
+                return new ResponseDTO("Email no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
             if (request.getProfileImg() == null)
                 request.setProfileImg("https://i.ibb.co/28FKMc7/monolithfood-img.png");
-            // Obtener la contraseña del request (por oauth2, la contraseña es null)
-            String password = request.getPassword();
-            // Valida si la contraseña es segura o no, dependiendo de si el registro es por Oauth2 o no
-            // Validar la contraseña segura si el registro no es por Oauth2
             ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
             // Si la contraseña no es segura, devolver la respuesta de validación
             if (respuestaValidacion != null)
                 return respuestaValidacion;
-            // Genera una contraseña encriptada si el registro no es por Oauth2
-            password = passwordEncoder.encode(request.getPassword());
-            // Validar formato del correo electrónico
+            // Formato del correo electrónico
             String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
             Pattern pattern = Pattern.compile(emailRegex);
             Matcher matcher = pattern.matcher(request.getEmail());
             if (!matcher.matches())
-                return new ResponseDTO("El formato del correo electrónico no es válido.", HttpStatus.BAD_REQUEST.value());
+                return new ResponseDTO("Email invalido", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+            // Genera nueva configuración por defecto
             UserConfigEntity uc = UserConfigEntity.builder()
                 .notifications(false)
                 .darkMode(true)
                 .lastFoodEntry(null)
                 .lastWeightUpdate(null)
                 .build();
-            // Crear el usuario con los datos de la petición y el rol de usuario por defecto (USER) y lo guarda en la BD
+            // Genera una nueva billetera
+            WalletEntity wallet = WalletEntity.builder().balance(0.0).build();
+            try {
+                WalletDTO walletDTO = externalApisService.getWalletFromIp(request.getIpAddress());
+                wallet.setCurrency(walletDTO.getCurrency());
+                wallet.setCurrencySymbol(walletDTO.getCurrencySymbol());
+                wallet.setCurrencyName(walletDTO.getCurrencyName());
+            } catch (Exception e) {
+                wallet.setCurrency("No encontrado");
+                wallet.setCurrencySymbol("No encontrado");
+                wallet.setCurrencyName("No encontrado");
+            }
+            // Crear el usuario en la BD
             UserEntity user = UserEntity.builder()
-                    .username(request.getUsername())
-                    .password(password)
-                    .email(request.getEmail())
-                    .names(request.getNames())
-                    .profileImg(request.getProfileImg())
-                    .isOauthRegistered(false)
-                    .isAccountBlocked(false)
-                    .ipAddress(request.getIpAddress())
-                    .userConfig(uc)
-                    .roles(setRoleUser())
-                    .build();
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .names(request.getNames())
+                .profileImg(request.getProfileImg())
+                .isOauthRegistered(false)
+                .isAccountBlocked(false)
+                .ipAddress(request.getIpAddress())
+                .userConfig(uc)
+                .wallet(wallet)
+                .roles(setRoleUser())
+                .build();
             userRepository.save(user);
             // Generar el token JWT para el usuario
             String profileStage = "personalInfo";
             String generatedToken = jwtService.genToken(user, profileStage);
             // Devolver el token generado junto con el mensaje de éxito y el código de estado
-            return new AuthResponseDTO("Registro realizado correctamente.", HttpStatus.OK.value(), generatedToken, uc.getDarkMode());
+            return new AuthResponseDTO(
+                "Registro exitoso", HttpStatus.OK.value(), ResponseType.SUCCESS,
+                generatedToken, uc.getDarkMode());
         } catch (DataIntegrityViolationException e) {
-            return new ResponseDTO("El nombre de usuario o el email ya se están en uso.", HttpStatus.CONFLICT.value());
+            // return new ResponseDTO(
+            //     "Se violó la integridad de los datos", 409);
+            return new ResponseDTO(
+                "Datos inválidos", HttpStatus.CONFLICT.value(), ResponseType.ERROR);
         } catch (Exception e) {
-            return new ResponseDTO("Error al registrarse. Por favor, intenta de nuevo.",
-                    HttpStatus.INTERNAL_SERVER_ERROR.value());
+            // return new ResponseDTO(
+            //     "Ocurrió un error al registrarse",500);
+            return new ResponseDTO(
+                "Ocurrió un error", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
     // * Brian: Cerrar sesión (desactivar el token)
@@ -157,13 +175,12 @@ public class AuthService {
         try {
             if (!jwtService.isTokenBlacklisted(realToken)) {
                 jwtService.addTokenToBlacklist(realToken);
-                return new ResponseDTO("Desconectado exitosamente.", HttpStatus.OK.value());
+                return new ResponseDTO("Desconectado exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
             } else {
-                return new ResponseDTO("El token ya está inhabilitado.", HttpStatus.BAD_REQUEST.value());
+                return new ResponseDTO("Token invalido", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
             }
         } catch (Exception e) {
-            return new ResponseDTO("Error al desconectar. Por favor, intenta de nuevo.",
-                    HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseDTO("Error al desconectar", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
 
@@ -174,16 +191,8 @@ public class AuthService {
         roles.add(USER);
         return roles;
     }
-    public String determineProfileStage(UserEntity user) {
-        return
-            user.getUserPersonalInfo() == null ? "personalInfo" :
-            user.getObjectives() == null || user.getObjectives().isEmpty() ? "objectives" :
-            user.getUserPersonalInfo().getActivityLevel() == null ? "activityLevel" :
-            user.getUserFitnessInfo() == null ? "fitnessInfo" :
-            "completed";
-    }
     private ResponseDTO validarContraseniaSegura(String contrasenia) {
-        if (contrasenia.length() < 8) return new ResponseDTO("La contraseña debe tener al menos 8 caracteres.", HttpStatus.BAD_REQUEST.value());
+        if (contrasenia.length() < 8) return new ResponseDTO("La contraseña debe tener al menos 8 caracteres", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         boolean tieneLetraMayuscula = false;
         boolean tieneLetraMinuscula = false;
         boolean tieneDigito = false;
@@ -200,13 +209,13 @@ public class AuthService {
                 tieneCaracterEspecial = true;
         }
         if (!tieneLetraMayuscula)
-            return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula.", HttpStatus.BAD_REQUEST.value());
+            return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         if (!tieneLetraMinuscula)
-            return new ResponseDTO("La contraseña debe contener al menos una letra minúscula.", HttpStatus.BAD_REQUEST.value());
+            return new ResponseDTO("La contraseña debe contener al menos una letra minúscula.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         if (!tieneDigito)
-            return new ResponseDTO("La contraseña debe contener al menos un dígito numérico.", HttpStatus.BAD_REQUEST.value());
+            return new ResponseDTO("La contraseña debe contener al menos un dígito numérico.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         if (!tieneCaracterEspecial)
-            return new ResponseDTO("La contraseña debe contener al menos un carácter especial.", HttpStatus.BAD_REQUEST.value());
+            return new ResponseDTO("La contraseña debe contener al menos un carácter especial.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         return null;
     }
     // FUNCIÓN: Registra un intento fallido de inicio de sesión

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -17,8 +18,8 @@ public class ActivityLevelsResponseDTO extends ResponseDTO {
     }
 
     @Builder
-    public ActivityLevelsResponseDTO(String message, Integer statusCode, List<ActivityLevelDTO> activityLevels) {
-        super(message, statusCode);
+    public ActivityLevelsResponseDTO(String message, Integer statusCode, ResponseType type, List<ActivityLevelDTO> activityLevels) {
+        super(message, statusCode, type);
         this.activityLevels = activityLevels;
     }
 }

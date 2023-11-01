@@ -15,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PutHeightWeightDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PutPersonalInfoDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.SetPersonalInfoDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.user.SetInformationDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.services.UserReportService;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
@@ -33,7 +34,7 @@ public class UserPersonalInfoController {
     // Post: Registrar información personal de un usuario
     @PostMapping("/new")
     public ResponseEntity<?>setUserPersonalInfo(@RequestHeader("Authorization") String bearerToken,
-        @RequestBody SetPersonalInfoDTO userPersonallnfoDto) {
+        @RequestBody SetInformationDTO userPersonallnfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = userPersonalInfoService.setUserPersonalInfo(username, userPersonallnfoDto);
         return validateResponse(response);
@@ -88,15 +89,10 @@ public class UserPersonalInfoController {
     
     // * Responder a la petición con el código de estado y el mensaje correspondiente
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
-        try {  
-            if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setMessage(null);
-                return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-            } else {
-                return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-            }
+        try {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         } catch (Exception e) {
-                return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
+            return new ResponseEntity<>(new ResponseDTO("Ocurrio un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
         }
     }
 }

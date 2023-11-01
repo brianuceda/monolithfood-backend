@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -22,13 +23,13 @@ public class MacrosDetailedDTO extends ResponseDTO {
 
     public MacrosDetailedDTO
     (
-        String message, Integer statusCode,
+        String message, Integer statusCode, ResponseType type,
         Double consumedCalories, Double dailyCaloricIntake,
         Double consumedProteins, Double dailyProteinIntake,
         Double consumedCarbohydrates, Double dailyCarbohydrateIntake,
         Double consumedFats, Double dailyFatIntake
     ) {
-        super(message, statusCode);
+        super(message, statusCode, type);
         this.consumedCalories = consumedCalories;
         this.dailyCaloricIntake = dailyCaloricIntake;
         this.consumedProteins = consumedProteins;

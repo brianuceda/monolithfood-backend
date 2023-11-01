@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -15,8 +16,8 @@ public class SubscriptionDTO extends ResponseDTO {
     private Boolean selected = false;
 
     @Builder
-    public SubscriptionDTO(String message, Integer status, RoleEnum subscriptionPlan, String information, Double price, Boolean selected) {
-        super(message, status);
+    public SubscriptionDTO(String message, Integer status, ResponseType type, RoleEnum subscriptionPlan, String information, Double price, Boolean selected) {
+        super(message, status, type);
         this.subscriptionPlan = subscriptionPlan;
         this.information = information;
         this.price = price;

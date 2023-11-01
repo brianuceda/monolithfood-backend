@@ -23,7 +23,7 @@ public class IntakeDTO extends ResponseDTO {
     private LocalDateTime date;
     
     public IntakeDTO(Long id, String name, String categoryFood, UnitOfMeasurementEnum unitOfMeasurement, Double quantity, LocalDateTime date) {
-        super(null, null);
+        super(null, null, null);
         this.id = id;
         this.name = name;
         this.categoryFood = categoryFood;
@@ -33,6 +33,6 @@ public class IntakeDTO extends ResponseDTO {
     }
 
     public IntakeDTO(String message) {
-        super(message, null);
+        super(message, null, null);
     }
 }

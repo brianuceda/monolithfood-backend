@@ -2,6 +2,7 @@ package pe.edu.upc.MonolithFoodApplication.services;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.GetUserDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PhotoDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
@@ -26,12 +28,12 @@ public class UserService {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            logger.error("Usuario no encontrado");
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         // Retorna la información del usuario
         UserEntity user = optUser.get();
-        return new GetUserDTO(null, 200,
+        return new GetUserDTO(null, 200, null,
             user.getUsername(),
             user.getProfileImg()
         );
@@ -42,22 +44,18 @@ public class UserService {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
-            logger.error("Usuario no encontrado.");
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         UserEntity user = optUser.get();
         if (photoUrl == null || photoUrl.isEmpty()) {
-            logger.error("El usuario " + username + " no envió ninguna foto para actualizar.");
-            return new ResponseDTO("Debes enviar una foto.", 400);
+            return new ResponseDTO("Debes enviar una foto", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
         }
         if (user.getProfileImg().equals(photoUrl)) {
-            logger.error("El usuario " + username + " ya tiene esa foto de perfil.");
-            return new ResponseDTO("Ya tienes esa foto de perfil.", 400);
+            return new ResponseDTO("Ya tienes esa foto", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         }
-        // Actualiza y guarda la foto de perfil del usuario
         user.setProfileImg(photoUrl);
         userRepository.save(user);
-        return new PhotoDTO("Foto actualizada.", 200, photoUrl);
+        return new PhotoDTO("Foto actualizada.", HttpStatus.OK.value(), ResponseType.SUCCESS, photoUrl);
     }
   
 }

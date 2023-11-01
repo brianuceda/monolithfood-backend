@@ -10,20 +10,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     // Se ejecuta cuando se envía un JSON con campos vacíos o nulos
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        ResponseDTO response = new ResponseDTO("Error en el formato de los datos enviados.", 400);
+        ResponseDTO response = new ResponseDTO("Los datos son ilegibles", 400, ResponseType.WARN);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     // Se ejecuta cuando se envía un JSON con un formato incorrecto
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ResponseDTO> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        ResponseDTO response = new ResponseDTO("Los datos enviados no son legibles.", 400);
+        ResponseDTO response = new ResponseDTO("Formato de datos ilegibles", 400, ResponseType.WARN);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
     
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ResponseDTO> handleAccessDeniedException(AccessDeniedException e) {
-        ResponseDTO response = new ResponseDTO("No tienes permiso para acceder a este recurso.", 400);
+        ResponseDTO response = new ResponseDTO("Recurso protegido", 400, ResponseType.ERROR);
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
@@ -39,10 +40,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
         if (ex.getMessage().contains("No enum constant")) {
-            ResponseDTO response = new ResponseDTO("El valor proporcionado no es un valor permitido.", 400);
+            ResponseDTO response = new ResponseDTO("Valor no permitido", 400, ResponseType.ERROR);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } else {
-            ResponseDTO response = new ResponseDTO("Error en el formato de los datos enviados.", 400);
+            ResponseDTO response = new ResponseDTO("Formato de datos ilegibles", 400, ResponseType.WARN);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }

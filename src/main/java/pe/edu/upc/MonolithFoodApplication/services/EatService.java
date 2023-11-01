@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
@@ -48,16 +50,18 @@ public class EatService {
         // Verifica que el usuario exista
             Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (isSeparatedSearch == true) {
-            if(!optUser.isPresent())
-                return new ResponseDTO("Usuario no encontrado.", 404);
+            if(optUser.isPresent()) {
+                logger.info("Usuario encontrado");
+                return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+            }
         }
         UserFitnessInfoEntity ufi = optUser.get().getUserFitnessInfo();
         if (ufi == null) {
-            return new ResponseDTO("Debes completar tu información fitness.", 400);
+            return new ResponseDTO("Completa tu información fitness", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
         }
         MacrosDetailedDTO dto = eatRepository.getMacrosDetailed(username, startDate, endDate);
         if (dto == null) {
-            MacrosDetailedDTO data = new MacrosDetailedDTO(null, null, 0.0, ufi.getDailyCaloricIntake(), 0.0, ufi.getDailyProteinIntake(), 0.0, ufi.getDailyCarbohydrateIntake() ,0.0, ufi.getDailyFatIntake());
+            MacrosDetailedDTO data = new MacrosDetailedDTO(null, null, null, 0.0, ufi.getDailyCaloricIntake(), 0.0, ufi.getDailyProteinIntake(), 0.0, ufi.getDailyCarbohydrateIntake() ,0.0, ufi.getDailyFatIntake());
             if (isSeparatedSearch == true) {
                 data.setMessage(null);
                 data.setStatusCode(200);
@@ -78,7 +82,7 @@ public class EatService {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if(!optUser.isPresent())
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         AllCategoriesIntakesDTO specificCategory = new AllCategoriesIntakesDTO();
         if (category == CategoryIntakeEnum.DESAYUNO)
             specificCategory.setDesayuno(getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate));
@@ -87,7 +91,7 @@ public class EatService {
         else if (category == CategoryIntakeEnum.CENA)
             specificCategory.setCena(getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate));
         return new IntakesResponseDTO(
-            null, 200,
+            null, HttpStatus.OK.value(), ResponseType.SUCCESS,
             (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false), specificCategory
         );
     }
@@ -96,9 +100,9 @@ public class EatService {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if(!optUser.isPresent())
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         return new IntakesResponseDTO(
-            null, 200,
+            null, HttpStatus.OK.value(), ResponseType.SUCCESS,
             (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false),
             new AllCategoriesIntakesDTO(
                 getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate),
@@ -111,14 +115,14 @@ public class EatService {
     public ResponseDTO getDetailedIntake(String username, Long id) {
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if(!optUser.isPresent())
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         DetailedIntakeDTO dto = eatRepository.findDetailedIntake(username, id);
         if (dto == null)
-            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+            return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         dto.minusHours(5);
         List<Object[]> nutrients = foodRepository.findNutrientsOfFood(dto.getFoodId(), dto.getQuantity());
         if (nutrients.isEmpty())
-            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+            return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         dto.setFoodId(null);
         // Convierte la tupla a una lista de DTOs
         List<NutrientDTO> nutrientsOfFood = nutrients.stream()
@@ -136,14 +140,13 @@ public class EatService {
     // * Heather: Agregar un alimento a la lista de alimentos consumidos
     @Transactional
     public ResponseDTO addFoodIntake(String username, NewIntakeDTO foodIntakeDTO) {
-        // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if(!optUser.isPresent()) {
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         Optional<FoodEntity> getFood = foodRepository.findById(foodIntakeDTO.getFoodId());
         if(!getFood.isPresent()) {
-            return new ResponseDTO("Alimento no encontrado.", 404);
+            return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         UserEntity user = optUser.get();
         EatEntity newEat = new EatEntity();
@@ -154,13 +157,9 @@ public class EatService {
         LocalDateTime dateTimeOfEat = foodIntakeDTO.getDate().toLocalDateTime().plusHours(5);
         newEat.setDate(Timestamp.valueOf(dateTimeOfEat));
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
-        // Guardar EatEntity en la lista de Alimentos del usuario
         user.getEats().add(newEat);
-        // Guardar cambios en la base de datos
         userRepository.save(user);
-        // Retornar mensaje de éxito
-        logger.info("Alimento registrado correctamente para el usuario " + username + ".");
-        return new ResponseDTO("Alimento registrado correctamente.", 200);
+        return new ResponseDTO("Alimento registrado exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
     }
     // * Heather: Actualizar un alimento de la lista de alimentos consumidos por un usuario
     @Transactional
@@ -173,24 +172,23 @@ public class EatService {
             niDTO.getUnitOfMeasurement() == null ||
             niDTO.getDate() == null
         ) {
-            return new ResponseDTO("Faltan campos por completar.", 400);
+            return new ResponseDTO("Completa todos los campos", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         }
-        // Verifica que el registro de ingesta que se está intentando actualizar, exista y sea del usuario
+        // El usuario es dueño del registro de ingesta?
         Optional<EatEntity> eat = eatRepository.findById(niDTO.getEatId());
         if(!eat.isPresent() || !eat.get().getUser().getUsername().equals(username))
-            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+            return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         // Obtiene el registro de ingesta actual del usuario
         Optional<EatEntity> getEat = eatRepository.findById(niDTO.getEatId());
         // Obtiene el nuevo alimento que se quiere consumir
         Optional<FoodEntity> getFood = foodRepository.findById(niDTO.getFoodId());
         if(!getFood.isPresent())
-            return new ResponseDTO("Alimento no encontrado.", 404);
-        // Es receta
+            return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        // Es receta?
         EatEntity newEat = getEat.get();
         if(newEat.getFood() == null) {
-            return new ResponseDTO("Aún no se puede actualizar el registro de ingesta de una receta.", 400);
+            return new ResponseDTO("Las recetas no pueden ser modificadas", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         }
-        // Actualizar TODOS los campos
         newEat.setFood(getFood.get());
         newEat.setEatQuantity(niDTO.getQuantity());
         newEat.setUnitOfMeasurement(niDTO.getUnitOfMeasurement());
@@ -199,27 +197,26 @@ public class EatService {
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
         try {
             eatRepository.save(newEat);
-            return new ResponseDTO("Registro actualizado correctamente.", 200);
+            return new ResponseDTO("Registro actualizado exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
         } catch (Exception e) {
-            return new ResponseDTO("Error al actualizar el registro.", 500);
+            return new ResponseDTO("Error al actualizar el registro", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
     // * Heather: Quitar un alimento de la lista de alimentos consumidos por un usuario
     @Transactional
     public ResponseDTO deleteFoodIntake(String username, Long eatId) {
-        // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent())
-            return new ResponseDTO("Usuario no encontrado.", 404);
+            return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         // Verificar que el registro de ingesta exista
         Optional<EatEntity> getEat = eatRepository.findById(eatId);
         if (!getEat.isPresent() || !getEat.get().getUser().getUsername().equals(username))
-            return new ResponseDTO("Registro de ingesta no encontrado.", 404);
+            return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         try {
             eatRepository.deleteId(getEat.get().getId());
-            return new ResponseDTO("Registro eliminado correctamente.", 200);
+            return new ResponseDTO("Registro eliminado exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
         } catch (Exception e) {
-            return new ResponseDTO("Error al eliminar el registro de ingesta.", 500);
+            return new ResponseDTO("Error al eliminar el registro", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
 
@@ -252,7 +249,7 @@ public class EatService {
                 );
             }).collect(Collectors.toList());
         }
-        return new CategoryIntakeDTO(null, null, macrosConsumedPerCategory, myIntakes);
+        return new CategoryIntakeDTO(null, null, null, macrosConsumedPerCategory, myIntakes);
     }
     // Calcular fecha de ingesta
     public CategoryIntakeEnum calculateCategory(LocalDateTime dateTimeOfEat) {

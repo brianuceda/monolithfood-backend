@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -18,8 +19,8 @@ public class ProgressWeightDTO extends ResponseDTO {
     private Double targetWeight;
 
     @Builder
-    public ProgressWeightDTO(String message, Integer status,Timestamp targetDate, Double percentence, Double currentWeight, Double startWeight, Double targetWeight) {
-        super(message, status);
+    public ProgressWeightDTO(String message, Integer status, ResponseType type,Timestamp targetDate, Double percentence, Double currentWeight, Double startWeight, Double targetWeight) {
+        super(message, status, type);
         this.targetDate = targetDate;
         this.percentence = percentence;
         this.currentWeight = currentWeight;

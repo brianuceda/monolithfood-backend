@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.services.AuthService;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
@@ -59,17 +60,26 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         // En el frontent, hacer una solicitud a /auth/set-ip-address(username, ipAddress).
     }
-    @PostMapping("/set-ip-address")
-    public ResponseEntity<?> setIpAddress(@RequestHeader("Authorization") String bearerToken, @RequestParam String ipAddress) {
+    // Post: Guardar la IP del usuario
+    @PostMapping("/set-basic-oauth2-data")
+    public ResponseEntity<?> setIpAndWallet(@RequestHeader("Authorization") String bearerToken,
+        @RequestParam String ipAddress)
+    {
         try { 
             String username = jwtService.getUsernameFromBearerToken(bearerToken);
-            oAuthService.setIpAddress(username, ipAddress);
-            return new ResponseEntity<>(new ResponseDTO("IP guardada correctamente.", 200), HttpStatus.OK);
+            ResponseDTO response = oAuthService.setBasicOauth2Data(username, ipAddress);
+            return validateResponse(response);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseDTO("Ocurrio un error.", 400), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ResponseDTO("Ocurrió un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
         }
-
     }
 
-
+    // * Responder a la petición con el código de estado y el mensaje correspondiente
+    private ResponseEntity<?> validateResponse(ResponseDTO response) {
+        try {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDTO("Ocurrió un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
+        }
+    }
 }

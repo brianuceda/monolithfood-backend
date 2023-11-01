@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.UserFitnessInfoService;
 
@@ -36,12 +37,20 @@ public class UserFitnessInfoController {
         ResponseDTO response = userFitnessInfoService.getObjectives(username);
         return validateResponse(response);
     }
-    // Put: Actualizar los objetivos de un usuario
-    @PutMapping("/objectives/select")
-    public ResponseEntity<?> selectObjectives(@RequestHeader("Authorization") String bearerToken,
+    // Post: Establecer nuevos objetivos para un usuario
+    @PostMapping("/objectives/new")
+    public ResponseEntity<?> setObjectives(@RequestHeader("Authorization") String bearerToken,
         @RequestBody List<String> objectives) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userFitnessInfoService.selectObjectives(username, objectives);
+        ResponseDTO response = userFitnessInfoService.setObjectives(username, objectives);
+        return validateResponse(response);
+    }
+    // Put: Actualizar los objetivos de un usuario
+    @PutMapping("/objectives/update")
+    public ResponseEntity<?> updateObjectives(@RequestHeader("Authorization") String bearerToken,
+        @RequestBody List<String> objectives) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userFitnessInfoService.updateObjectives(username, objectives);
         return validateResponse(response);
     }
     // * Brian (Nivel de actividad física)
@@ -52,50 +61,44 @@ public class UserFitnessInfoController {
         ResponseDTO response = userFitnessInfoService.getActivityLevels(username);
         return validateResponse(response);
     }
-    // Put: Actualizar el nivel de actividad física de un usuario
-    @PutMapping("/activity-levels/select")
-    public ResponseEntity<?> selectActivityLevel(@RequestHeader("Authorization") String bearerToken,
+    // Post: Establecer nuevo nivel de actividad física para un usuario
+    @PostMapping("/activity-levels/new")
+    public ResponseEntity<?> setActivityLevel(@RequestHeader("Authorization") String bearerToken,
         @RequestParam String activityLevel) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userFitnessInfoService.selectActivityLevel(username, activityLevel);
+        ResponseDTO response = userFitnessInfoService.setActivityLevel(username, activityLevel);
         return validateResponse(response);
     }
-    // * Willy (Información fitness)
-    // Post: Establecer nueva información fitness para un usuario
-    @PostMapping("/new")
-    public ResponseEntity<?>setUserFitnessInfo(@RequestHeader("Authorization") String bearerToken,
-        @RequestBody FitnessInfoDTO userFitnessInfoDto) {
+    // Put: Actualizar el nivel de actividad física de un usuario
+    @PutMapping("/activity-levels/update")
+    public ResponseEntity<?> updateActivityLevel(@RequestHeader("Authorization") String bearerToken,
+        @RequestParam String activityLevel) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userFitnessInfoService.setUserFitnessInfo(username, userFitnessInfoDto);
+        ResponseDTO response = userFitnessInfoService.updateActivityLevel(username, activityLevel);
         return validateResponse(response);
     }
     // Put: Actualizar información fitness de un usuario
     @PutMapping("/update")
-    public ResponseEntity<?>updateUserFitnessInfo(@RequestHeader("Authorization") String bearerToken,
+    public ResponseEntity<?>updateFitnessInfo(@RequestHeader("Authorization") String bearerToken,
         @RequestBody FitnessInfoDTO userFitnessInfoDto) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userFitnessInfoService.updateUserFitnessInfo(username, userFitnessInfoDto);
+        ResponseDTO response = userFitnessInfoService.updateFitnessInfo(username, userFitnessInfoDto);
         return validateResponse(response);
     }
     // Get: Obtener información fitness de un usuario
     @GetMapping("/calc")
     public ResponseEntity<?> calcFitnessInfo(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userFitnessInfoService.calcFitnessInfo(username);
+        ResponseDTO response = userFitnessInfoService.calcFitnessInfo(username, false);
         return validateResponse(response);
     }
 
     // * Responder a la petición con el código de estado y el mensaje correspondiente
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
-        try {  
-            if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setMessage(null);
-                return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-            } else {
-                return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-            }
+        try {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         } catch (Exception e) {
-                return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
+            return new ResponseEntity<>(new ResponseDTO("Ocurrio un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
         }
     }
 }

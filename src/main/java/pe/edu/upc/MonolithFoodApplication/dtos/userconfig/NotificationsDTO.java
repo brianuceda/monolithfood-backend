@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -15,8 +16,8 @@ public class NotificationsDTO extends ResponseDTO {
     }
 
     @Builder
-    public NotificationsDTO(String message, Integer statusCode, Boolean notifications) {
-        super(message, statusCode);
+    public NotificationsDTO(String message, Integer statusCode, ResponseType type, Boolean notifications) {
+        super(message, statusCode, type);
         this.notifications = notifications;
     }
 }

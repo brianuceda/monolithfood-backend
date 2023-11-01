@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter
 @Setter
@@ -33,8 +34,8 @@ public class FitnessInfoResponseDTO extends ResponseDTO {
     private Double tmb;
     
     @Builder
-    public FitnessInfoResponseDTO(String message, Integer statusCode, GenderEnum gender, Integer age, Double height, Double weight, Double targetWeightKg, Timestamp targetDate, String activityLevel, Double activityLevelQuotient, Double imc, String clasification, Double dailyCaloricIntake, Double dailyProteinIntake, Double dailyCarbohydrateIntake, Double dailyFatIntake, Double avgProteinPerKg, Double tmb) {
-        super(message, statusCode);
+    public FitnessInfoResponseDTO(String message, Integer statusCode, ResponseType type, GenderEnum gender, Integer age, Double height, Double weight, Double targetWeightKg, Timestamp targetDate, String activityLevel, Double activityLevelQuotient, Double imc, String clasification, Double dailyCaloricIntake, Double dailyProteinIntake, Double dailyCarbohydrateIntake, Double dailyFatIntake, Double avgProteinPerKg, Double tmb) {
+        super(message, statusCode, type);
         this.gender = gender;
         this.age = age;
         this.height = height;

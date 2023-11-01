@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.UserConfigService;
 
@@ -50,15 +51,10 @@ public class UserConfigController {
 
     // * Responder a la petición con el código de estado y el mensaje correspondiente
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
-        try {  
-            if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setMessage(null);
-                return new ResponseEntity<>(response, HttpStatus.valueOf(200));
-            } else {
-                return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-            }
+        try {
+            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
         } catch (Exception e) {
-                return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
+            return new ResponseEntity<>(new ResponseDTO("Ocurrio un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
         }
     }
 

@@ -20,6 +20,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 
 @Service
 public class JwtService {
@@ -107,5 +108,12 @@ public class JwtService {
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }
-	
+	// My methods
+    public String determineProfileStage(UserEntity user) {
+        return
+            user.getUserPersonalInfo() == null || user.getUserFitnessInfo() == null ? "information" :
+            user.getUserPersonalInfo().getActivityLevel() == null ? "activity-level" :
+            user.getObjectives() == null || user.getObjectives().isEmpty() ? "objectives" :
+            "completed";
+    }
 }
