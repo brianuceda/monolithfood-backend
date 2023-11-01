@@ -50,7 +50,7 @@ public class EatService {
         // Verifica que el usuario exista
             Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (isSeparatedSearch == true) {
-            if(optUser.isPresent()) {
+            if(!optUser.isPresent()) {
                 logger.info("Usuario encontrado");
                 return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
             }
