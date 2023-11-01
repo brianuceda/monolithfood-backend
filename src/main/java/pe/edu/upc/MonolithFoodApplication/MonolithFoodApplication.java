@@ -249,7 +249,7 @@ public class MonolithFoodApplication {
             if(compositionFoodRepository.count() == 0) {
                 Map<String, Map<String, Double>> nutrientCompositionFoodMap = new HashMap<String, Map<String, Double>>() {
                     {
-                        put("Pollo", Map.of("Proteina", 0.31, "Grasa", 0.036, "Calorias", 2.39, "Vitamina B6", 0.005, "Fosforo", 0.022));
+                        put("Pollo", Map.of("Proteina", 0.31, "Carbohidratos", 0.016, "Grasa", 0.036, "Calorias", 2.39, "Vitamina B6", 0.005, "Fosforo", 0.022));
                         put("Arroz", Map.of("Carbohidratos", 0.29, "Proteina", 0.027, "Grasa", 0.003, "Calorias", 1.3, "Fibra", 0.004, "Magnesio", 0.025)); 
                         put("Brocoli", Map.of("Carbohidratos", 0.06, "Proteina", 0.025, "Fibra", 0.026, "Calorias", 0.34, "Vitamina C", 0.892, "Vitamina K", 1.02, "Calcio", 0.47));
                         put("Platano", Map.of("Carbohidratos", 0.27, "Proteina", 0.01, "Grasa", 0.005, "Calorias", 1.05, "Fibra", 0.026, "Potasio", 0.358, "Vitamina B6", 0.004, "Vitamina C", 0.1, "Magnesio", 0.27));

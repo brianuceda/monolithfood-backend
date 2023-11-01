@@ -30,6 +30,7 @@ import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
@@ -45,17 +46,28 @@ public class EatService {
     // * Heather: Obtener todos los macronutrientes consumidos, por consumir y su porcentaje de consumo actual
     public ResponseDTO getMacrosDetailed(String username, LocalDateTime startDate, LocalDateTime endDate, Boolean isSeparatedSearch) {
         // Verifica que el usuario exista
-        if (isSeparatedSearch == true) {
             Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (isSeparatedSearch == true) {
             if(!optUser.isPresent())
                 return new ResponseDTO("Usuario no encontrado.", 404);
         }
+        UserFitnessInfoEntity ufi = optUser.get().getUserFitnessInfo();
+        if (ufi == null) {
+            return new ResponseDTO("Debes completar tu información fitness.", 400);
+        }
         MacrosDetailedDTO dto = eatRepository.getMacrosDetailed(username, startDate, endDate);
-        if (dto == null)
-            if (isSeparatedSearch == true)
-                return new MacrosDetailedDTO(null, 200, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-            else
-                return new MacrosDetailedDTO(null, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        if (dto == null) {
+            MacrosDetailedDTO data = new MacrosDetailedDTO(null, null, 0.0, ufi.getDailyCaloricIntake(), 0.0, ufi.getDailyProteinIntake(), 0.0, ufi.getDailyCarbohydrateIntake() ,0.0, ufi.getDailyFatIntake());
+            if (isSeparatedSearch == true) {
+                data.setMessage(null);
+                data.setStatusCode(200);
+            }
+            else {
+                data.setMessage(null);
+                data.setStatusCode(null);
+            }
+            return data;
+        }
         dto.roundAllValues();
         dto.setMessage(null);
         dto.setStatusCode(isSeparatedSearch ? 200 : null);

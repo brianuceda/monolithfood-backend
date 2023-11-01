@@ -2,6 +2,7 @@ package pe.edu.upc.MonolithFoodApplication.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -17,6 +18,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserConfigService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/config")
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class UserConfigController {
     private final UserConfigService userConfigService;
     private final JwtService jwtService;
@@ -50,7 +52,6 @@ public class UserConfigController {
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
         try {  
             if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setStatusCode(null);
                 response.setMessage(null);
                 return new ResponseEntity<>(response, HttpStatus.valueOf(200));
             } else {

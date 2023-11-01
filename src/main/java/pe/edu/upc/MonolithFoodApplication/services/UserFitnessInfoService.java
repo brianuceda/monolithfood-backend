@@ -333,13 +333,11 @@ public class UserFitnessInfoService {
     }
     private void calculateMacronutrientIntake(UserEntity user, UserPersonalInfoEntity upi, UserFitnessInfoEntity ufi, Integer age) {
         // Calcula la TMB según la fórmula proporcionada
-        double tmb;
+        double tmb = 0;
         if (upi.getGender() == GenderEnum.M)
             tmb = (10 * upi.getWeightKg()) + (6.25 * upi.getHeightCm()) + (5 * age) + 5; 
         else if (upi.getGender() == GenderEnum.F)
             tmb = (10 * upi.getWeightKg()) + (6.25 * upi.getHeightCm()) + (5 * age) - 161;
-        else
-            tmb = 0;
         // Multiplica la TMB por el factor de nivel de actividad física
         double dailyEnergyNeeds = tmb * upi.getActivityLevel().getQuotient();
         // Establece grams de proteína por kg de peso

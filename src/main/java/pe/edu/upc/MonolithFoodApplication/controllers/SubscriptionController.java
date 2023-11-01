@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/subscriptions")
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final JwtService jwtService;
@@ -46,7 +47,6 @@ public class SubscriptionController {
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
         try {  
             if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setStatusCode(null);
                 response.setMessage(null);
                 return new ResponseEntity<>(response, HttpStatus.valueOf(200));
             } else {

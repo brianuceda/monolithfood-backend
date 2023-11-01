@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,6 +23,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserFitnessInfoService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/fitness")
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class UserFitnessInfoController {
     private final UserFitnessInfoService userFitnessInfoService;
     private final JwtService jwtService;
@@ -87,7 +89,6 @@ public class UserFitnessInfoController {
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
         try {  
             if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setStatusCode(null);
                 response.setMessage(null);
                 return new ResponseEntity<>(response, HttpStatus.valueOf(200));
             } else {

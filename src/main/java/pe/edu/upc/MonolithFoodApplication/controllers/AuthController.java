@@ -23,7 +23,7 @@ import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class AuthController {
     // ? Atributos
     // Inyección de dependencias

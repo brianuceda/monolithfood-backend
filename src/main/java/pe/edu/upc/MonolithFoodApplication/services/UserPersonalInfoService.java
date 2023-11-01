@@ -194,40 +194,30 @@ public class UserPersonalInfoService {
         return new IMCDTO("Datos actualizados correctamente.", 200, imc, imc != null ? getClasification(imc) : null, upi.getHeightCm(), upi.getWeightKg());
     }
 
-        //FUNCION Willy: Calcular el progreso del peso del usuario
-        @Transactional
-        public ResponseDTO progressWeight(String username) {
-            // Verifica que el usuario exista
-            Optional<UserEntity> optUser = userRepository.findByUsername(username);
-            if (!optUser.isPresent()) {
-                logger.error("Usuario no encontrado.");
-                return new ResponseDTO("Usuario no encontrado.", 404);
-            }
-            UserEntity user = optUser.get();
-            UserPersonalInfoEntity upi = user.getUserPersonalInfo();
-            UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
-            Double porcentaje =null;
-             //Calcular el porcentaje de progreso
-            if (ufi ==null)
-                return new ResponseDTO("debes de ingresar tu información fitness", 404);
-            if (ufi.getTargetWeightKg()!=null && upi.getStartWeightKg()!=null && upi.getWeightKg()!=null) {
-                porcentaje = calculateProgress(upi.getStartWeightKg(),upi.getWeightKg(), ufi.getTargetWeightKg());
-            }
-            // return new ProgressWeightDTO("Porcentaje de progreso calculado correctamente", 200, 
-            //         porcentaje, 
-            //         upi.getWeightKg(), 
-            //         upi.getStartWeightKg(), 
-            //         ufi.getTargetWeightKg());
-            ProgressWeightDTO responseDTO = new ProgressWeightDTO("Porcentaje de progreso calculado correctamente", 200,
-                    ufi.getTargetDate(),
-                    porcentaje, 
-                    upi.getWeightKg(), 
-                    upi.getStartWeightKg(), 
-                    ufi.getTargetWeightKg());
-            responseDTO.minusHours(5);
-    
-            return responseDTO;
+    // Willy: Calcular el progreso del peso del usuario
+    @Transactional
+    public ResponseDTO progressWeight(String username) {
+        // Verifica que el usuario exista
+        Optional<UserEntity> optUser = userRepository.findByUsername(username);
+        if (!optUser.isPresent()) {
+            logger.error("Usuario no encontrado.");
+            return new ResponseDTO("Usuario no encontrado.", 404);
         }
+        UserEntity user = optUser.get();
+        UserPersonalInfoEntity upi = user.getUserPersonalInfo();
+        UserFitnessInfoEntity ufi = user.getUserFitnessInfo();
+        Double porcentaje =null;
+        //Calcular el porcentaje de progreso
+        if (ufi ==null)
+            return new ResponseDTO("Primero debes de ingresar tu información fitness.", 404);
+        if (ufi.getTargetWeightKg()!=null && upi.getStartWeightKg()!=null && upi.getWeightKg()!=null)
+            porcentaje = calculateProgress(upi.getStartWeightKg(),upi.getWeightKg(), ufi.getTargetWeightKg());
+        ProgressWeightDTO responseDTO = new ProgressWeightDTO(null, 200,
+            ufi.getTargetDate(), porcentaje, upi.getWeightKg(), upi.getStartWeightKg(),
+            ufi.getTargetWeightKg());
+        responseDTO.minusHours(5);
+        return responseDTO;
+    }
 
     // ? Funciones auxiliares
     // FUNCIÓN: Calcula el IMC

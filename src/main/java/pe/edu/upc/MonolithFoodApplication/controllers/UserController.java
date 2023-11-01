@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -31,6 +32,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class UserController {
     private final AuthService authService;
     private final UserService userService;
@@ -55,7 +57,7 @@ public class UserController {
         return validateResponse(response);
     }
     // Put: Actualizar la foto de perfil de un usuario
-    @PutMapping("/general-info/photo")
+    @PutMapping("/photo")
     public ResponseEntity<?>updatePhoto(@RequestHeader("Authorization") String bearerToken,
         @RequestParam String photoUrl) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
@@ -168,7 +170,6 @@ public class UserController {
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
         try {  
             if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setStatusCode(null);
                 response.setMessage(null);
                 return new ResponseEntity<>(response, HttpStatus.valueOf(200));
             } else {

@@ -2,6 +2,7 @@ package pe.edu.upc.MonolithFoodApplication.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,6 +23,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserPersonalInfoService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/info")
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class UserPersonalInfoController {
     private final UserPersonalInfoService userPersonalInfoService;
     private final JwtService jwtService;
@@ -76,11 +78,18 @@ public class UserPersonalInfoController {
         return validateResponse(response);
     }
 
+    //GET: obtener el progreso de peso
+    @GetMapping("/progress-weight")
+    public ResponseEntity<?> getProgressWeight(@RequestHeader("Authorization") String bearerToken) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userPersonalInfoService.progressWeight(username);
+        return validateResponse(response);
+    }
+    
     // * Responder a la petición con el código de estado y el mensaje correspondiente
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
         try {  
             if (response.getStatusCode() == 200 && response.getMessage() == null) {
-                response.setStatusCode(null);
                 response.setMessage(null);
                 return new ResponseEntity<>(response, HttpStatus.valueOf(200));
             } else {
@@ -89,12 +98,5 @@ public class UserPersonalInfoController {
         } catch (Exception e) {
                 return new ResponseEntity<>("Ocurrió un error.", HttpStatus.valueOf(500));
         }
-    }
-    //GET: obtener el progreso de peso
-    @GetMapping("/progress-weight")
-    public ResponseEntity<?> getProgressWeight(@RequestHeader("Authorization") String bearerToken) {
-        String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userPersonalInfoService.progressWeight(username);
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

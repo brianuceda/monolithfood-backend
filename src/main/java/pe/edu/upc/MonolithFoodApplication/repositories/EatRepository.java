@@ -68,16 +68,12 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosDetailedDTO(" +
             "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedCalories, " +
             "u.userFitnessInfo.dailyCaloricIntake as dailyCaloricIntake, " +
-            "(SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyCaloricIntake) as percentageCaloricConsumed, " +
             "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedProteins, " +
             "u.userFitnessInfo.dailyProteinIntake as dailyProteinIntake, " +
-            "(SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyProteinIntake) as percentageProteinConsumed, " +
             "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedCarbohydrates, " +
             "u.userFitnessInfo.dailyCarbohydrateIntake as dailyCarbohydrateIntake, " +
-            "(SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyCarbohydrateIntake) as percentageCarbohydrateConsumed, " +
             "SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedFats, " +
-            "u.userFitnessInfo.dailyFatIntake as dailyFatIntake, " +
-            "(SUM(CASE WHEN n.name = 'Grasa' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) / u.userFitnessInfo.dailyFatIntake) as percentageFatConsumed) " +
+            "u.userFitnessInfo.dailyFatIntake as dailyFatIntake) " +
         "FROM EatEntity e " +
         "JOIN e.user u " +
         "JOIN e.food f " +
