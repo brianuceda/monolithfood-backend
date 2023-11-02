@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,6 +47,14 @@ public class GlobalExceptionHandler {
             ResponseDTO response = new ResponseDTO("Formato de datos ilegibles", 400, ResponseType.WARN);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        // Crear un objeto de respuesta que contenga el mensaje y el tipo de respuesta
+        ResponseDTO response = new ResponseDTO("Usuario no encontrado", 401, ResponseType.ERROR);
+        // Devolver una entidad de respuesta con el estado HTTP y el cuerpo del mensaje
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
 }

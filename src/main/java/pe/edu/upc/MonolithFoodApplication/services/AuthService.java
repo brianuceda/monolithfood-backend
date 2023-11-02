@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 // import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -63,7 +64,7 @@ public class AuthService {
     @Transactional
     public ResponseDTO login(LoginRequestDTO request) {
         try {
-            UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
+            UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
             if (userEntity != null) {
                 // Verificar si la IP está bloqueada
                 if (isIpBlocked(request.getIpAddress(), userEntity)) {
@@ -90,10 +91,10 @@ public class AuthService {
             return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, generatedToken, userConfig.getDarkMode());
         } catch (AuthenticationException e) {
             // Si la autenticación falla, registrar el intento fallido
-            UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(null);
+            UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
             if (userEntity != null)
                 registerANewFailedAttempt(request.getIpAddress(), userEntity);
-            return new ResponseDTO("Usuario no encontrado", 401, ResponseType.ERROR);
+            return new ResponseDTO("Datos incorrectos", 401, ResponseType.ERROR);
         }
     }
     // * Brian: Registrar un nuevo usuario
@@ -150,7 +151,7 @@ public class AuthService {
                 .build();
             userRepository.save(user);
             // Generar el token JWT para el usuario
-            String profileStage = "personalInfo";
+            String profileStage = "information";
             String generatedToken = jwtService.genToken(user, profileStage);
             // Devolver el token generado junto con el mensaje de éxito y el código de estado
             return new AuthResponseDTO(

@@ -137,7 +137,7 @@ public class OAuthService {
     }
     public ResponseDTO oAuth2Register(UserEntity user) {
         userRepository.save(user);
-        String profileStage = "personalInfo";
+        String profileStage = "information";
         String generatedToken = jwtService.genToken(user, profileStage);
         return new AuthResponseDTO("Registro exitoso", HttpStatus.OK.value(), ResponseType.SUCCESS, generatedToken, user.getUserConfig().getDarkMode());
     }
