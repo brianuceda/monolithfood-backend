@@ -105,8 +105,6 @@ public class AuthService {
                 return new ResponseDTO("Nombre de usuario no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
             if (userRepository.findByEmail(request.getEmail()).isPresent())
                 return new ResponseDTO("Email no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
-            if (request.getProfileImg() == null)
-                request.setProfileImg("https://i.ibb.co/28FKMc7/monolithfood-img.png");
             ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
             // Si la contraseña no es segura, devolver la respuesta de validación
             if (respuestaValidacion != null)
@@ -142,7 +140,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .names(request.getNames())
-                .profileImg(request.getProfileImg())
+                .profileImg("https://i.ibb.co/28FKMc7/monolithfood-img.png")
                 .isOauthRegistered(false)
                 .isAccountBlocked(false)
                 .ipAddress(request.getIpAddress())

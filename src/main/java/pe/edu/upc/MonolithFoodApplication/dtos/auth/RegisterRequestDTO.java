@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequestDTO {
     private String username;
-    private String password;
     private String email;
+    private String password;
     private String names;
-    private String profileImg;
     private String ipAddress;
 
 }
