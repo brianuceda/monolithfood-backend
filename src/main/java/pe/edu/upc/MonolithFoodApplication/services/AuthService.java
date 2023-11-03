@@ -106,7 +106,8 @@ public class AuthService {
                 return new ResponseDTO("Nombre de usuario no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
             if (userRepository.findByEmail(request.getEmail()).isPresent())
                 return new ResponseDTO("Email no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
-            ResponseDTO respuestaValidacion = validarContraseniaSegura(request.getPassword());
+            ResponseDTO respuestaValidacion = validarUsernameSeguro(request.getUsername());
+            respuestaValidacion = validarContraseniaSegura(request.getPassword());
             // Si la contraseña no es segura, devolver la respuesta de validación
             if (respuestaValidacion != null)
                 return respuestaValidacion;
@@ -190,13 +191,30 @@ public class AuthService {
         roles.add(USER);
         return roles;
     }
+    private ResponseDTO validarUsernameSeguro(String username) {
+        if (username.length() < 6) {
+            return new ResponseDTO("El nombre de usuario debe tener al menos 6 caracteres", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }
+        boolean tieneLetraMayuscula = false;
+        // Recorrer cada caracter
+        for (char c : username.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                tieneLetraMayuscula = true;
+                break;
+            }
+        }
+        if (tieneLetraMayuscula) {
+            return new ResponseDTO("El nombre de usuario do debe contener letras mayúsculas", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+        }
+        return null;
+    }
     private ResponseDTO validarContraseniaSegura(String contrasenia) {
         if (contrasenia.length() < 8) return new ResponseDTO("La contraseña debe tener al menos 8 caracteres", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         boolean tieneLetraMayuscula = false;
         boolean tieneLetraMinuscula = false;
         boolean tieneDigito = false;
         boolean tieneCaracterEspecial = false;
-        // Recorrer cada caracter de la contraseña
+        // Recorrer cada caracter
         for (char c : contrasenia.toCharArray()) {
             if (Character.isUpperCase(c))
                 tieneLetraMayuscula = true;
@@ -208,13 +226,13 @@ public class AuthService {
                 tieneCaracterEspecial = true;
         }
         if (!tieneLetraMayuscula)
-            return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+            return new ResponseDTO("La contraseña debe contener al menos una letra mayúscula", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         if (!tieneLetraMinuscula)
-            return new ResponseDTO("La contraseña debe contener al menos una letra minúscula.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+            return new ResponseDTO("La contraseña debe contener al menos una letra minúscula", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         if (!tieneDigito)
-            return new ResponseDTO("La contraseña debe contener al menos un dígito numérico.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+            return new ResponseDTO("La contraseña debe contener al menos un dígito numérico", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         if (!tieneCaracterEspecial)
-            return new ResponseDTO("La contraseña debe contener al menos un carácter especial.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+            return new ResponseDTO("La contraseña debe contener al menos un carácter especial", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         return null;
     }
     // FUNCIÓN: Registra un intento fallido de inicio de sesión
