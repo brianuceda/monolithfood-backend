@@ -69,12 +69,14 @@ public class EatService {
             else {
                 data.setMessage(null);
                 data.setStatusCode(null);
+                data.setType(null);
             }
             return data;
         }
         dto.roundAllValues();
         dto.setMessage(null);
         dto.setStatusCode(isSeparatedSearch ? 200 : null);
+        dto.setType(isSeparatedSearch ? ResponseType.SUCCESS : null);
         return dto;
     }
     // * Heather: Obtener todos los macronutrientes consumidos, por consumir, su porcentaje de consumo actual y los alimentos consumidos en un rango de fechas de UNA categoría de ingesta (desayuno, almuerzo o cena)
@@ -238,14 +240,23 @@ public class EatService {
             myIntakes.add(new IntakeDTO("No has registrado ningun alimento."));
         }
         else {
+            // myIntakes = results.stream().map(result -> {
+            //     return new IntakeDTO(
+            //         (Long) result[0],
+            //         (String) result[1],
+            //         (String) result[2],
+            //         (UnitOfMeasurementEnum) result[3],
+            //         (Double) result[4],
+            //         ((Timestamp) result[5]).toLocalDateTime()
+            //     );
+            // }).collect(Collectors.toList());
             myIntakes = results.stream().map(result -> {
                 return new IntakeDTO(
                     (Long) result[0],
                     (String) result[1],
                     (String) result[2],
-                    (UnitOfMeasurementEnum) result[3],
-                    (Double) result[4],
-                    ((Timestamp) result[5]).toLocalDateTime()
+                    (Double) result[3],
+                    (UnitOfMeasurementEnum) result[4]
                 );
             }).collect(Collectors.toList());
         }

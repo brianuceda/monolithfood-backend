@@ -1,6 +1,6 @@
 package pe.edu.upc.MonolithFoodApplication.dtos.foodintake;
 
-import java.time.LocalDateTime;
+// import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -17,19 +17,29 @@ import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 public class IntakeDTO extends ResponseDTO {
     private Long id;
     private String name;
-    private String categoryFood;
-    private UnitOfMeasurementEnum unitOfMeasurement;
+    // private String categoryFood;
+    private String imgUrl;
     private Double quantity;
-    private LocalDateTime date;
+    private UnitOfMeasurementEnum unitOfMeasurement;
+    // private LocalDateTime date;
     
-    public IntakeDTO(Long id, String name, String categoryFood, UnitOfMeasurementEnum unitOfMeasurement, Double quantity, LocalDateTime date) {
+    // public IntakeDTO(Long id, String name, String categoryFood, UnitOfMeasurementEnum unitOfMeasurement, Double quantity, LocalDateTime date) {
+    //     super(null, null, null);
+    //     this.id = id;
+    //     this.name = name;
+    //     this.categoryFood = categoryFood;
+    //     this.unitOfMeasurement = unitOfMeasurement;
+    //     this.quantity = quantity;
+    //     this.date = date;
+    // }
+
+    public IntakeDTO(Long id, String name, String imgUrl, Double quantity, UnitOfMeasurementEnum unitOfMeasurement) {
         super(null, null, null);
         this.id = id;
         this.name = name;
-        this.categoryFood = categoryFood;
-        this.unitOfMeasurement = unitOfMeasurement;
+        this.imgUrl = imgUrl;
         this.quantity = quantity;
-        this.date = date;
+        this.unitOfMeasurement = unitOfMeasurement;
     }
 
     public IntakeDTO(String message) {

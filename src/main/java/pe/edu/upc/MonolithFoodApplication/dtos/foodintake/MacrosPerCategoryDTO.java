@@ -16,7 +16,7 @@ public class MacrosPerCategoryDTO {
     // Método para redondear un valor de forma concisa
     private Double round(Double value) {
         if (value == null) return null;
-        return Double.valueOf(String.format("%.2f", value));
+        return Double.valueOf(String.format("%.0f", value));
     }
 
     // Método para redondear todos los campos
