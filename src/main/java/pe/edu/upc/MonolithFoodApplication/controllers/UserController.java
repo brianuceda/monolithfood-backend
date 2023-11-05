@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
 @CrossOrigin(origins = "**", allowedHeaders = "**")
 public class UserController {
     private final AuthService authService;
@@ -131,18 +133,20 @@ public class UserController {
     // Delete: Eliminar un alimento consumido
     @DeleteMapping("/intakes/delete")
     public ResponseEntity<?> deleteFoodIntake(@RequestHeader("Authorization") String bearerToken,
-        @RequestParam Long id) {
+        @RequestParam Long intakeId) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = eatService.deleteFoodIntake(username, id);
+        ResponseDTO response = eatService.deleteFoodIntake(username, intakeId);
         return validateResponse(response);
     }
     // * Brian (Favoritos)
+    @PreAuthorize("hasAnyRole('ADMIN', 'VIP')")
     @GetMapping("/favorites")
     public ResponseEntity<?> getAllFavoriteFoods(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = favoriteService.getAllFavoriteFoods(username);
         return validateResponse(response);
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'VIP')")
     @PostMapping("/favorites/add")
     public ResponseEntity<?> addFavoriteFood(@RequestHeader("Authorization") String bearerToken,
         @RequestParam Long foodId) {
@@ -150,11 +154,12 @@ public class UserController {
         ResponseDTO response = favoriteService.addFavoriteFood(username, foodId);
         return validateResponse(response);
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'VIP')")
     @DeleteMapping("/favorites/delete")
     public ResponseEntity<?> deleteFavoriteFood(@RequestHeader("Authorization") String bearerToken,
-        @RequestParam Long id) {
+        @RequestParam Long foodId) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = favoriteService.deleteFavoriteFood(username, id);
+        ResponseDTO response = favoriteService.deleteFavoriteFood(username, foodId);
         return validateResponse(response);
     }
 

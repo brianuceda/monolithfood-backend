@@ -10,10 +10,12 @@ import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.SubscriptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/subscriptions")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
 @CrossOrigin(origins = "**", allowedHeaders = "**")
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;

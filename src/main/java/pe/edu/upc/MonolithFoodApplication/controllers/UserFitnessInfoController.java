@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserFitnessInfoService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/fitness")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
 @CrossOrigin(origins = "**", allowedHeaders = "**")
 public class UserFitnessInfoController {
     private final UserFitnessInfoService userFitnessInfoService;
