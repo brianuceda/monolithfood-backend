@@ -48,6 +48,7 @@ public class JwtService {
     public String genToken(UserDetails user, String profileStage) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("profileStage", profileStage);
+        extraClaims.put("roles", user.getAuthorities());
         return genToken(extraClaims, user);
     }
     private String genToken(Map<String, Object> extraClaims, UserDetails user) {

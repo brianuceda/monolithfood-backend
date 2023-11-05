@@ -57,7 +57,10 @@ public class FavoriteService {
         if (favoriteFoods.isEmpty()) {
             return new ResponseDTO("No tienes alimentos favoritos", HttpStatus.OK.value(), ResponseType.INFO);
         }
-        List<SearchFoodDTO> searchFoodDTOs = favoriteFoods.stream().map(this::convertToSearchFoodDTO).collect(Collectors.toList());
+        List<SearchFoodDTO> searchFoodDTOs = favoriteFoods.stream().map(f -> {
+            SearchFoodDTO searchFoodDTO = this.convertToSearchFoodDTO(user, f);
+            return searchFoodDTO;
+        }).collect(Collectors.toList());
         return new ListSearchFoodDTO(null, 200, null, searchFoodDTOs);
     }
     // Delete: Eliminar un alimento de favoritos
@@ -82,12 +85,17 @@ public class FavoriteService {
     }
 
     // ? Funciones auxiliares
-    private SearchFoodDTO convertToSearchFoodDTO(FoodEntity foodEntity) {
+    // Método para convertir una entidad a un DTO
+    private SearchFoodDTO convertToSearchFoodDTO(UserEntity user, FoodEntity foodEntity) {
         return SearchFoodDTO.builder()
             .foodId(foodEntity.getId())
             .foodName(foodEntity.getName())
             .information(foodEntity.getInformation())
             .imgUrl(foodEntity.getImgUrl())
+            .isFavorite(isFavoriteFoodById(user, foodEntity.getId()))
             .build();
+    }
+    private Boolean isFavoriteFoodById(UserEntity user, Long foodId) {
+        return user.getFavoriteFoods().stream().anyMatch(f -> f.getId().equals(foodId));
     }
 }

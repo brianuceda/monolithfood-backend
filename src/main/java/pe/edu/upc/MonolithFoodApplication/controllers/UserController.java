@@ -131,9 +131,9 @@ public class UserController {
     // Delete: Eliminar un alimento consumido
     @DeleteMapping("/intakes/delete")
     public ResponseEntity<?> deleteFoodIntake(@RequestHeader("Authorization") String bearerToken,
-        @RequestParam Long foodId) {
+        @RequestParam Long id) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = eatService.deleteFoodIntake(username, foodId);
+        ResponseDTO response = eatService.deleteFoodIntake(username, id);
         return validateResponse(response);
     }
     // * Brian (Favoritos)
@@ -152,9 +152,9 @@ public class UserController {
     }
     @DeleteMapping("/favorites/delete")
     public ResponseEntity<?> deleteFavoriteFood(@RequestHeader("Authorization") String bearerToken,
-        @RequestParam Long foodId) {
+        @RequestParam Long id) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = favoriteService.deleteFavoriteFood(username, foodId);
+        ResponseDTO response = favoriteService.deleteFavoriteFood(username, id);
         return validateResponse(response);
     }
 
