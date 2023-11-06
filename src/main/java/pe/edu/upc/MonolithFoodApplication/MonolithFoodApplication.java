@@ -110,34 +110,34 @@ public class MonolithFoodApplication {
 
             if(activityLevelRepository.count() == 0) {
                 activityLevels = Arrays.asList(
-                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad.", 1.2, null),
-                    new ActivityLevelEntity(null, "Ejercicio ligero", "1 - 3 dias", "Actividad ligera como caminatas o tareas diarias no exigentes.", 1.375, null),
-                    new ActivityLevelEntity(null, "Ejercicio moderado", "3 - 5 dias", "Actividad moderada que puede o no incluir ejercicios.", 1.55, null),
-                    new ActivityLevelEntity(null, "Ejercicio intenso", "5 - 7 dias", "Ejercicio intenso o trabajos fisicamente demandantes.", 1.725, null),
-                    new ActivityLevelEntity(null, "Ejercicio muy intenso", "Atleta profesional", "Atletas o individuos con trabajos extremadamente fisicos.", 1.9, null)
+                    new ActivityLevelEntity(null, "Poco o ningun ejercicio", "https://i.ibb.co/Vg4QDzj/Poco-o-ning-n-ejercicio.webp", "Ningun dia", "Personas sedentarias que realizan poco o ningun tipo de actividad.", 1.2, null),
+                    new ActivityLevelEntity(null, "Ejercicio ligero", "https://i.ibb.co/jVsHqKc/Ejercicio-ligero.webp", "1 - 3 dias", "Actividad ligera como caminatas o tareas diarias no exigentes.", 1.375, null),
+                    new ActivityLevelEntity(null, "Ejercicio moderado", "https://i.ibb.co/rf51JHG/Ejercicio-moderado.webp", "3 - 5 dias", "Actividad moderada que puede o no incluir ejercicios.", 1.55, null),
+                    new ActivityLevelEntity(null, "Ejercicio intenso", "https://i.ibb.co/BBk0jm0/Ejercicio-intenso.webp", "5 - 7 dias", "Ejercicio intenso o trabajos fisicamente demandantes.", 1.725, null),
+                    new ActivityLevelEntity(null, "Ejercicio muy intenso", "https://i.ibb.co/PtJDTfj/Ejercicio-muy-intenso.webp", "Atleta profesional", "Atletas o individuos con trabajos extremadamente fisicos.", 1.9, null)
                     // // Mas niveles de actividad fisica
-                    // new ActivityLevelEntity(null, "Caminata ocasional", "1-2 dias", "Caminatas cortas y ocasionales", 1.4, null),
-                    // new ActivityLevelEntity(null, "Caminata diaria", "5-6 dias", "Caminatas diarias de al menos 30 minutos", 1.6, null),
-                    // new ActivityLevelEntity(null, "Deporte recreativo", "2-3 dias", "Futbol, basquetbol u otro deporte recreativo durante la semana", 1.65, null),
-                    // new ActivityLevelEntity(null, "Entrenamiento de fuerza", "3-4 dias", "Entrenamiento de pesas o calistenia varios dias a la semana", 1.8, null)
+                    // new ActivityLevelEntity(null, "Caminata ocasional", "", "1-2 dias", "Caminatas cortas y ocasionales", 1.4, null),
+                    // new ActivityLevelEntity(null, "Caminata diaria", "", "5-6 dias", "Caminatas diarias de al menos 30 minutos", 1.6, null),
+                    // new ActivityLevelEntity(null, "Deporte recreativo", "", "2-3 dias", "Futbol, basquetbol u otro deporte recreativo durante la semana", 1.65, null),
+                    // new ActivityLevelEntity(null, "Entrenamiento de fuerza", "", "3-4 dias", "Entrenamiento de pesas o calistenia varios dias a la semana", 1.8, null)
                 );
                 activityLevelRepository.saveAll(activityLevels);
             }
             if(objectiveRepository.count() == 0) {
                 objectives = Arrays.asList(
-                    new ObjectiveEntity(null, "Bajar de peso", "Objetivo centrado en reducir el peso corporal a traves de una dieta equilibrada.", 1.6),
-                    new ObjectiveEntity(null, "Aumentar masa muscular", "Objetivo centrado en ganar masa muscular a traves de una dieta rica en proteinas.", 2.2),
-                    new ObjectiveEntity(null, "Mantener el peso", "Objetivo centrado en mantener el peso corporal actual.", 1.4),
-                    new ObjectiveEntity(null, "Aumentar resistencia", "Objetivo centrado en aumentar la resistencia fisica a traves de una dieta equilibrada.", 1.8),
-                    new ObjectiveEntity(null, "Mejorar salud cardiaca", "Objetivo centrado en fortalecer el corazon y sistema circulatorio.",1.4),
-                    new ObjectiveEntity(null, "Mejorar salud osea", "Objetivo centrado en fortalecer los huesos y prevenir enfermedades oseas.", 1.4),
-                    new ObjectiveEntity(null, "Reducir grasa corporal", "Objetivo centrado en reducir el porcentaje de grasa corporal.", 1.8),
-                    new ObjectiveEntity(null, "Mejorar digestion", "Objetivo centrado en promover una digestion saludable a traves de una dieta rica en fibra.", 1.2)
+                    new ObjectiveEntity(null, "Bajar de peso", "https://i.ibb.co/SJzd0Hb/Bajar-de-peso.webp", "Objetivo centrado en reducir el peso corporal a traves de una dieta equilibrada.", 1.6),
+                    new ObjectiveEntity(null, "Aumentar masa muscular", "https://i.ibb.co/LrvqGq4/Aumentar-masa-muscular.webp", "Objetivo centrado en ganar masa muscular a traves de una dieta rica en proteinas.", 2.2),
+                    new ObjectiveEntity(null, "Mantener el peso", "https://i.ibb.co/bH5b2JM/Mantener-el-peso.webp", "Objetivo centrado en mantener el peso corporal actual.", 1.4),
+                    new ObjectiveEntity(null, "Aumentar resistencia", "https://i.ibb.co/zGj1xZv/Aumentar-resistencia.webp", "Objetivo centrado en aumentar la resistencia fisica a traves de una dieta equilibrada.", 1.8),
+                    new ObjectiveEntity(null, "Mejorar salud cardiaca", "https://i.ibb.co/W0ZZgcN/Mejorar-salud-cardiaca.webp", "Objetivo centrado en fortalecer el corazon y sistema circulatorio.",1.4),
+                    new ObjectiveEntity(null, "Mejorar salud osea", "https://i.ibb.co/pnmFHKJ/Mejorar-salud-osea.webp", "Objetivo centrado en fortalecer los huesos y prevenir enfermedades oseas.", 1.4),
+                    new ObjectiveEntity(null, "Reducir grasa corporal", "https://i.ibb.co/99CQNQN/Reducir-grasa-corporal.webp", "Objetivo centrado en reducir el porcentaje de grasa corporal.", 1.8),
+                    new ObjectiveEntity(null, "Mejorar digestion", "https://i.ibb.co/C0Q2nFf/Mejorar-digestion.webp", "Objetivo centrado en promover una digestion saludable a traves de una dieta rica en fibra.", 1.2)
                     // // Mas objetivos secundarios
-                    // new ObjectiveEntity(null, "Mejorar sistema inmune", "Objetivo para fortalecer el sistema inmunologico.", 1.6),  
-                    // new ObjectiveEntity(null, "Controlar el colesterol", "Objetivo para reducir los niveles de colesterol.", 1.4),
-                    // new ObjectiveEntity(null, "Controlar la glucosa", "Objetivo para mantener niveles saludables de azucar en la sangre.", 1.6),
-                    // new ObjectiveEntity(null, "Mejorar piel y cabello", "Objetivo para mejorar la apariencia de piel y cabello.", 1.6)
+                    // new ObjectiveEntity(null, "Mejorar sistema inmune", "", "Objetivo para fortalecer el sistema inmunologico.", 1.6),  
+                    // new ObjectiveEntity(null, "Controlar el colesterol", "", "Objetivo para reducir los niveles de colesterol.", 1.4),
+                    // new ObjectiveEntity(null, "Controlar la glucosa", "", "Objetivo para mantener niveles saludables de azucar en la sangre.", 1.6),
+                    // new ObjectiveEntity(null, "Mejorar piel y cabello", "", "Objetivo para mejorar la apariencia de piel y cabello.", 1.6)
                 );
                 objectiveRepository.saveAll(objectives);
             }

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ActivityLevelDTO {
     private String name;
+    private String imgUrl;
     private String days;
     private String information;
     private Double quotient;

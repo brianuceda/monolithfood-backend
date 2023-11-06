@@ -66,7 +66,7 @@ public class UserFitnessInfoService {
                 boolean selected = false;
                 if(userPersonalInfo.getActivityLevel() != null)
                     selected = userPersonalInfo.getActivityLevel().getName().equals(obj.getName());
-                return new ActivityLevelDTO(obj.getName(), obj.getDays(), obj.getInformation(), obj.getQuotient(), selected);
+                return new ActivityLevelDTO(obj.getName(), obj.getImgUrl() , obj.getDays(), obj.getInformation(), obj.getQuotient(), selected);
             })
         .collect(Collectors.toList());
         return new ActivityLevelsResponseDTO(null, 200, null, activityLevelDTOs);
@@ -154,7 +154,7 @@ public class UserFitnessInfoService {
         List<ObjectiveDTO> objectiveDTOs = allObjectives.stream()
                 .map(obj -> {
                     boolean selected = myObjectives.stream().anyMatch(o -> o.getName().equals(obj.getName()));
-                    return new ObjectiveDTO(obj.getName(), obj.getInformation(), obj.getProteinPerKg(), selected);
+                    return new ObjectiveDTO(obj.getName(), obj.getImgUrl(), obj.getInformation(), obj.getProteinPerKg(), selected);
                 })
                 .collect(Collectors.toList());
         return new ObjectivesResponseDTO(null, 200, null, objectiveDTOs);

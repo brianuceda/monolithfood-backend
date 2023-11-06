@@ -29,6 +29,9 @@ public class ActivityLevelEntity {
     @Column(nullable = false, length = 80, unique = true)
     private String name;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String imgUrl;
+
     @Column(nullable = true, length = 20)
     private String days;
 

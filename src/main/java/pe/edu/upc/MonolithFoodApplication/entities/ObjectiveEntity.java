@@ -18,6 +18,9 @@ public class ObjectiveEntity {
     @Column(nullable = false, length = 80)
     private String name;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String imgUrl;
+
     @Column(nullable = false, length = 512)
     private String information;
 
