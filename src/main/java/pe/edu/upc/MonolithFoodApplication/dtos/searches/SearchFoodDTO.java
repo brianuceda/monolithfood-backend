@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class SearchFoodDTO {
     private Long foodId;
     private String foodName;
+    private String foodCategory;
     private String information;
     private String imgUrl;
     private Boolean isFavorite;

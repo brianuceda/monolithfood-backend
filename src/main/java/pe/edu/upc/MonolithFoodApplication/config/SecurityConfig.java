@@ -48,12 +48,10 @@ public class SecurityConfig {
                 // Permite cualquier origen y cualquier encabezado
                 configuration.setAllowedOrigins(Arrays.asList("*"));
                 configuration.setAllowedHeaders(Arrays.asList("*"));
-                // Aplica la configuración
                 return configuration;
             }))
             // ? Permite o bloquea la conexión a los endpoints ? //
             .authorizeHttpRequests(authRequest -> {
-                // authRequest.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                 authRequest.requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll();
                 authRequest.requestMatchers("/favicon.ico", "/error").permitAll(); // OAuth2
                 authRequest.requestMatchers("/v3/api-docs/**").permitAll(); // Swagger API
@@ -67,11 +65,14 @@ public class SecurityConfig {
                 .failureHandler((request, response, exception) -> 
                     response.sendRedirect("/login"))
             )
-            // // ? Session Management: Es el que se encarga de manejar las sesiones de los usuarios ? //
-            // .sessionManagement(sessionManager -> { sessionManager
-            //     // ? STATELESS: No se manejarán las sesiones de los usuarios de Spring Security ? //
-            //     .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-            // })
+            // .oauth2Login(oauth2 -> oauth2
+            //     .successHandler((request, response, authentication) -> {
+            //         response.sendRedirect("http://localhost:4200/login");
+            //     })
+            //     .failureHandler((request, response, exception) -> {
+            //         response.sendRedirect("http://localhost:4200/login?error");
+            //     })
+            // )
             // ? Authentication Provider: Es el que se encarga de validar las credenciales de los usuarios ? //
             .authenticationProvider(authProvider)
             .formLogin(withDefaults())
