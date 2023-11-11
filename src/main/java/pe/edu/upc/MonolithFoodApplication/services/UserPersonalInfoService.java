@@ -20,11 +20,11 @@ import pe.edu.upc.MonolithFoodApplication.dtos.user.PutHeightWeightDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.PutPersonalInfoDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.SetInformationDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.user.external.LocationDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 

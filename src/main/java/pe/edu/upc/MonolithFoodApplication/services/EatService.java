@@ -26,13 +26,13 @@ import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.NewIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.UpdateIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.NutrientDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.repositories.EatRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
@@ -122,17 +122,18 @@ public class EatService {
         if (dto == null)
             return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         dto.minusHours(5);
-        List<Object[]> nutrients = foodRepository.findNutrientsOfFood(dto.getFoodId(), dto.getQuantity());
+        List<Object[]> nutrients = foodRepository.findNutrientsOfFood(dto.getFoodId());
         if (nutrients.isEmpty())
             return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         dto.setFoodId(null);
         // Convierte la tupla a una lista de DTOs
         List<NutrientDTO> nutrientsOfFood = nutrients.stream()
             .map(n -> new NutrientDTO(
-                (String) n[0],
-                this.round((Double) n[1]),
-                (UnitOfMeasurementEnum) n[2],
-                (String) n[3]
+                (Long) n[0],
+                (String) n[1],
+                this.round((Double) n[2]),
+                (UnitOfMeasurementEnum) n[3],
+                (String) n[4]
             ))
             .collect(Collectors.toList());
         dto.setNutrients(nutrientsOfFood);
@@ -169,7 +170,6 @@ public class EatService {
         // Verifica que todos los campos estén completos
         if(
             niDTO.getEatId() == null ||
-            niDTO.getFoodId() == null ||
             (niDTO.getQuantity() == null || niDTO.getQuantity() <= 0.0) ||
             niDTO.getUnitOfMeasurement() == null ||
             niDTO.getDate() == null
@@ -182,16 +182,22 @@ public class EatService {
             return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         // Obtiene el registro de ingesta actual del usuario
         Optional<EatEntity> getEat = eatRepository.findById(niDTO.getEatId());
-        // Obtiene el nuevo alimento que se quiere consumir
-        Optional<FoodEntity> getFood = foodRepository.findById(niDTO.getFoodId());
-        if(!getFood.isPresent())
-            return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        // No se envió un alimento
+        Optional<FoodEntity> getFood = Optional.empty();
+        if (niDTO.getFoodId() != null) {
+            // Obtiene el nuevo alimento que se quiere consumir
+            getFood = foodRepository.findById(niDTO.getFoodId());
+            if(!getFood.isPresent())
+                return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
         // Es receta?
         EatEntity newEat = getEat.get();
         if(newEat.getFood() == null) {
             return new ResponseDTO("Las recetas no pueden ser modificadas", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         }
-        newEat.setFood(getFood.get());
+        if (niDTO.getFoodId() != null) {
+            newEat.setFood(getFood.get());
+        }
         newEat.setEatQuantity(niDTO.getQuantity());
         newEat.setUnitOfMeasurement(niDTO.getUnitOfMeasurement());
         LocalDateTime dateTimeOfEat = niDTO.getDate().toLocalDateTime().plusHours(5);
@@ -240,16 +246,6 @@ public class EatService {
             myIntakes.add(new IntakeDTO("No has registrado ningun alimento."));
         }
         else {
-            // myIntakes = results.stream().map(result -> {
-            //     return new IntakeDTO(
-            //         (Long) result[0],
-            //         (String) result[1],
-            //         (String) result[2],
-            //         (UnitOfMeasurementEnum) result[3],
-            //         (Double) result[4],
-            //         ((Timestamp) result[5]).toLocalDateTime()
-            //     );
-            // }).collect(Collectors.toList());
             myIntakes = results.stream().map(result -> {
                 return new IntakeDTO(
                     (Long) result[0],

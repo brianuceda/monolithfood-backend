@@ -12,8 +12,8 @@ import org.springframework.stereotype.Repository;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosDetailedDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosPerCategoryDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.EatEntity;
+import pe.edu.upc.MonolithFoodApplication.enums.CategoryIntakeEnum;
 
 @Repository
 public interface EatRepository extends JpaRepository<EatEntity, Long> {

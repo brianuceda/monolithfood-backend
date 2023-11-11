@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.GenderEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 
 @Getter

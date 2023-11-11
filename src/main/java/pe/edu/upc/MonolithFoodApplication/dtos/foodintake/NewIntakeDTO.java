@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 
 @Data
 @NoArgsConstructor

@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.entities;
+package pe.edu.upc.MonolithFoodApplication.enums;
 
 public enum CategoryIntakeEnum {
     DESAYUNO,

@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
+import pe.edu.upc.MonolithFoodApplication.enums.RoleEnum;
 
 @Getter
 @Setter

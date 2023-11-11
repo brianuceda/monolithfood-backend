@@ -1,10 +1,10 @@
-package pe.edu.upc.MonolithFoodApplication.entities;
+package pe.edu.upc.MonolithFoodApplication.enums;
 
 public enum UnitOfMeasurementEnum {
     G,
     MG,
     ML,
-    CAL,
+    KCAL,
     UN,
 
 }

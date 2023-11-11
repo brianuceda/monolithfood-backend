@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.NewIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.UpdateIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.services.AuthService;
 import pe.edu.upc.MonolithFoodApplication.services.EatService;

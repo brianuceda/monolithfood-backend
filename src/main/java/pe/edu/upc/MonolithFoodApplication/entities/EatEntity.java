@@ -17,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pe.edu.upc.MonolithFoodApplication.enums.CategoryIntakeEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 
 @Data
 @NoArgsConstructor

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 import lombok.AllArgsConstructor;
 
 @Data

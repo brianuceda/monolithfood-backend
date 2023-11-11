@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 // import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodNutrientDTO;
 // import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListFoodNutrientDTO;
@@ -17,9 +18,9 @@ import pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListNutrientsDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.repositories.CategoryRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
@@ -89,52 +90,45 @@ public class FoodService {
     }
     // * Gabriela: Buscar todos los detalles de un alimento a partir de su id
     public ResponseDTO getDetailedFoodById(Long id, Double quantity) {
-        List<Object[]> dto = foodRepository.findDetailedFood(id);
-        if (dto.isEmpty())
+        DetailedFoodDTO dto = foodRepository.findDetailedFood(id);
+        if (dto == null)
             return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
-        List<Object[]> nutrients = foodRepository.findNutrientsOfFood(id, quantity);
+        dto.setUnitOfMeasurement(UnitOfMeasurementEnum.G);
+        dto.setQuantity(quantity);
+        List<Object[]> nutrients = foodRepository.findNutrientsOfFood(id);
         if (nutrients.isEmpty())
             return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         // Convierte la tupla a una lista de DTOs
         List<NutrientDTO> nutrientsOfFood = nutrients.stream()
             .map(n -> new NutrientDTO(
-                (String) n[0],
-                this.round((Double) n[1]),
-                (UnitOfMeasurementEnum) n[2],
-                (String) n[3]
+                (Long) n[0],
+                (String) n[1],
+                this.round((Double) n[2]),
+                (UnitOfMeasurementEnum) n[3],
+                (String) n[4]
             ))
             .collect(Collectors.toList());
         // Convierte la tupla a un DTO
-        DetailedFoodDTO detailedFoodDTO = new DetailedFoodDTO(
-            (Long) dto.get(0)[0],
-            (String) dto.get(0)[1],
-            (String) dto.get(0)[2],
-            (String) dto.get(0)[3],
-            (String) dto.get(0)[4],
-            new CategoryFoodDTO(
-                (String) dto.get(0)[5],
-                (String) dto.get(0)[6],
-                (String) dto.get(0)[7],
-                (String) dto.get(0)[8]
-            ), nutrientsOfFood
-        );
-        detailedFoodDTO.noMessageAndStatusCode();
-        return detailedFoodDTO;
+        dto.setNutrients(nutrientsOfFood);
+        dto.noMessageAndStatusCode();
+        return dto;
     }
     public ResponseDTO getNutrientsByFoodId(Long id, Double quantity) {
-        List<Object[]> dto = foodRepository.findDetailedFood(id);
-        if (dto.isEmpty())
+        DetailedFoodDTO dto = foodRepository.findDetailedFood(id);
+        if (dto == null)
             return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
-        List<Object[]> nutrients = foodRepository.findNutrientsOfFood(id, quantity);
+        dto.setQuantity(quantity);
+        List<Object[]> nutrients = foodRepository.findNutrientsOfFood(id);
         if (nutrients.isEmpty())
             return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.WARN);
         // Convierte la tupla a una lista de DTOs
         List<NutrientDTO> nutrientsOfFood = nutrients.stream()
             .map(n -> new NutrientDTO(
-                (String) n[0],
-                this.round((Double) n[1]),
-                (UnitOfMeasurementEnum) n[2],
-                (String) n[3]
+                (Long) n[0],
+                (String) n[1],
+                this.round((Double) n[2]),
+                (UnitOfMeasurementEnum) n[3],
+                (String) n[4]
             ))
             .collect(Collectors.toList());
         return new ListNutrientsDTO(null, 200, ResponseType.SUCCESS, nutrientsOfFood);

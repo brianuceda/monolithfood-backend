@@ -35,7 +35,7 @@ public class NutrientEntity {
     private String detailedInformation;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String imgUrl;
+    private String color;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY)

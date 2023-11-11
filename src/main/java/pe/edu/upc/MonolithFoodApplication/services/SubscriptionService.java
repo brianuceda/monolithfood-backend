@@ -12,9 +12,9 @@ import pe.edu.upc.MonolithFoodApplication.dtos.subscriptions.SubscriptionsRespon
 import pe.edu.upc.MonolithFoodApplication.dtos.subscriptions.SubscriptionRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.subscriptions.SubscriptionDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
-import pe.edu.upc.MonolithFoodApplication.entities.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
+import pe.edu.upc.MonolithFoodApplication.enums.RoleEnum;
 import pe.edu.upc.MonolithFoodApplication.repositories.RoleRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 

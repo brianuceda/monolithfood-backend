@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 
 @Getter
 @Setter

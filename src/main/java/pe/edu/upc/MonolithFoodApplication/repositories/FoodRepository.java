@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 
 public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
@@ -27,36 +29,50 @@ public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
 
     @Query(
         "SELECT " +
+            "n.id, " +
             "n.name, " +
-            "(cf.nutrientQuantity * CAST(:quantity AS float)) as nutrientQuantity, " +
+            // "(cf.nutrientQuantity * CAST(:quantity AS float)) as nutrientQuantity, " +
+            "(cf.nutrientQuantity * 1) as nutrientQuantity, " + // Using 1 as a constant multiplier
             "cf.unitOfMeasurement, " +
-            "n.imgUrl " +
+            "n.color " +
         "FROM FoodEntity f " +
             "JOIN f.compositions cf " +
             "JOIN cf.nutrient n " +
         "WHERE f.id = :id " +
-        "GROUP BY n.name, cf.nutrientQuantity, cf.unitOfMeasurement, n.imgUrl"
+        "GROUP BY n.id, n.name, cf.nutrientQuantity, cf.unitOfMeasurement, n.color"
     )
     List<Object[]> findNutrientsOfFood(
-        @Param("id") Long id,
-        @Param("quantity") Double quantity
-    );
+        @Param("id") Long id);
 
-    @Query("SELECT " + 
-            "f.id, " +
-            "f.name, " + 
-            "f.information, " + 
-            "f.imgUrl, " + 
-            "f.sourceOfOrigin, " +
-            "cf.name, " + 
-            "cf.information, " + 
-            "cf.benefits, " + 
-            "cf.disadvantages " + 
+    // @Query("SELECT " + 
+    //         "f.id, " +
+    //         "f.name, " + 
+    //         "f.information, " + 
+    //         "f.imgUrl, " + 
+    //         "f.sourceOfOrigin, " +
+    //         "cf.name, " + 
+    //         "cf.information, " + 
+    //         "cf.benefits, " + 
+    //         "cf.disadvantages " + 
+    //     "FROM FoodEntity f " +
+    //         "JOIN f.categoryFood cf " +
+    //     "WHERE f.id = :id"
+    // )
+    // List<Object[]> findDetailedFood(
+    //     @Param("id") Long id
+    // );
+
+    @Query(
+        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO(" + 
+            "f.id as id, " +
+            "f.name as name, " + 
+            "c.name as categoryFood) " +
         "FROM FoodEntity f " +
-            "JOIN f.categoryFood cf " +
-        "WHERE f.id = :id"
+            "JOIN f.categoryFood c " +
+        "WHERE f.id = :id " +
+        "GROUP BY f.id, f.name, c.name"
     )
-    List<Object[]> findDetailedFood(
+    DetailedFoodDTO findDetailedFood(
         @Param("id") Long id
     );
 }

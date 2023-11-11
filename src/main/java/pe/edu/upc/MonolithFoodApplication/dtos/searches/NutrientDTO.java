@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 
 @Getter
 @Setter
@@ -14,8 +14,9 @@ import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NutrientDTO {
+    private Long id;
     private String name;
     private Double nutrientQuantity;
     private UnitOfMeasurementEnum unitOfMeasurement;
-    private String imgUrl;
+    private String color;
 }

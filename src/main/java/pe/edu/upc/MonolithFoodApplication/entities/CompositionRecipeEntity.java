@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 
 @Data
 @NoArgsConstructor

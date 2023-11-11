@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.NutrientDTO;
-import pe.edu.upc.MonolithFoodApplication.entities.CategoryIntakeEnum;
-import pe.edu.upc.MonolithFoodApplication.entities.UnitOfMeasurementEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.CategoryIntakeEnum;
+import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 
 @Getter
 @Setter
