@@ -102,21 +102,6 @@ public class EatService {
         );
     }
     // * Heather: Obtener todos los macronutrientes consumidos, por consumir, su porcentaje de consumo actual y los alimentos consumidos en un rango de fechas de TODAS las categorías de ingestas (desayuno, almuerzo y cena)
-    // public ResponseDTO getAllMacrosAndIntakes(String username, LocalDateTime startDate, LocalDateTime endDate) {
-    //     // Verifica que el usuario exista
-    //     Optional<UserEntity> optUser = userRepository.findByUsername(username);
-    //     if(!optUser.isPresent())
-    //         return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
-    //     return new IntakesResponseDTO(
-    //         null, HttpStatus.OK.value(), ResponseType.SUCCESS,
-    //         (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false),
-    //         new AllCategoriesIntakesDTO(
-    //             getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate),
-    //             getCatMacrosAndIntakes(username, CategoryIntakeEnum.ALMUERZO, startDate, endDate),
-    //             getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate)
-    //         )
-    //     );
-    // }
     public ResponseDTO getAllMacrosAndIntakes(String username, LocalDateTime startDate, LocalDateTime endDate) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -131,10 +116,11 @@ public class EatService {
         );
     
         // Imprimir las fechas de las ingestas para cada categoría
-        imprimirFechasDeIngesta("Desayuno", allCategoriesIntakesDTO.getDesayuno());
-        imprimirFechasDeIngesta("Almuerzo", allCategoriesIntakesDTO.getAlmuerzo());
-        imprimirFechasDeIngesta("Cena", allCategoriesIntakesDTO.getCena());
+        printDatesOfIntakes("Desayuno", allCategoriesIntakesDTO.getDesayuno());
+        printDatesOfIntakes("Almuerzo", allCategoriesIntakesDTO.getAlmuerzo());
+        printDatesOfIntakes("Cena", allCategoriesIntakesDTO.getCena());
 
+        // Calibrar las horas de las ingestas con Perú
         calibrateHoursWithPeru(allCategoriesIntakesDTO.getDesayuno());
         calibrateHoursWithPeru(allCategoriesIntakesDTO.getAlmuerzo());
         calibrateHoursWithPeru(allCategoriesIntakesDTO.getCena());
@@ -144,20 +130,6 @@ public class EatService {
             (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false),
             allCategoriesIntakesDTO
         );
-    }
-
-    public void calibrateHoursWithPeru(CategoryIntakeDTO categoryIntakeDTO) {
-        if (categoryIntakeDTO != null && categoryIntakeDTO.getMyIntakes() != null) {
-            for (IntakeDTO intake : categoryIntakeDTO.getMyIntakes()) {
-                Timestamp timestamp = intake.getCreatedAt();
-                if (timestamp != null) {
-                    LocalDateTime localDateTime = timestamp.toLocalDateTime();
-                    // La diferencia de horas entre Perú y UTC es de 5 horas menos en Perú
-                    LocalDateTime adjustedDateTime = localDateTime.minusHours(hoursToSubtract);
-                    intake.setCreatedAt(Timestamp.valueOf(adjustedDateTime));
-                }
-            }
-        }
     }
     
     // * Heather: Obtener la información de un alimento consumido
@@ -211,8 +183,10 @@ public class EatService {
         ZonedDateTime zonedDateTime = dateTimeOfEat.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
         newEat.setDate(Timestamp.valueOf(zonedDateTime.toLocalDateTime()));
 
+        // Calcular la categoría de la ingesta
         dateTimeOfEat = dateTimeOfEat.plusHours(hoursToSubtract);
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
+
         user.getEats().add(newEat);
         userRepository.save(user);
         return new ResponseDTO("Alimento registrado exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
@@ -230,20 +204,21 @@ public class EatService {
         ) {
             return new ResponseDTO("Completa todos los campos", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         }
+
         // El usuario es dueño del registro de ingesta?
         Optional<EatEntity> eat = eatRepository.findById(niDTO.getEatId());
         if(!eat.isPresent() || !eat.get().getUser().getUsername().equals(username))
             return new ResponseDTO("Registro no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
-        // Obtiene el registro de ingesta actual del usuario
+            
         Optional<EatEntity> getEat = eatRepository.findById(niDTO.getEatId());
         // No se envió un alimento
         Optional<FoodEntity> getFood = Optional.empty();
         if (niDTO.getFoodId() != null) {
-            // Obtiene el nuevo alimento que se quiere consumir
             getFood = foodRepository.findById(niDTO.getFoodId());
             if(!getFood.isPresent())
                 return new ResponseDTO("Alimento no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
+
         // Es receta?
         EatEntity newEat = getEat.get();
         if(newEat.getFood() == null) {
@@ -252,32 +227,25 @@ public class EatService {
         if (niDTO.getFoodId() != null) {
             newEat.setFood(getFood.get());
         }
+
         newEat.setEatQuantity(niDTO.getQuantity());
         newEat.setUnitOfMeasurement(niDTO.getUnitOfMeasurement());
 
+        // Convertir la fecha a UTC antes de guardarla
         LocalDateTime dateTimeOfEat = niDTO.getDate().toLocalDateTime();
         dateTimeOfEat = dateTimeOfEat.plusHours(hoursToSubtract);
         ZonedDateTime zonedDateTime = dateTimeOfEat.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
         newEat.setDate(Timestamp.valueOf(zonedDateTime.toLocalDateTime()));
 
+        // Calcular la categoría de la ingesta
         dateTimeOfEat = dateTimeOfEat.plusHours(hoursToSubtract);
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
+
         try {
             eatRepository.save(newEat);
             return new ResponseDTO("Registro actualizado exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
         } catch (Exception e) {
             return new ResponseDTO("Error al actualizar el registro", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
-        }
-    }
-
-    public void calibrateHoursWithPeru(IntakeDTO intakeDTO) {
-        int hoursToSubtract = 5;
-        if (intakeDTO != null && intakeDTO.getCreatedAt() != null) {
-            Timestamp timestamp = intakeDTO.getCreatedAt();
-            LocalDateTime localDateTime = timestamp.toLocalDateTime();
-            // La diferencia de horas entre Perú y UTC es de 5 horas menos en Perú
-            LocalDateTime adjustedDateTime = localDateTime.minusHours(hoursToSubtract);
-            intakeDTO.setCreatedAt(Timestamp.valueOf(adjustedDateTime));
         }
     }
 
@@ -327,7 +295,8 @@ public class EatService {
     }
 
     // ? Funciones
-    private void imprimirFechasDeIngesta(String nombreCategoria, CategoryIntakeDTO categoryIntake) {
+    // Imprimir las fechas (exactamente igual a como está en la BD) de las ingestas
+    private void printDatesOfIntakes(String nombreCategoria, CategoryIntakeDTO categoryIntake) {
         if (categoryIntake != null && categoryIntake.getMyIntakes() != null) {
             System.out.println("Categoría: " + nombreCategoria);
             for (IntakeDTO intake : categoryIntake.getMyIntakes()) {
@@ -336,13 +305,28 @@ public class EatService {
         }
     }
 
+    // Calibrar las horas de las ingestas con Perú al momento de mostrarlas
+    public void calibrateHoursWithPeru(CategoryIntakeDTO categoryIntakeDTO) {
+        if (categoryIntakeDTO != null && categoryIntakeDTO.getMyIntakes() != null) {
+            for (IntakeDTO intake : categoryIntakeDTO.getMyIntakes()) {
+                Timestamp timestamp = intake.getCreatedAt();
+                if (timestamp != null) {
+                    LocalDateTime localDateTime = timestamp.toLocalDateTime();
+                    // La diferencia de horas entre Perú y UTC es de 5 horas menos en Perú
+                    LocalDateTime adjustedDateTime = localDateTime.minusHours(hoursToSubtract);
+                    intake.setCreatedAt(Timestamp.valueOf(adjustedDateTime));
+                }
+            }
+        }
+    }
+
     // Método para redondear un valor de forma concisa
     public Double round(Double value) {
         if (value == null) return null;
-        return Double.valueOf(String.format("%.2f", value));
+        return Double.valueOf(String.format("%.3f", value));
     }
 
-    // Calcular fecha de ingesta
+    // Asigna una categoría de ingesta según la hora de la ingesta
     public CategoryIntakeEnum calculateCategory(LocalDateTime dateTimeOfEat) {
         LocalTime timeOfEat = dateTimeOfEat.toLocalTime();
         if (timeOfEat.isAfter(LocalTime.of(2, 0)) && timeOfEat.isBefore(LocalTime.of(12, 0)))
