@@ -3,6 +3,9 @@ package pe.edu.upc.MonolithFoodApplication.services;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +47,7 @@ public class EatService {
     private final EatRepository eatRepository;
     private final FoodRepository foodRepository;
     private static final Logger logger = LoggerFactory.getLogger(EatService.class);
+    public static int hoursToSubtract = 5;
     
     // * Heather: Obtener todos los macronutrientes consumidos, por consumir y su porcentaje de consumo actual
     public ResponseDTO getMacrosDetailed(String username, LocalDateTime startDate, LocalDateTime endDate, Boolean isSeparatedSearch) {
@@ -98,21 +102,64 @@ public class EatService {
         );
     }
     // * Heather: Obtener todos los macronutrientes consumidos, por consumir, su porcentaje de consumo actual y los alimentos consumidos en un rango de fechas de TODAS las categorías de ingestas (desayuno, almuerzo y cena)
+    // public ResponseDTO getAllMacrosAndIntakes(String username, LocalDateTime startDate, LocalDateTime endDate) {
+    //     // Verifica que el usuario exista
+    //     Optional<UserEntity> optUser = userRepository.findByUsername(username);
+    //     if(!optUser.isPresent())
+    //         return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+    //     return new IntakesResponseDTO(
+    //         null, HttpStatus.OK.value(), ResponseType.SUCCESS,
+    //         (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false),
+    //         new AllCategoriesIntakesDTO(
+    //             getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate),
+    //             getCatMacrosAndIntakes(username, CategoryIntakeEnum.ALMUERZO, startDate, endDate),
+    //             getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate)
+    //         )
+    //     );
+    // }
     public ResponseDTO getAllMacrosAndIntakes(String username, LocalDateTime startDate, LocalDateTime endDate) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
-        if(!optUser.isPresent())
+        if (!optUser.isPresent()) {
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
+    
+        AllCategoriesIntakesDTO allCategoriesIntakesDTO = new AllCategoriesIntakesDTO(
+            getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate),
+            getCatMacrosAndIntakes(username, CategoryIntakeEnum.ALMUERZO, startDate, endDate),
+            getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate)
+        );
+    
+        // Imprimir las fechas de las ingestas para cada categoría
+        imprimirFechasDeIngesta("Desayuno", allCategoriesIntakesDTO.getDesayuno());
+        imprimirFechasDeIngesta("Almuerzo", allCategoriesIntakesDTO.getAlmuerzo());
+        imprimirFechasDeIngesta("Cena", allCategoriesIntakesDTO.getCena());
+
+        calibrateHoursWithPeru(allCategoriesIntakesDTO.getDesayuno());
+        calibrateHoursWithPeru(allCategoriesIntakesDTO.getAlmuerzo());
+        calibrateHoursWithPeru(allCategoriesIntakesDTO.getCena());
+    
         return new IntakesResponseDTO(
             null, HttpStatus.OK.value(), ResponseType.SUCCESS,
             (MacrosDetailedDTO) getMacrosDetailed(username, startDate, endDate, false),
-            new AllCategoriesIntakesDTO(
-                getCatMacrosAndIntakes(username, CategoryIntakeEnum.DESAYUNO, startDate, endDate),
-                getCatMacrosAndIntakes(username, CategoryIntakeEnum.ALMUERZO, startDate, endDate),
-                getCatMacrosAndIntakes(username, CategoryIntakeEnum.CENA, startDate, endDate)
-            )
+            allCategoriesIntakesDTO
         );
     }
+
+    public void calibrateHoursWithPeru(CategoryIntakeDTO categoryIntakeDTO) {
+        if (categoryIntakeDTO != null && categoryIntakeDTO.getMyIntakes() != null) {
+            for (IntakeDTO intake : categoryIntakeDTO.getMyIntakes()) {
+                Timestamp timestamp = intake.getCreatedAt();
+                if (timestamp != null) {
+                    LocalDateTime localDateTime = timestamp.toLocalDateTime();
+                    // La diferencia de horas entre Perú y UTC es de 5 horas menos en Perú
+                    LocalDateTime adjustedDateTime = localDateTime.minusHours(hoursToSubtract);
+                    intake.setCreatedAt(Timestamp.valueOf(adjustedDateTime));
+                }
+            }
+        }
+    }
+    
     // * Heather: Obtener la información de un alimento consumido
     public ResponseDTO getDetailedIntake(String username, Long id) {
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
@@ -140,6 +187,7 @@ public class EatService {
         dto.noMessageAndStatusCode();
         return dto;
     }
+
     // * Heather: Agregar un alimento a la lista de alimentos consumidos
     @Transactional
     public ResponseDTO addFoodIntake(String username, NewIntakeDTO foodIntakeDTO) {
@@ -157,13 +205,19 @@ public class EatService {
         newEat.setFood(getFood.get());
         newEat.setEatQuantity(foodIntakeDTO.getQuantity());
         newEat.setUnitOfMeasurement(foodIntakeDTO.getUnitOfMeasurement());
-        newEat.setDate(foodIntakeDTO.getDate());
-        LocalDateTime dateTimeOfEat = foodIntakeDTO.getDate().toLocalDateTime().plusHours(5);
+        
+        // Convertir la fecha a UTC antes de guardarla
+        LocalDateTime dateTimeOfEat = foodIntakeDTO.getDate().toLocalDateTime();
+        ZonedDateTime zonedDateTime = dateTimeOfEat.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
+        newEat.setDate(Timestamp.valueOf(zonedDateTime.toLocalDateTime()));
+
+        dateTimeOfEat = dateTimeOfEat.plusHours(hoursToSubtract);
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
         user.getEats().add(newEat);
         userRepository.save(user);
         return new ResponseDTO("Alimento registrado exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
     }
+
     // * Heather: Actualizar un alimento de la lista de alimentos consumidos por un usuario
     @Transactional
     public ResponseDTO updateFoodIntake(String username, UpdateIntakeDTO niDTO) {
@@ -200,9 +254,13 @@ public class EatService {
         }
         newEat.setEatQuantity(niDTO.getQuantity());
         newEat.setUnitOfMeasurement(niDTO.getUnitOfMeasurement());
-        LocalDateTime dateTimeOfEat = niDTO.getDate().toLocalDateTime().plusHours(5);
-        newEat.setDate(Timestamp.valueOf(dateTimeOfEat));
-        dateTimeOfEat = niDTO.getDate().toLocalDateTime().plusHours(5);
+
+        LocalDateTime dateTimeOfEat = niDTO.getDate().toLocalDateTime();
+        dateTimeOfEat = dateTimeOfEat.plusHours(hoursToSubtract);
+        ZonedDateTime zonedDateTime = dateTimeOfEat.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
+        newEat.setDate(Timestamp.valueOf(zonedDateTime.toLocalDateTime()));
+
+        dateTimeOfEat = dateTimeOfEat.plusHours(hoursToSubtract);
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
         try {
             eatRepository.save(newEat);
@@ -211,6 +269,18 @@ public class EatService {
             return new ResponseDTO("Error al actualizar el registro", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
+
+    public void calibrateHoursWithPeru(IntakeDTO intakeDTO) {
+        int hoursToSubtract = 5;
+        if (intakeDTO != null && intakeDTO.getCreatedAt() != null) {
+            Timestamp timestamp = intakeDTO.getCreatedAt();
+            LocalDateTime localDateTime = timestamp.toLocalDateTime();
+            // La diferencia de horas entre Perú y UTC es de 5 horas menos en Perú
+            LocalDateTime adjustedDateTime = localDateTime.minusHours(hoursToSubtract);
+            intakeDTO.setCreatedAt(Timestamp.valueOf(adjustedDateTime));
+        }
+    }
+
     // * Heather: Quitar un alimento de la lista de alimentos consumidos por un usuario
     @Transactional
     public ResponseDTO deleteFoodIntake(String username, Long eatId) {
@@ -228,13 +298,7 @@ public class EatService {
             return new ResponseDTO("Error al eliminar el registro", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
-
-    // ? Funciones
-    // Método para redondear un valor de forma concisa
-    public Double round(Double value) {
-        if (value == null) return null;
-        return Double.valueOf(String.format("%.2f", value));
-    }
+    
     // Obtener los macronutrientes consumidos y los alimentos consumidos en un rango de fechas
     public CategoryIntakeDTO getCatMacrosAndIntakes(String username, CategoryIntakeEnum category, LocalDateTime startDate, LocalDateTime endDate) {
         MacrosPerCategoryDTO macrosConsumedPerCategory = eatRepository.findMacrosPerCategory(username, category, startDate, endDate);
@@ -248,6 +312,7 @@ public class EatService {
         }
         else {
             myIntakes = results.stream().map(result -> {
+                System.out.println(result[5]);
                 return new IntakeDTO(
                     (Long) result[0],
                     (String) result[1],
@@ -260,6 +325,23 @@ public class EatService {
         }
         return new CategoryIntakeDTO(null, null, null, macrosConsumedPerCategory, myIntakes);
     }
+
+    // ? Funciones
+    private void imprimirFechasDeIngesta(String nombreCategoria, CategoryIntakeDTO categoryIntake) {
+        if (categoryIntake != null && categoryIntake.getMyIntakes() != null) {
+            System.out.println("Categoría: " + nombreCategoria);
+            for (IntakeDTO intake : categoryIntake.getMyIntakes()) {
+                System.out.println("Fecha de ingesta: " + intake.getCreatedAt());
+            }
+        }
+    }
+
+    // Método para redondear un valor de forma concisa
+    public Double round(Double value) {
+        if (value == null) return null;
+        return Double.valueOf(String.format("%.2f", value));
+    }
+
     // Calcular fecha de ingesta
     public CategoryIntakeEnum calculateCategory(LocalDateTime dateTimeOfEat) {
         LocalTime timeOfEat = dateTimeOfEat.toLocalTime();

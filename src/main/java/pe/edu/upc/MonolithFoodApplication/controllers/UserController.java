@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.NewIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.UpdateIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
@@ -103,6 +102,9 @@ public class UserController {
         validateDates(startDate, endDate);
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
         ResponseDTO response = eatService.getAllMacrosAndIntakes(username, startDate, endDate);
+
+        // Código modificado para ajustarse a la estructura de IntakesResponseDTO
+
         return validateResponse(response);
     }
     // * Heather (Alimentos consumidos)
