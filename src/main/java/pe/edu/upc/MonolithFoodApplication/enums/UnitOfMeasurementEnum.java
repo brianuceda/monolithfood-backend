@@ -6,5 +6,5 @@ public enum UnitOfMeasurementEnum {
     ML,
     KCAL,
     UN,
-
+    MCG,
 }

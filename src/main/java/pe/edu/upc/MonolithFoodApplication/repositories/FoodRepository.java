@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.FoodEntity;
 
@@ -31,8 +30,7 @@ public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
         "SELECT " +
             "n.id, " +
             "n.name, " +
-            // "(cf.nutrientQuantity * CAST(:quantity AS float)) as nutrientQuantity, " +
-            "(cf.nutrientQuantity * 1) as nutrientQuantity, " + // Using 1 as a constant multiplier
+            "(cf.nutrientQuantity * 1) as nutrientQuantity, " +
             "cf.unitOfMeasurement, " +
             "n.color " +
         "FROM FoodEntity f " +
@@ -43,24 +41,6 @@ public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
     )
     List<Object[]> findNutrientsOfFood(
         @Param("id") Long id);
-
-    // @Query("SELECT " + 
-    //         "f.id, " +
-    //         "f.name, " + 
-    //         "f.information, " + 
-    //         "f.imgUrl, " + 
-    //         "f.sourceOfOrigin, " +
-    //         "cf.name, " + 
-    //         "cf.information, " + 
-    //         "cf.benefits, " + 
-    //         "cf.disadvantages " + 
-    //     "FROM FoodEntity f " +
-    //         "JOIN f.categoryFood cf " +
-    //     "WHERE f.id = :id"
-    // )
-    // List<Object[]> findDetailedFood(
-    //     @Param("id") Long id
-    // );
 
     @Query(
         "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO(" + 

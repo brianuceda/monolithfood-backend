@@ -148,7 +148,7 @@ public class MonolithFoodApplication {
                     new NutrientEntity(null, "Carbohidratos", "Principal fuente de energia.", "Los carbohidratos o glucidos proporcionan glucosa que es la principal fuente de energía para las células. Pueden ser simples (azúcares) o complejos (almidones).", "#32a7f5", null, null),
                     new NutrientEntity(null, "Grasa", "Macronutriente esencial para la energia.", "Los lípidos o grasas son fuente concentrada de energía. También ayudan en la absorción de vitaminas liposolubles y forman parte de las membranas celulares.", "#f5a623", null, null),
                     new NutrientEntity(null, "Colesterol", "Esencial para la salud celular.", "El colesterol es un lípido necesario para construir membranas celulares y producir hormonas. Existen dos tipos principales: LDL (malo) y HDL (bueno), y mantener un equilibrio es crucial para la salud cardiovascular.", "#005377", null, null),
-                    new NutrientEntity(null, "Vitamina B6", "Vitamina esencial para el metabolismo.", "La vitamina B6 participa en el metabolismo de proteínas, glucidos y grasas. Contribuye a la síntesis de neurotransmisores y hemoglobina.", "#ffdf00", null, null),
+                    new NutrientEntity(null, "Vitamina B6", "Vitamina esencial para el metabolismo.", "La vitamina B6 participa en el metabolismo de proteínas, glucidos y grasas. Contribuye a la síntesis de neurotransmisores y hemoglobina.", "#ff8928", null, null),
                     new NutrientEntity(null, "Fosforo", "Mineral esencial para la salud osea.", "El fósforo forma parte de huesos y dientes, también participa en el metabolismo energético, la contracción muscular y el equilibrio ácido-base.", "#8d93ab", null, null),
                     new NutrientEntity(null, "Magnesio", "Mineral esencial para diversas funciones biologicas.", "El magnesio participa en más de 300 reacciones enzimáticas del metabolismo energético, síntesis proteica, contracción muscular y neurotransmisión. Ayuda a regular la glucosa y la presión arterial.", "#3fada8", null, null),
                     new NutrientEntity(null, "Vitamina C", "Antioxidante y esencial para la salud inmunologica.", "La vitamina C es un potente antioxidante que protege contra el daño oxidativo. También participa en la formación de colágeno, absorción de hierro y funcionamiento del sistema inmunológico.", "#ff6f61", null, null),
@@ -213,7 +213,7 @@ public class MonolithFoodApplication {
                     new FoodEntity(null, "Brocoli", "Verdura crucífera rica en vitaminas C, K, folatos, potasio y fibra. Posee propiedades anticancerígenas.", "https://www.fatsecret.es/calor%C3%ADas-nutrici%C3%B3n/gen%C3%A9rico/br%C3%B3coli-cocido-(fresco)", "https://cdn-icons-png.flaticon.com/512/2346/2346952.png", null, null, getCategoryByName(categories, "Vegetales"), null, null, null),  
                     new FoodEntity(null, "Platano", "Fruta tropical rica en hidratos de carbono, potasio, vitamina B6 y fibra dietética. Aporta rápida energía.", "https://www.fatsecret.es/calor%C3%ADas-nutrici%C3%B3n/gen%C3%A9rico/pl%C3%A1tano-maduro", "https://cdn-icons-png.flaticon.com/512/10247/10247513.png", null, null, getCategoryByName(categories, "Frutas"), null, null, null),
                     new FoodEntity(null, "Lentejas", "Legumbre rica en proteínas, hidratos de carbono complejos, fibra, hierro, folatos y potasio.", "https://www.fatsecret.es/calor%C3%ADas-nutrici%C3%B3n/gen%C3%A9rico/lentejas-cocidas?portionid=51933&portionamount=100,000", "https://cdn-icons-png.flaticon.com/512/2165/2165967.png", null, null, getCategoryByName(categories, "Granos"), null, null, null),
-                    new FoodEntity(null, "Salmon", "Pescado azul rico en proteínas, grasas omega 3 y vitaminas A, D, B6, B12. Beneficioso para el corazón y el cerebro.", "https://bing.com/search?q=Arroz+blanco%2c+cocido+site%3afatsecret.es", "https://cdn-icons-png.flaticon.com/512/4809/4809697.png", null, null, getCategoryByName(categories, "Pescados y Mariscos"), null, null, null),
+                    new FoodEntity(null, "Salmon", "Pescado azul rico en proteínas, grasas omega 3 y vitaminas A, D, B6, B12. Beneficioso para el corazón y el cerebro.", "https://www.fatsecret.com.mx/calor%C3%ADas-nutrici%C3%B3n/gen%C3%A9rico/salm%C3%B3n", "https://cdn-icons-png.flaticon.com/512/4809/4809697.png", null, null, getCategoryByName(categories, "Pescados y Mariscos"), null, null, null),
                     new FoodEntity(null, "Leche", "Bebida láctea rica en proteínas, calcio, vitaminas A y B12. Fortalece huesos y dientes.", "https://www.fatsecret.es/calor%C3%ADas-nutrici%C3%B3n/gen%C3%A9rico/leche-(leche-entera)", "https://cdn-icons-png.flaticon.com/512/372/372973.png", null, null, getCategoryByName(categories, "Lacteos"), null, null, null),
                     new FoodEntity(null, "Pescado", "Alimento rico en proteínas, grasas saludables y vitaminas del complejo B. Excelente para el cerebro y corazón.", "https://www.fatsecret.es/calor%C3%ADas-nutrici%C3%B3n/gen%C3%A9rico/filete-de-pescado-al-horno-o-la-parrilla?portionid=50627&portionamount=100,000", "https://cdn-icons-png.flaticon.com/512/3829/3829599.png", null, null, getCategoryByName(categories, "Pescados y Mariscos"), null, null, null),
                     new FoodEntity(null, "Cebolla", "Bulbo vegetal con compuestos azufrados, vitamina C, flavonoides y fibra. Propiedades anticancerígenas.", "https://www.fatsecret.es/calor%C3%ADas-nutrici%C3%B3n/gen%C3%A9rico/cebollas-rojas?portionid=340024&portionamount=1,000", "https://cdn-icons-png.flaticon.com/512/5194/5194898.png", null, null, getCategoryByName(categories, "Vegetales"), null, null, null),
@@ -249,34 +249,306 @@ public class MonolithFoodApplication {
             if(compositionFoodRepository.count() == 0) {
                 Map<String, Map<String, Double>> nutrientCompositionFoodMap = new HashMap<String, Map<String, Double>>() {
                     {
-                        put("Pollo", Map.of("Proteina", 0.31, "Carbohidratos", 0.016, "Grasa", 0.036, "Calorias", 2.39, "Vitamina B6", 0.005, "Fosforo", 0.022));
-                        put("Arroz", Map.of("Carbohidratos", 0.29, "Proteina", 0.027, "Grasa", 0.003, "Calorias", 1.3, "Fibra", 0.004, "Magnesio", 0.025)); 
-                        put("Brocoli", Map.of("Carbohidratos", 0.06, "Proteina", 0.025, "Fibra", 0.026, "Calorias", 0.34, "Vitamina C", 0.892, "Vitamina K", 1.02, "Calcio", 0.47));
-                        put("Platano", Map.of("Carbohidratos", 0.27, "Proteina", 0.01, "Grasa", 0.005, "Calorias", 1.05, "Fibra", 0.026, "Potasio", 0.358, "Vitamina B6", 0.004, "Vitamina C", 0.1, "Magnesio", 0.27));
-                        put("Lentejas", Map.of("Carbohidratos", 0.2, "Proteina", 0.09, "Fibra", 0.08, "Calorias", 1.16, "Hierro", 0.00015, "Zinc", 0.00019, "Calcio", 0.00019, "Magnesio", 0.00016, "Fosforo", 0.00011));
-                        put("Salmon", Map.of("Proteina", 0.199, "Grasa", 0.136, "Calorias", 2.08, "Omega 3", 0.011, "Vitamina D", 0.071, "Calcio", 0.09, "Fosforo", 0.35));
-                        put("Leche", Map.of("Carbohidratos", 0.05, "Proteina", 0.033, "Grasa", 0.033, "Calorias", 0.42, "Lactosa", 0.048, "Calcio", 1.19, "Fosforo", 0.93, "Potasio", 1.51));
-                        put("Pescado", Map.of("Proteina", 0.17, "Grasa", 0.022, "Carbohidratos", 0.002, "Calorias", 0.82, "Omega 3", 0.003, "Calcio", 0.15, "Fosforo", 0.88, "Potasio", 2.5));
-                        put("Cebolla", Map.of("Carbohidratos", 0.093, "Calorias", 0.4, "Fibra", 0.02, "Folato", 0.19, "Potasio", 1.46, "Vitamina C", 0.092));
-                        put("Limon", Map.of("Carbohidratos", 0.093, "Calorias", 0.17, "Fibra", 0.028, "Vitamina C", 0.53, "Potasio", 1.38, "Calcio", 0.26));
-                        put("Aji", Map.of("Carbohidratos", 0.088, "Calorias", 0.4, "Fibra", 0.017, "Vitamina C", 1.4, "Vitamina A", 4.16, "Potasio", 3.22));
-                        put("Carne", Map.of("Proteina", 0.2, "Grasa", 0.055, "Calorias", 1.04, "Hierro", 0.012, "Zinc", 0.029));  
-                        put("Papa", Map.of("Carbohidratos", 0.17, "Calorias", 0.77, "Fibra", 0.022, "Potasio", 4.21, "Vitamina C", 0.197));
-                        put("Tomate", Map.of("Carbohidratos", 0.039, "Calorias", 0.18, "Fibra", 0.012, "Potasio", 2.37, "Vitamina C", 0.137));
-                        put("Ajo", Map.of("Carbohidratos", 0.331, "Calorias", 1.49, "Fibra", 0.021, "Calcio", 1.81, "Fosforo", 1.53));
-                        put("Queso", Map.of("Proteina", 0.25, "Grasa", 0.33, "Calorias", 4.02, "Calcio", 7.21, "Fosforo", 5.12, "Sodio", 6.21));
-                        put("Lechuga", Map.of("Carbohidratos", 0.033, "Calorias", 0.15, "Fibra", 0.013, "Folato", 0.384, "Vitamina A", 3.61));
-                        put("Aceituna", Map.of("Grasa", 0.15, "Calorias", 1.15, "Fibra", 0.031, "Calcio", 0.52, "Magnesio", 0.04));
-                        put("Huevo", Map.of("Proteina", 0.063, "Grasa", 0.048, "Calorias", 0.74, "Colesterol", 1.86));
-                        put("Mayonesa", Map.of("Grasa", 0.832, "Calorias", 7.2, "Sodio", 0.067)); 
-                        put("Palta", Map.of("Grasa", 0.238, "Calorias", 2.33, "Fibra", 0.101, "Potasio", 7.3));
-                        put("Cecina", Map.of("Proteina", 0.29, "Grasa", 0.02, "Calorias", 1.22, "Sodio", 15.75));
-                        put("Gallina", Map.of("Proteina", 0.2085, "Grasa", 0.05, "Calorias", 1.1, "Hierro", 0.01));
-                        put("Vino", Map.of("Alcohol", 0.125, "Calorias", 0.85, "Sodio", 0.058));
-                        put("Azucar", Map.of("Carbohidratos", 0.998, "Calorias", 3.85, "Fructosa", 0.5, "Glucosa", 0.5, "Sacarosa", 0.5));
-                        put("Claras de huevo", Map.of("Proteina", 0.109, "Calorias", 0.52, "Riboflavina", 0.00367));
-                        put("Esencia de vainilla", Map.of("Alcohol", 0.35, "Calorias", 2.88, "Azucares", 0.719));
-                        put("Manjarblanco", Map.of("Carbohidratos", 0.77, "Grasa", 0.057, "Calorias", 3.36, "Calcio", 1.4, "Fosforo", 0.95, "Hierro", 0.012));
+                        put("Pollo", Map.of(
+                            "Calorias", 1.46, // KCAL
+                            "Proteina", 0.263, // G
+                            "Grasa", 0.035, // G
+                            "Colesterol", 0.487, // MG
+                            "Vitamina B3", 0.074, // MG
+                            "Vitamina B6", 0.003, // MG
+                            "Hierro", 0.006, // MG
+                            "Magnesio", 0.157, // MG
+                            "Fosforo", 1.241, // MG
+                            "Potasio", 1.421 // MG
+                        ));
+
+                        put("Arroz", Map.of(
+                            "Calorias", 2.05, // KCAL
+                            "Proteina", 0.043, // G
+                            "Carbohidratos", 0.445, // G
+                            "Grasa", 0.004, // G
+                            "Fibra", 0.006, // G
+                            "Calcio", 0.158, // MG
+                            "Hierro", 0.019, // MG
+                            "Magnesio", 0.19, // MG
+                            "Fosforo", 0.679, // MG
+                            "Potasio", 0.553 // MG
+                        ));
+
+                        put("Brocoli", Map.of(
+                            "Calorias", 0.98, // KCAL
+                            "Proteina", 0.067, // G
+                            "Carbohidratos", 0.201, // G
+                            "Fibra", 0.092, // G
+                            "Vitamina C", 1.817, // MG
+                            "Calcio", 1.12, // MG
+                            "Hierro", 0.019, // MG
+                            "Magnesio", 0.588, // MG
+                            "Fosforo", 1.876, // MG
+                            "Potasio", 8.204 // MG
+                        ));
+
+                        put("Platano", Map.of(
+                            "Calorias", 2.32, // KCAL
+                            "Proteina", 0.016, // G
+                            "Carbohidratos", 0.623, // G
+                            "Grasa", 0.004, // G
+                            "Fibra", 0.046, // G
+                            "Vitamina B6", 0.005, // MG
+                            "Vitamina C", 0.218, // MG
+                            "Magnesio", 0.64, // MG
+                            "Fosforo", 0.56, // MG
+                            "Potasio", 9.3 // MG
+                        ));
+                        
+                        put("Lentejas", Map.of(
+                            "Calorias", 2.26, // KCAL
+                            "Proteina", 0.179, // G
+                            "Carbohidratos", 0.387, // G
+                            "Fibra", 0.156, // G
+                            "Hierro", 0.066, // MG
+                            "Magnesio", 0.713, // MG
+                            "Fosforo", 3.564, // MG
+                            "Potasio", 7.306, // MG
+                            "Cinc", 0.025, // MG
+                            "Calcio", 0.376 // MG
+                        ));
+                        
+                        put("Salmon", Map.of(
+                            "Calorias", 7.33, // KCAL
+                            "Proteina", 0.787, // G
+                            "Grasa", 0.44, // G
+                            "Colesterol", 2.243, // MG
+                            "Vitamina B1", 0.012, // MG
+                            "Vitamina B6", 0.023, // MG
+                            "Calcio", 0.534, // MG
+                            "Hierro", 0.012, // MG
+                            "Magnesio", 1.068, // MG
+                            "Potasio", 13.67 // MG
+                        ));
+                        
+                        put("Leche", Map.of(
+                            "Calorias", 0.6, // KCAL
+                            "Proteina", 0.032, // G
+                            "Carbohidratos", 0.045, // G
+                            "Grasa", 0.033, // G
+                            "Colesterol", 0.1, // MG
+                            "Sodio", 0.4, // MG
+                            "Azucares", 0.053, // G
+                            "Calcio", 1.2, // MG
+                            "Potasio", 1.5 // MG
+                        ));
+                        
+                        put("Pescado", Map.of(
+                            "Calorias", 0.82, // KCAL
+                            "Proteina", 0.27, // G
+                            "Carbohidratos", 0.002, // G
+                            "Grasa", 0.022, // G
+                            "Omega 3", 0.003, // G
+                            "Calcio", 0.15, // MG
+                            "Fosforo", 0.88, // MG
+                            "Potasio", 2.5 // MG
+                        ));
+                        
+                        put("Cebolla", Map.of(
+                            "Calorias", 0.427, // KCAL
+                            "Proteina", 0.013, // G
+                            "Carbohidratos", 0.102, // G
+                            "Fibra", 0.016, // G
+                            "Azucares", 0.045, // G
+                            "Vitamina C", 0.081, // MG
+                            "Folato", 0.209, // MG
+                            "Potasio", 1.61, // MG
+                            "Calcio", 0.22, // MG
+                            "Sodio", 0.035 // MG
+                        ));
+                        
+                        put("Limon", Map.of(
+                            "Calorias", 0.29, // KCAL
+                            "Carbohidratos", 0.093, // G
+                            "Proteina", 0.011, // G
+                            "Grasa", 0.003, // G
+                            "Fibra", 0.028, // G
+                            "Azucares", 0.025, // G
+                            "Vitamina C", 1.06, // MG
+                            "Potasio", 2.76, // MG
+                            "Calcio", 0.52, // MG
+                            "Sodio", 0.02 // MG
+                        ));
+                        
+                        put("Aji", Map.of(
+                            "Calorias", 0.4, // KCAL
+                            "Proteina", 0.014, // G
+                            "Carbohidratos", 0.091, // G
+                            "Fibra", 0.015, // G
+                            "Vitamina C", 1.06, // MG
+                            "Vitamina A", 0.48, // MG
+                            "Potasio", 3.22, // MG
+                            "Azucares", 0.052 // G
+                        ));
+                            
+                        put("Carne", Map.of(
+                            "Calorias", 2.58, // KCAL
+                            "Proteina", 0.263, // G
+                            "Grasa", 0.181, // G
+                            "Colesterol", 0.825, // MG
+                            "Hierro", 0.025, // MG
+                            "Zinc", 0.05, // MG
+                            "Sodio", 2.37 // MG
+                        ));
+                        
+                        put("Papa", Map.of(
+                            "Calorias", 0.913, // KCAL
+                            "Proteina", 0.022, // G
+                            "Carbohidratos", 0.2, // G
+                            "Fibra", 0.022, // G
+                            "Potasio", 4.21, // MG
+                            "Vitamina C", 0.197, // MG
+                            "Calcio", 0.12 // MG
+                        ));
+                        
+                        put("Tomate", Map.of(
+                            "Calorias", 0.18, // KCAL
+                            "Proteina", 0.009, // G
+                            "Carbohidratos", 0.039, // G
+                            "Azucares", 0.026, // G
+                            "Fibra", 0.012, // G
+                            "Potasio", 2.37, // MG
+                            "Vitamina C", 0.14, // MG
+                            "Calcio", 0.1 // MG
+                        ));
+                        
+                        put("Ajo", Map.of(
+                            "Calorias", 1.49, // KCAL
+                            "Proteina", 0.064, // G
+                            "Carbohidratos", 0.331, // G
+                            "Azucares", 0.01, // G
+                            "Fibra", 0.021, // G
+                            "Calcio", 2.46, // MG
+                            "Fosforo", 1.53 // MG
+                        ));
+                        
+                        put("Queso", Map.of(
+                            "Calorias", 3.257, // KCAL
+                            "Proteina", 0.23, // G
+                            "Carbohidratos", 0.035, // G
+                            "Grasa", 0.31, // G
+                            "Azucares", 0.022, // G
+                            "Colesterol", 0.957, // MG
+                            "Calcio", 7.0, // MG
+                            "Fosforo", 5.0, // MG
+                            "Sodio", 7.43 // MG
+                        ));
+                        
+                        put("Lechuga", Map.of(
+                            "Calorias", 0.153, // KCAL
+                            "Proteina", 0.013, // G
+                            "Carbohidratos", 0.031, // G
+                            "Azucares", 0.013, // G
+                            "Fibra", 0.015, // G
+                            "Folato", 0.384, // MG
+                            "Vitamina A", 74.05, // MG
+                            "Potasio", 1.94 // MG
+                        ));
+                        
+                        put("Aceituna", Map.of(
+                            "Calorias", 1.067, // KCAL
+                            "Proteina", 0.004, // G
+                            "Carbohidratos", 0.036, // G
+                            "Grasa", 0.14, // G
+                            "Fibra", 0.026, // G
+                            "Azucares", 0.003, // G
+                            "Calcio", 0.88, // MG
+                            "Magnesio", 0.04, // MG
+                            "Sodio", 10.83 // MG
+                        ));
+                        
+                        put("Huevo", Map.of(
+                            "Calorias", 1.3, // KCAL
+                            "Proteina", 0.12, // G
+                            "Carbohidratos", 0.007, // G
+                            "Grasa", 0.085, // G
+                            "Azucares", 0.006, // G
+                            "Colesterol", 3.985, // MG
+                            "Sodio", 1.16 // MG
+                        ));
+                        
+                        put("Mayonesa", Map.of(
+                            "Calorias", 3.9, // KCAL
+                            "Carbohidratos", 0.239, // G
+                            "Grasa", 0.334, // G
+                            "Azucares", 0.064, // G
+                            "Colesterol", 0.26, // MG
+                            "Sodio", 7.11 // MG
+                        ));
+                        
+                        put("Palta", Map.of(
+                            "Calorias", 1.2, // KCAL
+                            "Proteina", 0.015, // G
+                            "Carbohidratos", 0.065, // G
+                            "Grasa", 0.11, // G
+                            "Fibra", 0.05, // G
+                            "Sodio", 0.055 // MG
+                        ));
+                        
+                        put("Cecina", Map.of(
+                            "Calorias", 1.16, // KCAL
+                            "Proteina", 0.094, // G
+                            "Carbohidratos", 0.031, // G
+                            "Grasa", 0.073, // G
+                            "Fibra", 0.005, // G
+                            "Azucares", 0.026, // G
+                            "Colesterol", 0.14, // MG
+                            "Sodio", 5.9, // MG
+                            "Hierro", 0.015 // MG
+                        ));
+                        
+                        put("Gallina", Map.of(
+                            "Calorias", 1.1, // KCAL
+                            "Proteina", 0.231, // G
+                            "Grasa", 0.012, // G
+                            "Hierro", 0.007, // MG
+                            "Sodio", 0.65, // MG
+                            "Vitamina B3", 0.112, // MG
+                            "Vitamina B6", 0.005, // MG
+                            "Vitamina B12", 0.004, // MCG
+                            "Folato", 0.04, // MCG
+                            "Vitamina A", 0.21 // IU
+                        ));
+                        
+                        put("Vino", Map.of(
+                            "Calorias", 0.812, // KCAL
+                            "Carbohidratos", 0.0135, // G
+                            "Alcohol", 0.106 // G
+                        ));
+                        
+                        put("Azucar", Map.of(
+                            "Calorias", 4.0, // KCAL
+                            "Carbohidratos", 1.0 // G
+                        ));
+
+                        put("Claras de huevo", Map.of(
+                            "Calorias", 0.52, // KCAL
+                            "Proteina", 0.109, // G
+                            "Carbohidratos", 0.007, // G
+                            "Grasa", 0.0017, // G
+                            "Sodio", 1.66, // MG
+                            "Azucares", 0.0071 // G
+                        ));
+                        
+                        put("Esencia de vainilla", Map.of(
+                            "Calorias", 2.88, // KCAL
+                            "Alcohol", 0.014, // G
+                            "Azucares", 0.1265 // G
+                        ));
+                        
+                        put("Manjarblanco", Map.of(
+                            "Calorias", 3.15, // KCAL
+                            "Carbohidratos", 0.554, // G
+                            "Grasa", 0.074, // G
+                            "Azucares", 0.497, // G
+                            "Sodio", 1.29 // MG
+                        ));
                     }
                 };
                 // Crear un mapa para buscar FoodEntity por nombre

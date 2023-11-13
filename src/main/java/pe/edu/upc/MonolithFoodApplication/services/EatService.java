@@ -157,8 +157,8 @@ public class EatService {
         newEat.setFood(getFood.get());
         newEat.setEatQuantity(foodIntakeDTO.getQuantity());
         newEat.setUnitOfMeasurement(foodIntakeDTO.getUnitOfMeasurement());
+        newEat.setDate(foodIntakeDTO.getDate());
         LocalDateTime dateTimeOfEat = foodIntakeDTO.getDate().toLocalDateTime().plusHours(5);
-        newEat.setDate(Timestamp.valueOf(dateTimeOfEat));
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
         user.getEats().add(newEat);
         userRepository.save(user);
@@ -202,6 +202,7 @@ public class EatService {
         newEat.setUnitOfMeasurement(niDTO.getUnitOfMeasurement());
         LocalDateTime dateTimeOfEat = niDTO.getDate().toLocalDateTime().plusHours(5);
         newEat.setDate(Timestamp.valueOf(dateTimeOfEat));
+        dateTimeOfEat = niDTO.getDate().toLocalDateTime().plusHours(5);
         newEat.setCategoryIntake(calculateCategory(dateTimeOfEat));
         try {
             eatRepository.save(newEat);
@@ -252,7 +253,8 @@ public class EatService {
                     (String) result[1],
                     (String) result[2],
                     (Double) result[3],
-                    (UnitOfMeasurementEnum) result[4]
+                    (UnitOfMeasurementEnum) result[4],
+                    (Timestamp) result[5]
                 );
             }).collect(Collectors.toList());
         }

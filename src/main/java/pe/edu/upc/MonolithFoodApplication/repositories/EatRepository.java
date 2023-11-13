@@ -113,11 +113,10 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "SELECT " + 
             "e.id as id, " +
             "f.name as name, " + 
-            // "c.name as categoryFood, " +
             "f.imgUrl as imgUrl, " +  
             "e.eatQuantity as quantity, " + 
-            "e.unitOfMeasurement as unitOfMeasurement " + 
-            // "e.date as date " +
+            "e.unitOfMeasurement as unitOfMeasurement, " + 
+            "e.date as createdAt " +
         "FROM EatEntity e " +
         "JOIN e.user u " +
         "JOIN e.food f " +

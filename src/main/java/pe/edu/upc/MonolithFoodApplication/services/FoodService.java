@@ -1,19 +1,13 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-// import pe.edu.upc.MonolithFoodApplication.dtos.searches.FoodNutrientDTO;
-// import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListFoodNutrientDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListSearchFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.NutrientDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.SearchFoodDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.searches.CategoryFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.searches.ListNutrientsDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.CategoryFoodEntity;
@@ -138,7 +132,7 @@ public class FoodService {
     // Método para redondear un valor de forma concisa
     public Double round(Double value) {
         if (value == null) return null;
-        return Double.valueOf(String.format("%.2f", value));
+        return Double.valueOf(String.format("%.3f", value));
     }
     // Método para convertir una entidad a un DTO
     private SearchFoodDTO convertToSearchFoodDTO(String username, FoodEntity foodEntity) {
