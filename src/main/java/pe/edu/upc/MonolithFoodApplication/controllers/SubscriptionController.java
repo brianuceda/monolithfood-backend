@@ -16,7 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RequiredArgsConstructor
 @RequestMapping("/user/subscriptions")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
-@CrossOrigin(origins = "https://monolithfood.site", allowedHeaders = {"Content-Type", "Authorization", "Cache-Control"})
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final JwtService jwtService;

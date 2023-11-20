@@ -28,7 +28,7 @@ import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://monolithfood.site", allowedHeaders = {"Content-Type", "Authorization", "Cache-Control"})
+@CrossOrigin(origins = "**", allowedHeaders = "**")
 public class AuthController {
     private final AuthService authService;
     private final OAuthService oAuthService;

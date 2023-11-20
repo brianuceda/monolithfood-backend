@@ -46,8 +46,8 @@ public class SecurityConfig {
                     HttpMethod.OPTIONS.name()
                 ));
                 // Permite cualquier origen y cualquier encabezado
-                configuration.setAllowedOrigins(Arrays.asList("https://monolithfood.site"));
-                configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Cache-Control"));
+                configuration.setAllowedOrigins(Arrays.asList("*"));
+                configuration.setAllowedHeaders(Arrays.asList("*"));
                 return configuration;
             }))
             // ? Permite o bloquea la conexión a los endpoints ? //
