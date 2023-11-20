@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import static org.springframework.security.config.Customizer.withDefaults;
+// import static org.springframework.security.config.Customizer.withDefaults;
 
 import java.util.Arrays;
 
@@ -46,8 +46,8 @@ public class SecurityConfig {
                     HttpMethod.OPTIONS.name()
                 ));
                 // Permite cualquier origen y cualquier encabezado
-                configuration.setAllowedOrigins(Arrays.asList("*"));
-                configuration.setAllowedHeaders(Arrays.asList("*"));
+                configuration.setAllowedOrigins(Arrays.asList("https://monolithfood.site"));
+                configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "Cache-Control"));
                 return configuration;
             }))
             // ? Permite o bloquea la conexión a los endpoints ? //
@@ -67,7 +67,6 @@ public class SecurityConfig {
             )
             // ? Authentication Provider: Es el que se encarga de validar las credenciales de los usuarios ? //
             .authenticationProvider(authProvider)
-            .formLogin(withDefaults())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
 

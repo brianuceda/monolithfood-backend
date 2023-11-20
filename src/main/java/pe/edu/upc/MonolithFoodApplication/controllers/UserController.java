@@ -34,7 +34,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserService;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
-@CrossOrigin(origins = "**", allowedHeaders = "**")
+@CrossOrigin(origins = "https://monolithfood.site", allowedHeaders = {"Content-Type", "Authorization", "Cache-Control"})
 public class UserController {
     private final AuthService authService;
     private final UserService userService;

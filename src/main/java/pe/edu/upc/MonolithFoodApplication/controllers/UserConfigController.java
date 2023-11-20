@@ -21,7 +21,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserConfigService;
 @RequiredArgsConstructor
 @RequestMapping("/user/config")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
-@CrossOrigin(origins = "**", allowedHeaders = "**")
+@CrossOrigin(origins = "https://monolithfood.site", allowedHeaders = {"Content-Type", "Authorization", "Cache-Control"})
 public class UserConfigController {
     private final UserConfigService userConfigService;
     private final JwtService jwtService;
