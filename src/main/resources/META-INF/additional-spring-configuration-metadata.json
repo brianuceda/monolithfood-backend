@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret.key",
+      "type": "java.lang.String",
+      "description": "A description for 'jwt.secret.key'"
+    },
+    {
+      "name": "jwt.time.expiration",
+      "type": "java.lang.String",
+      "description": "A description for 'jwt.time.expiration'"
+    },
+    {
+      "name": "app.security.max-attempts-login",
+      "type": "java.lang.String",
+      "description": "A description for 'app.security.max-attempts-login'"
+    },
+    {
+      "name": "app.security.ip-block-duration-hours",
+      "type": "java.lang.String",
+      "description": "A description for 'app.security.ip-block-duration-hours'"
+    },
+    {
+      "name": "app.security.reset-attempt-duration-minutes",
+      "type": "java.lang.String",
+      "description": "A description for 'app.security.reset-attempt-duration-minutes'"
+    }
+  ]
+}
