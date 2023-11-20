@@ -298,7 +298,7 @@ public class MonolithFoodApplication {
                             "Vitamina C", 0.218, // MG
                             "Magnesio", 0.64, // MG
                             "Fosforo", 0.56, // MG
-                            "Potasio", 9.3 // MG
+                            "Potasio", 3.8 // MG
                         ));
                         
                         put("Lentejas", Map.of(
@@ -662,7 +662,6 @@ public class MonolithFoodApplication {
                 // Crear un mapa para buscar los tipos por nombre
                 Map<String, FoodEntity> foodNameMap = generateNameMap(foods, FoodEntity::getName);
                 Map<String, RecipeEntity> recipeNameMap = generateNameMap(recipes, RecipeEntity::getName);
-                // Recorrer la estructura de datos y realizar inserciones
                 for (Map.Entry<String, Map<String, Double>> entry : recipeIngredientMap.entrySet()) {
                     String recipeName = entry.getKey();
                     RecipeEntity recipe = recipeNameMap.get(recipeName);
@@ -670,7 +669,6 @@ public class MonolithFoodApplication {
                         for (Map.Entry<String, Double> ingredientEntry : entry.getValue().entrySet()) {
                             String foodName = ingredientEntry.getKey();
                             Double quantity = ingredientEntry.getValue();
-                            // Buscar FoodEntity por nombre y crear un nuevo IngredientEntity
                             FoodEntity food = foodNameMap.get(foodName);
                             if (food != null) {
                                 ingredients.add(new IngredientEntity(new IngredientKey(food.getId(), recipe.getId()), food, recipe, quantity));
@@ -688,18 +686,13 @@ public class MonolithFoodApplication {
                     personalInfo.setGender(genders[rand.nextInt(genders.length)]);
                     // Fecha de nacimiento aleatoria entre 1980 y 2010
                     personalInfo.setBorndate(Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay()));
-                    // Localización
                     personalInfo.setCity("Lima");
                     personalInfo.setCountry("Peru");
-                    // Altura aleatoria entre 150 y 200 cm
                     personalInfo.setHeightCm(150.0 + rand.nextInt(50));
-                    // Peso aleatorio entre 50 y 100 kg
+                    personalInfo.setStartWeightKg(personalInfo.getWeightKg());
                     personalInfo.setWeightKg(50.0 + rand.nextInt(5001) / 100.0);
-                    // Asignacion de nivel de actividad fisica
                     personalInfo.setActivityLevel(activityLevels.get(rand.nextInt(activityLevels.size())));
-                    // Asignacion de usuario
                     user.setUserPersonalInfo(personalInfo);
-                    // personalInfo.setUser(user);
                     usersPersonalInfos.add(personalInfo);
                 }
                 userPersonalInfoRepository.saveAll(usersPersonalInfos);
@@ -739,14 +732,10 @@ public class MonolithFoodApplication {
                 for (UserEntity user : users) {
                     Random rand = new Random();
                     UserConfigEntity config = new UserConfigEntity();
-                    // Generacion aleatoria de true y false
                     config.setNotifications(rand.nextBoolean());
-                    // Generacion de LocalDateTime aleatorio entre hace 4 días (4) y hoy (0) para lastFoodEntry
                     config.setLastFoodEntry(Timestamp.valueOf(LocalDateTime.now().plusDays(-rand.nextInt(4))));
-                    // Generacion de LocalDateTime aleatorio entre hace 3 semanas (-20) y hace 3 días (-3) para lastWeightUpdate
                     config.setLastWeightUpdate(Timestamp.valueOf(LocalDateTime.now().plusDays(-(3 + rand.nextInt(18)))));
                     config.setDarkMode(rand.nextBoolean());
-                    // Asignacion de usuario
                     user.setUserConfig(config);
                     usersConfig.add(config);
                 }
@@ -770,9 +759,7 @@ public class MonolithFoodApplication {
                             eat.setFood(getRandomObject(foods));
                             eat.setRecipe(null);
                             eat.setUnitOfMeasurement(UnitOfMeasurementEnum.G);
-                            // eat.setUnitOfMeasurement(getRandomUnitOfMeasurement());
                             if (eat.getUnitOfMeasurement() == UnitOfMeasurementEnum.UN) {
-                                // Genera un entero aleatorio entre 1 y 3
                                 eat.setEatQuantity(1.0 + (double) new Random().nextInt(3));
                             } else {
                                 // Genera un decimal aleatorio entre 1 y 400

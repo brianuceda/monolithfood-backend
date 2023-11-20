@@ -43,7 +43,6 @@ public class UserController {
     private final JwtService jwtService;
 
     // * Brian (Auth)
-    // Post: Cerrar sesión
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         String realToken = jwtService.getRealToken(token);

@@ -74,6 +74,7 @@ public class UserFitnessInfoService {
     // * Brian: Establecer nivel de actividad física del usuario
     @Transactional
     public ResponseDTO setActivityLevel(String username, String activityLevelName) {
+        
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);

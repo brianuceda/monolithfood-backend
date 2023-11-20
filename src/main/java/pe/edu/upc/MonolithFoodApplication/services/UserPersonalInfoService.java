@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.IMCDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ProgressWeightDTO;
@@ -31,28 +32,22 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class UserPersonalInfoService {
-    // ? Atributos
-    // Inyección de dependencias
     private final UserRepository userRepository;
     private final ExternalApisService externalApisService;
-    // Log de errores y eventos
+    private final JwtService jwtService;
     private static final Logger logger = LoggerFactory.getLogger(UserPersonalInfoService.class);
 
-    // ? Metodos
     // * Naydeline: Registrar nueva información de usuario
     @Transactional
     public ResponseDTO setUserPersonalInfo(String username, SetInformationDTO request) {
-        // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
             logger.error("Usuario no encontrado");
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
-        // Gaurda la información personal del usuario en una variable
         UserEntity user = optUser.get();
         UserConfigEntity uc = user.getUserConfig();
         UserPersonalInfoEntity upi = user.getUserPersonalInfo();
-        // verifica que todos los campos estén completos
         if (request.getGender() == null || request.getBorndate() == null || request.getWeightKg() == null || request.getHeightCm() == null || request.getTargetWeightKg() == null || request.getTargetDate() == null)
             return new ResponseDTO("Completa todos los campos.", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         if (upi == null)
@@ -72,6 +67,7 @@ public class UserPersonalInfoService {
         upi.setBorndate(request.getBorndate());
         upi.setWeightKg(request.getWeightKg());
         upi.setStartWeightKg(request.getWeightKg());
+        upi.setHeightCm(request.getHeightCm());
         uc.setLastWeightUpdate(new Timestamp(System.currentTimeMillis()));
         ufi.setTargetWeightKg(request.getTargetWeightKg());
         ufi.setTargetDate(request.getTargetDate());
@@ -80,22 +76,21 @@ public class UserPersonalInfoService {
             user.setUserPersonalInfo(upi);
             user.setUserFitnessInfo(ufi);
             userRepository.save(user);
-            logger.info("Información personal del usuario {} guardada correctamente.", username);
-            // Retorna un mensaje de éxito
-            return new ResponseDTO("Información guardada", HttpStatus.OK.value(), ResponseType.SUCCESS);
+            // Token
+            String profileStage = jwtService.determineProfileStage(user);
+            String token = jwtService.genToken(user, profileStage);
+            return new AuthResponseDTO("Información guardada", HttpStatus.OK.value(), ResponseType.SUCCESS, token, null);
         } catch (DataAccessException e) {
             return new ResponseDTO("Ocurrió un error inesperado", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
     // * Naydeline: Obtener información personal del usuario
     public ResponseDTO getInformation(String username) {
-        // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent()) {
             logger.error("Usuario no encontrado.");
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
-        // Retorna la información personal del usuario
         UserEntity user = optUser.get();
         UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         if (upi == null || upi.getWeightKg() == null || upi.getHeightCm() == null)
@@ -104,6 +99,7 @@ public class UserPersonalInfoService {
             .message(null)
             .statusCode(200)
             .username(user.getUsername())
+            .profileImg(user.getProfileImg())
             .email(user.getEmail())
             .names(user.getNames())
             .gender(upi.getGender())
@@ -112,6 +108,8 @@ public class UserPersonalInfoService {
             .weightKg(upi.getWeightKg())
             .heightCm(upi.getHeightCm())
             .imc(String.format("%.2f", calculateIMC(upi.getWeightKg(), upi.getHeightCm())) + " % | " + getClasification(calculateIMC(upi.getWeightKg(), upi.getHeightCm())))
+            .currencySymbol(user.getWallet().getCurrencySymbol())
+            .currency(user.getWallet().getBalance())
             .build();
         return dto;
     }

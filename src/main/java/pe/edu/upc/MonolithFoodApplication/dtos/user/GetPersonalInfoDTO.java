@@ -18,6 +18,7 @@ import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 @Builder
 public class GetPersonalInfoDTO extends ResponseDTO {
     private String username;
+    private String profileImg;
     private String email;
     private String names;
     private GenderEnum gender;
@@ -26,11 +27,14 @@ public class GetPersonalInfoDTO extends ResponseDTO {
     private Double weightKg;
     private Double heightCm;
     private String imc;
+    private String currencySymbol;
+    private Double currency;
 
     @Builder
-    public GetPersonalInfoDTO(String message, Integer statusCode, ResponseType type, String username, String email, String names, GenderEnum gender, Timestamp borndate, String location, Double weightKg, Double heightCm, String imc) {
+    public GetPersonalInfoDTO(String message, Integer statusCode, ResponseType type, String username, String profileImg, String email, String names, GenderEnum gender, Timestamp borndate, String location, Double weightKg, Double heightCm, String imc, String currencySymbol, Double currency) {
         super(message, statusCode, type);
         this.username = username;
+        this.profileImg = profileImg;
         this.email = email;
         this.names = names;
         this.gender = gender;
@@ -39,6 +43,7 @@ public class GetPersonalInfoDTO extends ResponseDTO {
         this.weightKg = weightKg;
         this.heightCm = heightCm;
         this.imc = imc;
-
+        this.currencySymbol = currencySymbol;
+        this.currency = currency;
     }
 }

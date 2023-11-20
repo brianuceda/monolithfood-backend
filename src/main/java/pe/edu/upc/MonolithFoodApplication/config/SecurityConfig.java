@@ -65,14 +65,6 @@ public class SecurityConfig {
                 .failureHandler((request, response, exception) -> 
                     response.sendRedirect("/login"))
             )
-            // .oauth2Login(oauth2 -> oauth2
-            //     .successHandler((request, response, authentication) -> {
-            //         response.sendRedirect("http://localhost:4200/login");
-            //     })
-            //     .failureHandler((request, response, exception) -> {
-            //         response.sendRedirect("http://localhost:4200/login?error");
-            //     })
-            // )
             // ? Authentication Provider: Es el que se encarga de validar las credenciales de los usuarios ? //
             .authenticationProvider(authProvider)
             .formLogin(withDefaults())

@@ -150,7 +150,7 @@ public class OAuthService {
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         UserEntity user = optUser.get();
         if (user.getIpAddress() != null)
-        return new ResponseDTO("Ya tienes una IP registrada", HttpStatus.OK.value(), ResponseType.INFO);
+            return new ResponseDTO("Ya tienes una IP registrada", HttpStatus.OK.value(), ResponseType.INFO);
         // Guarda la ip
         user.setIpAddress(ipAddress);
         // Genera una nueva billetera para el usuario

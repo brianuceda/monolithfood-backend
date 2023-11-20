@@ -248,7 +248,7 @@ public class EatService {
             return new ResponseDTO("Error al actualizar el registro", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
-
+    
     // * Heather: Quitar un alimento de la lista de alimentos consumidos por un usuario
     @Transactional
     public ResponseDTO deleteFoodIntake(String username, Long eatId) {
@@ -329,11 +329,15 @@ public class EatService {
     // Asigna una categoría de ingesta según la hora de la ingesta
     public CategoryIntakeEnum calculateCategory(LocalDateTime dateTimeOfEat) {
         LocalTime timeOfEat = dateTimeOfEat.toLocalTime();
-        if (timeOfEat.isAfter(LocalTime.of(2, 0)) && timeOfEat.isBefore(LocalTime.of(12, 0)))
+        if (timeOfEat.isBefore(LocalTime.of(12, 0))) {
             return CategoryIntakeEnum.DESAYUNO;
-        else if (timeOfEat.isAfter(LocalTime.of(11, 59, 59, 999)) && timeOfEat.isBefore(LocalTime.of(19, 0)))
+        } else if (timeOfEat.isBefore(LocalTime.of(19, 0))) {
             return CategoryIntakeEnum.ALMUERZO;
-        else
+        } else {
             return CategoryIntakeEnum.CENA;
+        }
+        // Desayuno: 0:00 hasta las 11:59
+        // Almuerzo: 12:00 hasta las 18:59
+        // Cena: 19:00 hasta las 23:59
     }
 }

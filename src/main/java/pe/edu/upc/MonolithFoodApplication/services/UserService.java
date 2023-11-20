@@ -35,7 +35,9 @@ public class UserService {
         UserEntity user = optUser.get();
         return new GetUserDTO(null, 200, null,
             user.getUsername(),
-            user.getProfileImg()
+            user.getProfileImg(),
+            user.getWallet().getCurrencySymbol(),
+            user.getWallet().getBalance()
         );
     }
     // * Naydeline: Actualizar la foto de perfil del usuario

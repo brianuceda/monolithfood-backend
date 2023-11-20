@@ -48,7 +48,6 @@ public class SubscriptionService {
             return new ResponseDTO("No tienes ninguna suscripción", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
         Set<RoleEnum> myRoleNames = myRoles.stream().map(RoleEntity::getName).collect(Collectors.toSet());
-        // Obtiene los roles del servidor y marca los que tiene el usuario
         List<SubscriptionDTO> subscriptionDTOs = allRoles.stream()
             .map(role -> new SubscriptionDTO(
                 null, 
@@ -64,24 +63,26 @@ public class SubscriptionService {
     // * Gabriela: Comprar plan de suscripcion
     @Transactional
     public ResponseDTO purchaseSubscription(String username, SubscriptionRequestDTO subscriptionPlanDTO) {
+        subscriptionPlanDTO.setConfirmed(true);
         if(subscriptionPlanDTO.getConfirmed() == true) {
-            // Verifica que el usuario exista
             Optional<UserEntity> optUser = userRepository.findByUsername(username);
             if (!optUser.isPresent()) {
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
             }
-            // Verifica que el plan de suscripción exista
             Optional<RoleEntity> role = roleRepository.findByName(subscriptionPlanDTO.getSubscriptionPlan());
             if(!role.isPresent()) {
                 logger.error("Plan de suscripción no encontrado para el usuario: " + username);
                 return new ResponseDTO("El plan de suscripción no existe", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
             }
             UserEntity user = optUser.get();
-            // Verifica que el usuario no tenga el rol que ha elegido actualmente
             if(user.getRoles().contains(role.get())) {
                 return new ResponseDTO("Ya cuentas con ese plan de suscripción", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
             }
+            if(user.getWallet().getBalance() < role.get().getPrice()) {
+                return new ResponseDTO("Saldo insuficiente", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
+            }
             user.getRoles().add(role.get());
+            user.getWallet().setBalance(user.getWallet().getBalance() - role.get().getPrice());
             userRepository.save(user);
             logger.info("El usuario " + username + " ha comprado el plan de suscripción " + subscriptionPlanDTO.getSubscriptionPlan());
             return new ResponseDTO("Plan de suscripción adquirido exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
@@ -93,31 +94,24 @@ public class SubscriptionService {
     @Transactional
     public ResponseDTO cancelSubscription(String username, SubscriptionRequestDTO subscriptionPlanDTO) {
         if(subscriptionPlanDTO.getConfirmed() == true) {
-            // Verifica que el usuario exista
             Optional<UserEntity> optUser = userRepository.findByUsername(username);
             if (!optUser.isPresent()) {
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
             }
-            // Verifica que el plan de suscripción exista
             Optional<RoleEntity> optRole = roleRepository.findByName(subscriptionPlanDTO.getSubscriptionPlan());
             if(!optRole.isPresent()) {
                 return new ResponseDTO("El plan de suscripción no existe", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
             }
             UserEntity user = optUser.get();
             RoleEntity role = optRole.get();
-            // Verifica que el usuario tenga el rol que ha elegido actualmente
             if(!user.getRoles().contains(role)) {
                 return new ResponseDTO("No cuentas con ese plan de suscripción", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
             }
-            // Verifica que el rol que está intentando suspender el usuario, no sea su único rol (siempre debe tener al menos uno)
             if(user.getRoles().size() == 1) {
                 return new ResponseDTO("No puedes suspender tu único plan de suscripción", HttpStatus.NOT_FOUND.value(), ResponseType.INFO);
             }
-            // Elimina el rol del usuario
             user.getRoles().remove(role);
-            // Guarda el usuario en la base de datos
             userRepository.save(user);
-            // Retorna el plan de suscripción eliminado
             logger.info("El usuario " + username + " suspendió su plan de suscripción " + role.getName() + " correctamente.");
             return new ResponseDTO("Plan de suscripción suspendido exitosamente", HttpStatus.OK.value(), ResponseType.SUCCESS);
         } else {
