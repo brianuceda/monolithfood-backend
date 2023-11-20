@@ -33,7 +33,7 @@ public class AuthController {
     private final AuthService authService;
     private final OAuthService oAuthService;
     private final JwtService jwtService;
-    private final String redirectOauth2Url = "http://localhost:4200/oauth-callback";
+    private final String redirectOauth2Url = "https://monolithfood.site/oauth-callback";
 
     // * Brian (Auth)
     @PostMapping("/login")

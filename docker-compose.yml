@@ -31,7 +31,7 @@ services:
     depends_on:
       - springbootapp
     ports:
-      - "80:4200"
+      - "80:80"
 
 volumes:
   postgres:
