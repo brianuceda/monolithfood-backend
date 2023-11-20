@@ -95,6 +95,17 @@ public class UserPersonalInfoService {
         UserPersonalInfoEntity upi = user.getUserPersonalInfo();
         if (upi == null || upi.getWeightKg() == null || upi.getHeightCm() == null)
             return new ResponseDTO("Debes registrar tu información personal", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+
+        // ! MODIFICAR CUANDO SE ARREGLE EL INICIO POR OAUTH2
+
+        String currencySymbol = "S/.";
+        Double currency = 0.0;
+
+        if (user.getWallet() != null) {
+            currencySymbol = user.getWallet().getCurrencySymbol();
+            currency = user.getWallet().getBalance();
+        }
+
         GetPersonalInfoDTO dto = GetPersonalInfoDTO.builder()
             .message(null)
             .statusCode(200)
@@ -108,8 +119,8 @@ public class UserPersonalInfoService {
             .weightKg(upi.getWeightKg())
             .heightCm(upi.getHeightCm())
             .imc(String.format("%.2f", calculateIMC(upi.getWeightKg(), upi.getHeightCm())) + " % | " + getClasification(calculateIMC(upi.getWeightKg(), upi.getHeightCm())))
-            .currencySymbol(user.getWallet().getCurrencySymbol())
-            .currency(user.getWallet().getBalance())
+            .currencySymbol(currencySymbol)
+            .currency(currency)
             .build();
         return dto;
     }

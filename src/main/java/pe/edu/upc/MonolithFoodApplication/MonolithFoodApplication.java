@@ -40,6 +40,7 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserFitnessInfoEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserPersonalInfoEntity;
+import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
 import pe.edu.upc.MonolithFoodApplication.enums.CategoryIntakeEnum;
 import pe.edu.upc.MonolithFoodApplication.enums.GenderEnum;
 import pe.edu.upc.MonolithFoodApplication.enums.RoleEnum;
@@ -60,6 +61,7 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserConfigRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserFitnessInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserPersonalInfoRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.WalletRepository;
 
 @SpringBootApplication
 public class MonolithFoodApplication {
@@ -86,7 +88,7 @@ public class MonolithFoodApplication {
         UserPersonalInfoRepository userPersonalInfoRepository,
         UserFitnessInfoRepository userFitnessInfoRepository,
         UserConfigRepository userConfigRepository,
-        // IpLoginAttemptRepository ipLoginAttemptRepository,
+        WalletRepository walletRepository,
         EatRepository eatRepository
     ){
         return args -> {
@@ -105,7 +107,7 @@ public class MonolithFoodApplication {
             List<UserPersonalInfoEntity> usersPersonalInfos = new ArrayList<>();
             List<UserFitnessInfoEntity> usersFitnessInfos = new ArrayList<>();
             List<UserConfigEntity> usersConfig = new ArrayList<>();
-            // List<IpLoginAttemptEntity> ipsLoginsAttempts = new ArrayList<>();
+            List<WalletEntity> wallets = new ArrayList<>(); 
             List<EatEntity> eats = new ArrayList<>();
 
             if(activityLevelRepository.count() == 0) {
@@ -775,6 +777,17 @@ public class MonolithFoodApplication {
                     }
                 }
                 eatRepository.saveAll(eats);
+            }
+            if (walletRepository.count() == 0) {
+                for (UserEntity user : users) {
+                    WalletEntity wallet = new WalletEntity();
+                    wallet.setBalance(0.0);
+                    wallet.setCurrency("PEN");
+                    wallet.setCurrencyName("Sol");
+                    wallet.setCurrencySymbol("S/.");
+                    wallets.add(wallet);
+                }
+                walletRepository.saveAll(wallets);
             }
         };
     }

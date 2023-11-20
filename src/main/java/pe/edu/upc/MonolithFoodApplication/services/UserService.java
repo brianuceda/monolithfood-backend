@@ -31,13 +31,23 @@ public class UserService {
             logger.error("Usuario no encontrado");
             return new ResponseDTO("Usuario no encontrado", HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }
-        // Retorna la información del usuario
         UserEntity user = optUser.get();
+
+        // ! MODIFICAR CUANDO SE ARREGLE EL INICIO POR OAUTH2
+
+        String currencySymbol = "S/.";
+        Double currency = 0.0;
+
+        if (user.getWallet() != null) {
+            currencySymbol = user.getWallet().getCurrencySymbol();
+            currency = user.getWallet().getBalance();
+        }
+
         return new GetUserDTO(null, 200, null,
             user.getUsername(),
             user.getProfileImg(),
-            user.getWallet().getCurrencySymbol(),
-            user.getWallet().getBalance()
+            currencySymbol,
+            currency
         );
     }
     // * Naydeline: Actualizar la foto de perfil del usuario
