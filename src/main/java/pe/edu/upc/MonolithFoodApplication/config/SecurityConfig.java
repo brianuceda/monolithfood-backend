@@ -28,7 +28,7 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired
     private AuthenticationProvider authProvider;
-    private static final String[] ALLOWED_ORIGINS = { "https://monolithfood.site" };
+    // private static final String[] ALLOWED_ORIGINS = { "https://monolithfood.site" };
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -78,7 +78,7 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(ALLOWED_ORIGINS);
+                registry.addMapping("/**").allowedOrigins("*");
             }
         };
     }
