@@ -39,7 +39,8 @@ public class SecurityConfig {
             // .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(Arrays.asList(ALLOWED_ORIGINS));
+                // configuration.setAllowedOrigins(Arrays.asList(ALLOWED_ORIGINS));
+				configuration.setAllowedOrigins(Arrays.asList("*"));
                 configuration.setAllowedMethods(Arrays.asList(
                     HttpMethod.GET.name(),
                     HttpMethod.POST.name(),
@@ -77,7 +78,8 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins(ALLOWED_ORIGINS);
+                // registry.addMapping("/**").allowedOrigins(ALLOWED_ORIGINS);
+                registry.addMapping("/**").allowedOrigins("*");
             }
         };
     }
