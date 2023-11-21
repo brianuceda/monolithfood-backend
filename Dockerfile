@@ -15,7 +15,7 @@ FROM openjdk:17-jdk-slim
 COPY --from=build target/MonolithFoodApplication-0.0.1-SNAPSHOT.jar /app.jar
 
 # Exponer el puerto
-EXPOSE 80
+EXPOSE 8080
 
 # Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "/app.jar"]
