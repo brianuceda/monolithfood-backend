@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,9 @@ public class EatService {
     private final FoodRepository foodRepository;
     private static final Logger logger = LoggerFactory.getLogger(EatService.class);
     public static int hoursToSubtract = 5;
+
+    @Value("${app.production}")
+    private Boolean isInProduction;
     
     // * Heather: Obtener todos los macronutrientes consumidos, por consumir y su porcentaje de consumo actual
     public ResponseDTO getMacrosDetailed(String username, LocalDateTime startDate, LocalDateTime endDate, Boolean isSeparatedSearch) {
@@ -329,6 +333,10 @@ public class EatService {
     // Asigna una categoría de ingesta según la hora de la ingesta
     public CategoryIntakeEnum calculateCategory(LocalDateTime dateTimeOfEat) {
         LocalTime timeOfEat = dateTimeOfEat.toLocalTime();
+
+        if (isInProduction)
+            timeOfEat = timeOfEat.minusHours(hoursToSubtract);
+
         if (timeOfEat.isBefore(LocalTime.of(12, 0))) {
             return CategoryIntakeEnum.DESAYUNO;
         } else if (timeOfEat.isBefore(LocalTime.of(19, 0))) {

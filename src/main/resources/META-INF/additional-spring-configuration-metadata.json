@@ -24,6 +24,11 @@
       "name": "app.security.reset-attempt-duration-minutes",
       "type": "java.lang.String",
       "description": "A description for 'app.security.reset-attempt-duration-minutes'"
+    },
+    {
+      "name": "app.production",
+      "type": "java.lang.String",
+      "description": "A description for 'app.production'"
     }
   ]
 }

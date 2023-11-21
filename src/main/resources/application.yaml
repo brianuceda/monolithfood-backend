@@ -57,6 +57,7 @@ jwt:
     expiration: 604800000
 
 app:
+  production: true
   security:
     max-attempts-login: 5
     ip-block-duration-hours: 24
