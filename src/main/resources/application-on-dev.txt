@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgresdb:5432/monolithfooddb
+    url: jdbc:postgresql://localhost:5432/monolithfooddb
     username: postgres
-    password: MonolithFood12345
+    password: password
     driver-class-name: org.postgresql.Driver
     hikari:
       maxLifetime: 150000
@@ -11,6 +11,10 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+
   security:
     oauth2:
       client:
@@ -23,35 +27,52 @@ spring:
             jwk-set-uri: https://login.microsoftonline.com/common/discovery/v2.0/keys
         registration:
           github:
-            client-id: d6899d99d573fc62ebed
-            client-secret: c8131984cc6b0f468a9352e84206d3b1356d95be
+            client-id: 05c987ca9693827bf0b1
+            client-secret: 8ba4b8e24e80850fc6ce1ef4c2555ee46f699243
             scope:
               - user:email
               - public_profile
           google:
-            client-id: 878340215935-p8jmav6gekqe55c0ui2k6pod8qrovq7t.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 581918068833-46k96hi71htq0770qbb66b38ebs5lbr8.apps.googleusercontent.com
+            client-secret: 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
           microsoft:
-            client-id: 067372bc-d979-4735-b9e5-33f94b243e07
-            client-secret: m~c8Q~u9oUtDc4PFjijAcy3IZJQ_nH9G-Jc~ccoG
+            client-id: f25f039f-cc02-4553-88b7-783f59930c7f
+            client-secret: tDP8Q~RBG0C4lCUWe663Tz1izJfWq_OgNp3Qublb
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/microsoft"
+            redirect-uri: "https://monolithcards.site/login/oauth2/code/microsoft"
             scope: User.Read
             client-name: Microsoft
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /doc/swagger-ui/index.html
+
 jwt:
   secret:
     key: 81db10483eac754b379a518496151643a777SAD78A434AS22162d6811d11f303ef
   time:
     expiration: 604800000
+
 app:
+  production: true
   security:
     max-attempts-login: 5
     ip-block-duration-hours: 24
     reset-attempt-duration-minutes: 10
+
 logging:
   level:
     org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
       springframework:
         security: TRACE
+
 server:
   port: 8080
