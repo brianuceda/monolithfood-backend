@@ -54,7 +54,7 @@ public class SecurityConfig {
             }))
             // ? Permite o bloquea la conexión a los endpoints ? //
             .authorizeHttpRequests(authRequest -> {
-                authRequest.requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll();
+                authRequest.requestMatchers("/auth/**", "/oauth2/**").permitAll();
                 authRequest.requestMatchers("/favicon.ico", "/error").permitAll(); // OAuth2
                 authRequest.requestMatchers("/v3/api-docs/**").permitAll(); // Swagger API
                 authRequest.requestMatchers("/doc/swagger-ui/**").permitAll(); // Swagger UI
