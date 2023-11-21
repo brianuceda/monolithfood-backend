@@ -28,6 +28,7 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired
     private AuthenticationProvider authProvider;
+    private static final String[] ALLOWED_ORIGINS = { "https://monolithfood.site" };
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +39,7 @@ public class SecurityConfig {
             // .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration configuration = new CorsConfiguration();
-                // Define los métodos permitidos
+                configuration.setAllowedOrigins(Arrays.asList(ALLOWED_ORIGINS));
                 configuration.setAllowedMethods(Arrays.asList(
                     HttpMethod.GET.name(),
                     HttpMethod.POST.name(),
@@ -47,8 +48,6 @@ public class SecurityConfig {
                     HttpMethod.PATCH.name(),
                     HttpMethod.OPTIONS.name()
                 ));
-                // Permite cualquier origen y cualquier encabezado
-                configuration.setAllowedOrigins(Arrays.asList("*"));
                 configuration.setAllowedHeaders(Arrays.asList("*"));
                 return configuration;
             }))
@@ -72,13 +71,13 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
-    
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("https://monolithfood.site");
+                registry.addMapping("/**").allowedOrigins(ALLOWED_ORIGINS);
             }
         };
     }
