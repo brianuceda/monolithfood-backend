@@ -24,14 +24,5 @@ services:
     ports:
       - "8080:8080"
 
-  angularapp:
-    build:
-      context: ../MonolithFoodFrontend
-      dockerfile: Dockerfile
-    depends_on:
-      - springbootapp
-    ports:
-      - "80:80"
-
 volumes:
   postgres:
