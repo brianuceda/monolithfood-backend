@@ -39,7 +39,7 @@ spring:
             client-id: f25f039f-cc02-4553-88b7-783f59930c7f
             client-secret: tDP8Q~RBG0C4lCUWe663Tz1izJfWq_OgNp3Qublb
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/microsoft"
+            redirect-uri: "https://monolithcards.site/login/oauth2/code/microsoft"
             scope: User.Read
             client-name: Microsoft
 
