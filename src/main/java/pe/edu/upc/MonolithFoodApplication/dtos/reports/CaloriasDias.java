@@ -10,13 +10,17 @@ import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 @Setter
 @NoArgsConstructor
 public class CaloriasDias extends ResponseDTO {
-    private Double domingo;
-    private Double lunes;
-    private Double martes;
-    private Double miercoles;
-    private Double jueves;
-    private Double viernes;
-    private Double sabado;
+    private Double domingo = 0.0;
+    private Double lunes = 0.0;
+    private Double martes = 0.0;
+    private Double miercoles = 0.0;
+    private Double jueves = 0.0;
+    private Double viernes = 0.0;
+    private Double sabado = 0.0;
+
+    public CaloriasDias(String message, Integer statusCode, ResponseType type) {
+        super(message, statusCode, type);
+    }
 
     public CaloriasDias(Double domingo, Double lunes, Double martes, Double miercoles, Double jueves,
             Double viernes, Double sabado) {
@@ -40,5 +44,25 @@ public class CaloriasDias extends ResponseDTO {
         this.jueves = jueves;
         this.viernes = viernes;
         this.sabado = sabado;
+    }
+
+    public void setValuesOfObjectList(Object[] result) {
+        this.domingo = (Double) result[0];
+        this.lunes = (Double) result[1];
+        this.martes = (Double) result[2];
+        this.miercoles = (Double) result[3];
+        this.jueves = (Double) result[4];
+        this.viernes = (Double) result[5];
+        this.sabado = (Double) result[6];
+    }
+
+    public void setToCeroAllValues() {
+        this.domingo = 0.0;
+        this.lunes = 0.0;
+        this.martes = 0.0;
+        this.miercoles = 0.0;
+        this.jueves = 0.0;
+        this.viernes = 0.0;
+        this.sabado = 0.0;
     }
 }

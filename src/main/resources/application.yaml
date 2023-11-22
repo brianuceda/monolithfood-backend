@@ -1,8 +1,14 @@
 spring:
   datasource:
+    # ! Production
     url: jdbc:postgresql://postgresdb:5432/monolithfooddb
     username: postgres
     password: MonolithFood12345
+    # ! Development
+    # url: jdbc:postgresql://localhost:5432/monolithfooddb
+    # username: postgres
+    # password: 40se02j7
+    # Other configurations
     driver-class-name: org.postgresql.Driver
     hikari:
       maxLifetime: 150000
@@ -57,6 +63,7 @@ jwt:
     expiration: 604800000
 
 app:
+  # ! Production
   production: true
   security:
     max-attempts-login: 5

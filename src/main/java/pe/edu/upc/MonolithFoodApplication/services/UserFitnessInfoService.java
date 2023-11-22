@@ -317,25 +317,25 @@ public class UserFitnessInfoService {
         
         if (!results.isEmpty()) {
             Object[] result = results.get(0);
-            System.out.println(results.get(0));
-            CaloriasDias caloriasDias = new CaloriasDias(
-                ((Number) result[0]).doubleValue(),
-                ((Number) result[1]).doubleValue(),
-                ((Number) result[2]).doubleValue(),
-                ((Number) result[3]).doubleValue(),
-                ((Number) result[4]).doubleValue(),
-                ((Number) result[5]).doubleValue(),
-                ((Number) result[6]).doubleValue()
-            );
-            return new CaloriasDias(
-                null, HttpStatus.OK.value(), null,
-                caloriasDias.getDomingo(),
-                caloriasDias.getLunes(),
-                caloriasDias.getMartes(),
-                caloriasDias.getMiercoles(),
-                caloriasDias.getJueves(),
-                caloriasDias.getViernes(),
-                caloriasDias.getSabado());
+
+            CaloriasDias caloriasDias = new CaloriasDias(null, HttpStatus.OK.value(), null);
+
+            // Verifica que no haya valores nulos
+            boolean isAllNull = true;
+            for (int i = 0; i < result.length; i++) {
+                if (result[i] == null) {
+                    isAllNull = false;
+                    break;
+                }
+            }
+
+            if (isAllNull) {
+                caloriasDias.setValuesOfObjectList(result);
+            } else {
+                caloriasDias.setToCeroAllValues();
+            }
+
+            return caloriasDias;
         } else {
             return new ResponseDTO(null, HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
         }

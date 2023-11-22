@@ -577,9 +577,9 @@ public class MonolithFoodApplication {
             }
             if(roleRepository.count() == 0) {
                 roles = Arrays.asList(
-                    new RoleEntity(null, RoleEnum.ADMIN, "Role de Administrador", 0.0),
-                    new RoleEntity(null, RoleEnum.USER, "Rol de Usuario", 0.0),
-                    new RoleEntity(null, RoleEnum.VIP, "Role Vip", 30.0)
+                    new RoleEntity(null, RoleEnum.ADMIN, "Como administrador, tendrás el control total del sistema con acceso a herramientas avanzadas\nGestión y supervisión de toda la actividad de la plataforma\nAcceso a todas las funcionalidades disponibles en el Plan Básico\nCapacidad para crear y compartir alimentos o recetas con otros usuarios\nExportación de reportes en formato CSV o PDF para análisis detallados\nAcceso a herramientas de comparación avanzadas, reportes detallados y gráficos de progreso\nPosibilidad de ajustar planes y objetivos\nFacilidades para la implementación y gestión de contenido exclusivo en la plataforma", 0.0),
+                    new RoleEntity(null, RoleEnum.USER, "Registra tu ingesta y monitorea tu progreso con funciones esenciales\nSeguimiento de ingesta\nCálculos basados en tus objetivos nutricionales\nCálculos basados en tu nivel de actividad física\nAcceso a una amplia gama de alimentos y recetas\nReportes básicos de progreso", 0.0),
+                    new RoleEntity(null, RoleEnum.VIP, "Maximiza tu experiencia con herramientas avanzadas, soporte pers\nTodas las funcionalidades del Plan Básico\nCrear y compartir alimentos o recetas\nExportar reportes en formato CSV o PDF\nComparación, reportes y gráficos de progreso\nSugerencias de comidas basadas en objetivos\nSeguimiento de progreso personalizado\nSoporte tecnológico prioritario", 30.0)
                 );
                 roleRepository.saveAll(roles);
             }
