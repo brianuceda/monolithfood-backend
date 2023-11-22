@@ -1,8 +1,12 @@
 package pe.edu.upc.MonolithFoodApplication.services;
 
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -23,6 +27,7 @@ import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoResponseDT
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectiveDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectivesResponseDTO;
+import pe.edu.upc.MonolithFoodApplication.dtos.reports.CaloriasDias;
 import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
@@ -280,7 +285,7 @@ public class UserFitnessInfoService {
         userRepository.save(user);
         if (!isCalledFromMethod) {
             return new FitnessInfoResponseDTO(
-                "Información fitness calculada", HttpStatus.OK.value(), ResponseType.SUCCESS,
+                "null", HttpStatus.OK.value(), null,
                 upi.getGender(), age,
                 upi.getHeightCm(),
                 upi.getWeightKg(),
@@ -298,6 +303,42 @@ public class UserFitnessInfoService {
             );
         }
         return null;
+    }
+
+    // * Reportes
+    public ResponseDTO getCaloriesReport(String username) {
+        // Ajusta al inicio del día (domingo) a las 00:00 horas
+        LocalDateTime startWeekDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).atStartOfDay();
+        // Ajusta al final del día (sábado) a las 23:59:59.999999999 horas
+        LocalDateTime endWeekDate = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).atTime(LocalTime.MAX);
+        
+        List<Object[]> results = userFitnessInfoRepository.findCaloriesPerDaysNative(
+            username, startWeekDate, endWeekDate);
+        
+        if (!results.isEmpty()) {
+            Object[] result = results.get(0);
+            System.out.println(results.get(0));
+            CaloriasDias caloriasDias = new CaloriasDias(
+                ((Number) result[0]).doubleValue(),
+                ((Number) result[1]).doubleValue(),
+                ((Number) result[2]).doubleValue(),
+                ((Number) result[3]).doubleValue(),
+                ((Number) result[4]).doubleValue(),
+                ((Number) result[5]).doubleValue(),
+                ((Number) result[6]).doubleValue()
+            );
+            return new CaloriasDias(
+                null, HttpStatus.OK.value(), null,
+                caloriasDias.getDomingo(),
+                caloriasDias.getLunes(),
+                caloriasDias.getMartes(),
+                caloriasDias.getMiercoles(),
+                caloriasDias.getJueves(),
+                caloriasDias.getViernes(),
+                caloriasDias.getSabado());
+        } else {
+            return new ResponseDTO(null, HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+        }
     }
 
     // ? Funciones auxiliares

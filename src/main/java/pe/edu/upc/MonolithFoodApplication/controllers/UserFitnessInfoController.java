@@ -94,6 +94,14 @@ public class UserFitnessInfoController {
         ResponseDTO response = userFitnessInfoService.calcFitnessInfo(username, false);
         return validateResponse(response);
     }
+    // * Reportes
+    // Get: Obtener reporte de calorías por día de todos los dias en un ListCaloriasDia
+    @GetMapping("/reports/calories")
+    public ResponseEntity<?> getCaloriesReport(@RequestHeader("Authorization") String bearerToken) {
+        String username = jwtService.getUsernameFromBearerToken(bearerToken);
+        ResponseDTO response = userFitnessInfoService.getCaloriesReport(username);
+        return validateResponse(response);
+    }
 
     // * Responder a la petición con el código de estado y el mensaje correspondiente
     private ResponseEntity<?> validateResponse(ResponseDTO response) {
