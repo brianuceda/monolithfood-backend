@@ -27,7 +27,8 @@ import pe.edu.upc.MonolithFoodApplication.dtos.fitnessinfo.FitnessInfoResponseDT
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectiveDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.objectives.ObjectivesResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.reports.CaloriasDias;
+import pe.edu.upc.MonolithFoodApplication.dtos.reports.MacrosPerDays;
+import pe.edu.upc.MonolithFoodApplication.dtos.reports.MacrosPerWeek;
 import pe.edu.upc.MonolithFoodApplication.entities.ActivityLevelEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.ObjectiveEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
@@ -306,39 +307,41 @@ public class UserFitnessInfoService {
     }
 
     // * Reportes
-    public ResponseDTO getCaloriesReport(String username) {
+    public ResponseDTO getMacrosReport(String username) {
         // Ajusta al inicio del día (domingo) a las 00:00 horas
         LocalDateTime startWeekDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).atStartOfDay();
         // Ajusta al final del día (sábado) a las 23:59:59.999999999 horas
         LocalDateTime endWeekDate = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).atTime(LocalTime.MAX);
         
-        List<Object[]> results = userFitnessInfoRepository.findCaloriesPerDaysNative(
-            username, startWeekDate, endWeekDate);
-        
-        if (!results.isEmpty()) {
+        MacrosPerWeek macrosPerWeek = new MacrosPerWeek();
+        macrosPerWeek.setCalories(getMacrosPerDays(username, "Calorias", startWeekDate, endWeekDate));
+        macrosPerWeek.setProteins(getMacrosPerDays(username, "Proteina", startWeekDate, endWeekDate));
+        macrosPerWeek.setCarbohydrates(getMacrosPerDays(username, "Carbohidratos", startWeekDate, endWeekDate));
+        macrosPerWeek.setFats(getMacrosPerDays(username, "Grasa", startWeekDate, endWeekDate));
+
+        return new MacrosPerWeek(null, HttpStatus.OK.value(), ResponseType.SUCCESS, macrosPerWeek.getCalories(), macrosPerWeek.getProteins(), macrosPerWeek.getCarbohydrates(), macrosPerWeek.getFats());
+    }
+
+    private MacrosPerDays getMacrosPerDays(String username, String nutrientSearch, LocalDateTime startWeekDate, LocalDateTime endWeekDate) {
+        List<Object[]> results = userFitnessInfoRepository.getMacrosReport(username, nutrientSearch, startWeekDate, endWeekDate);
+        if (!results.isEmpty() && results.get(0) != null) {
             Object[] result = results.get(0);
-
-            CaloriasDias caloriasDias = new CaloriasDias(null, HttpStatus.OK.value(), null);
-
-            // Verifica que no haya valores nulos
-            boolean isAllNull = true;
-            for (int i = 0; i < result.length; i++) {
-                if (result[i] == null) {
-                    isAllNull = false;
-                    break;
-                }
-            }
-
-            if (isAllNull) {
-                caloriasDias.setValuesOfObjectList(result);
-            } else {
-                caloriasDias.setToCeroAllValues();
-            }
-
-            return caloriasDias;
+            return new MacrosPerDays(
+                asDouble(result[0]), 
+                asDouble(result[1]), 
+                asDouble(result[2]), 
+                asDouble(result[3]), 
+                asDouble(result[4]), 
+                asDouble(result[5]), 
+                asDouble(result[6])
+            );
         } else {
-            return new ResponseDTO(null, HttpStatus.NOT_FOUND.value(), ResponseType.ERROR);
+            return new MacrosPerDays(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         }
+    }
+    
+    private Double asDouble(Object value) {
+        return value != null ? Double.valueOf(String.format("%.2f", value)) : 0.0;
     }
 
     // ? Funciones auxiliares

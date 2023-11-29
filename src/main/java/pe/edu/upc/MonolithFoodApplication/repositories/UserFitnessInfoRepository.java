@@ -26,11 +26,12 @@ public interface UserFitnessInfoRepository extends JpaRepository<UserFitnessInfo
        "INNER JOIN food f ON e.food_id = f.id " +
        "INNER JOIN composition_food cf ON f.id = cf.food_id " +
        "INNER JOIN nutrient n ON cf.nutrient_id = n.id " +
-       "WHERE u.username = :username AND n.name = 'Calorias' AND " +
+       "WHERE u.username = :username AND n.name = :nutrientSearch AND " +
        "e.date BETWEEN :startWeekDate AND :endWeekDate", 
        nativeQuery = true)
-    List<Object[]> findCaloriesPerDaysNative(
+    List<Object[]> getMacrosReport(
         @Param("username") String username,
+        @Param("nutrientSearch") String nutrientSearch,
         @Param("startWeekDate") LocalDateTime startWeekDate,
         @Param("endWeekDate") LocalDateTime endWeekDate);
 }

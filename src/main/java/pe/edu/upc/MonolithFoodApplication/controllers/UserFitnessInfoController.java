@@ -99,7 +99,7 @@ public class UserFitnessInfoController {
     @GetMapping("/reports/calories")
     public ResponseEntity<?> getCaloriesReport(@RequestHeader("Authorization") String bearerToken) {
         String username = jwtService.getUsernameFromBearerToken(bearerToken);
-        ResponseDTO response = userFitnessInfoService.getCaloriesReport(username);
+        ResponseDTO response = userFitnessInfoService.getMacrosReport(username);
         return validateResponse(response);
     }
 
