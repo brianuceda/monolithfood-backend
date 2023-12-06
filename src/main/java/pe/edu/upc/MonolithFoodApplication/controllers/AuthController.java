@@ -28,12 +28,12 @@ import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "**", allowedHeaders = "**")
+@CrossOrigin(origins = { "https://monolithfood.vercel.app" }, allowedHeaders = "**")
 public class AuthController {
     private final AuthService authService;
     private final OAuthService oAuthService;
     private final JwtService jwtService;
-    private final String redirectOauth2Url = "https://monolithfood.site/oauth-callback";
+    private final String redirectOauth2Url = "https://monolithfood.vercel.app/oauth-callback";
 
     // * Brian (Auth)
     @PostMapping("/login")

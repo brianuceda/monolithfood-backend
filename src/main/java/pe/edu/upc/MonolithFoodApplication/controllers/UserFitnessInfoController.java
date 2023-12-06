@@ -26,7 +26,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserFitnessInfoService;
 @RequiredArgsConstructor
 @RequestMapping("/user/fitness")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
-@CrossOrigin(origins = "**", allowedHeaders = "**")
+@CrossOrigin(origins = { "https://monolithfood.vercel.app" }, allowedHeaders = "**")
 public class UserFitnessInfoController {
     private final UserFitnessInfoService userFitnessInfoService;
     private final JwtService jwtService;

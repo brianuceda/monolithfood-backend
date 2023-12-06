@@ -28,19 +28,15 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired
     private AuthenticationProvider authProvider;
-    // private static final String[] ALLOWED_ORIGINS = { "https://monolithfood.site" };
+    private static final String[] ALLOWED_ORIGINS = { "https://monolithfood.vercel.app" };
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            // ? CSRF: Es el que se encarga de manejar los tokens CSRF (Spring Security) ? //
             .csrf(csrf -> csrf.disable())
-            // ? CORS: Permite que la aplicación acepte solicitudes CORS de cualquier origen (*) para métodos HTTP comunes (GET, HEAD, POST) ? //
-            // .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration configuration = new CorsConfiguration();
-                // configuration.setAllowedOrigins(Arrays.asList(ALLOWED_ORIGINS));
-				configuration.setAllowedOrigins(Arrays.asList("*"));
+                configuration.setAllowedOrigins(Arrays.asList(ALLOWED_ORIGINS));
                 configuration.setAllowedMethods(Arrays.asList(
                     HttpMethod.GET.name(),
                     HttpMethod.POST.name(),
@@ -56,8 +52,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(authRequest -> {
                 authRequest.requestMatchers("/auth/**", "/oauth2/**").permitAll();
                 authRequest.requestMatchers("/favicon.ico", "/error").permitAll(); // OAuth2
-                authRequest.requestMatchers("/v3/api-docs/**").permitAll(); // Swagger API
-                authRequest.requestMatchers("/doc/swagger-ui/**").permitAll(); // Swagger UI
                 authRequest.anyRequest().authenticated();
             })
             // ? Oauth2 Login
@@ -78,7 +72,7 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
+                registry.addMapping("/**").allowedOrigins(ALLOWED_ORIGINS);
             }
         };
     }

@@ -19,12 +19,11 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 public class ApplicationConfig {
     private final UserRepository userRepository;
 
-    // ? AuthenticationManager ? //
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    // ? AuthenticationProvider ? //
+    
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -32,14 +31,13 @@ public class ApplicationConfig {
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
-    // ? UserDetailsService ? //
+    
     @Bean
     public UserDetailsService userDetailService() {
-        // Si el usuario no se encuentra en la BD, lanza una excepción de tipo UsernameNotFoundException.
         return username -> userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado."));
     }
-    // ? PasswordEncoder ? //
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -1,9 +1,0 @@
-# Development
-url: jdbc:postgresql://localhost:5432/monolithfooddb
-username: postgres
-password: password
-
-# Production
-url: jdbc:postgresql://postgresdb:5432/monolithfooddb
-username: postgres
-password: MonolithFood12345
