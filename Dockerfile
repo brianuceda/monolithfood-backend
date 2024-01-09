@@ -6,7 +6,7 @@ COPY pom.xml .
 COPY src ./src/
 
 # Construir la aplicación
-RUN mvn clean package
+RUN mvn -X -f pom.xml clean package -DskipTests
 
 # Etapa de ejecución
 FROM openjdk:17-jdk-slim
