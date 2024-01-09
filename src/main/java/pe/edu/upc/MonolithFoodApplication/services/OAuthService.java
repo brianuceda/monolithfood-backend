@@ -20,11 +20,13 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.WalletRepository;
 
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
     private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
     private final JwtService jwtService;
     private final AuthService authService;
     private static final Logger logger = LoggerFactory.getLogger(OAuthService.class);
@@ -111,6 +113,7 @@ public class OAuthService {
                 .userConfig(uc)
                 .roles(authService.setRoleUser())
                 .build();
+                
             // Iniciar sesion o registrar
             Optional<UserEntity> oAuthUser = userRepository.findByOauthProviderId(oa2.getOauthProviderId());
             if (oAuthUser.isPresent())
@@ -134,6 +137,20 @@ public class OAuthService {
         return new AuthResponseDTO("Inicio de sesión exitoso", HttpStatus.OK.value(), ResponseType.SUCCESS, generatedToken, user.getUserConfig().getDarkMode());
     }
     public ResponseDTO oAuth2Register(UserEntity user) {
+
+        // Genera y guarda una nueva billetera
+        WalletEntity wallet = WalletEntity.builder()
+            .balance(0.0)
+            .currency("PEN")
+            .currencyName("Sol")
+            .currencySymbol("S/.")
+            .build();
+        // walletRepository.save(wallet);
+
+        // Asigna la billetera al usuario
+        // user.setWallet(walletRepository.findById(wallet.getId()).get());
+        user.setWallet(wallet);
+
         userRepository.save(user);
         String profileStage = "information";
         String generatedToken = jwtService.genToken(user, profileStage);
@@ -153,15 +170,6 @@ public class OAuthService {
         String ipAddress = AuthService.getClientIp();
 
         user.setIpAddress(ipAddress);
-
-        // Genera una nueva billetera
-        WalletEntity wallet = WalletEntity.builder()
-            .balance(0.0)
-            .currency("PEN")
-            .currencyName("Sol")
-            .currencySymbol("S/.")
-            .build();
-        user.setWallet(wallet);
 
         userRepository.save(user);
         return new ResponseDTO(null, 200, null);
