@@ -22,7 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
@@ -52,6 +55,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    
     // Variables de entorno
     @Value("${app.security.ip-block-duration-hours}")
     private Integer IP_BLOCK_DURATION_HOURS;
@@ -63,12 +67,15 @@ public class AuthService {
     // * Brian: Iniciar sesión
     @Transactional
     public ResponseDTO login(LoginRequestDTO request) {
+        String ipAddress = getClientIp();
+
         try {
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
             if (userEntity != null) {
                 // Verificar si la IP está bloqueada
-                if (isIpBlocked(request.getIpAddress(), userEntity)) {
-                    logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", request.getIpAddress(), request.getUsername());
+                if (isIpBlocked(ipAddress, userEntity)) {
+                    logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", ipAddress, request.getUsername());
                     return new ResponseDTO("Tu acceso fue bloqueado", 403, ResponseType.ERROR);
                 }
                 if (userEntity.getIsOauthRegistered()) {
@@ -80,7 +87,7 @@ public class AuthService {
             UserEntity user = userRepository.findByUsername(request.getUsername()).get();
             UserConfigEntity userConfig = user.getUserConfig();
             // Reiniciar el contador de intentos fallidos de inicio de sesión
-            IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(request.getIpAddress(), request.getUsername()).orElse(null);
+            IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, request.getUsername()).orElse(null);
             if (attempt != null) {
                 attempt.setAttemptsCount(1);
                 ipLoginAttemptRepository.save(attempt);
@@ -93,7 +100,7 @@ public class AuthService {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
             if (userEntity != null)
-                registerANewFailedAttempt(request.getIpAddress(), userEntity);
+                registerANewFailedAttempt(ipAddress, userEntity);
             return new ResponseDTO("Datos incorrectos", 401, ResponseType.ERROR);
         }
     }
@@ -126,8 +133,11 @@ public class AuthService {
                 .build();
             // Genera una nueva billetera
             WalletEntity wallet = WalletEntity.builder().balance(0.0).build();
+
+            String ipAddress = getClientIp();
+
             try {
-                WalletDTO walletDTO = externalApisService.getWalletFromIp(request.getIpAddress());
+                WalletDTO walletDTO = externalApisService.getWalletFromIp(ipAddress);
                 wallet.setCurrency(walletDTO.getCurrency());
                 wallet.setCurrencySymbol(walletDTO.getCurrencySymbol());
                 wallet.setCurrencyName(walletDTO.getCurrencyName());
@@ -145,7 +155,7 @@ public class AuthService {
                 .profileImg("https://i.ibb.co/28FKMc7/monolithfood-img.png")
                 .isOauthRegistered(false)
                 .isAccountBlocked(false)
-                .ipAddress(request.getIpAddress())
+                .ipAddress(ipAddress)
                 .userConfig(uc)
                 .wallet(wallet)
                 .roles(setRoleUser())
@@ -208,6 +218,7 @@ public class AuthService {
         }
         return null;
     }
+
     private ResponseDTO validarContraseniaSegura(String contrasenia) {
         if (contrasenia.length() < 8) return new ResponseDTO("La contraseña debe tener al menos 8 caracteres", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         boolean tieneLetraMayuscula = false;
@@ -235,6 +246,7 @@ public class AuthService {
             return new ResponseDTO("La contraseña debe contener al menos un carácter especial", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
         return null;
     }
+
     // FUNCIÓN: Registra un intento fallido de inicio de sesión
     private void registerANewFailedAttempt(String ipAddress, UserEntity userEntity) {
         IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
@@ -267,6 +279,7 @@ public class AuthService {
         }
         ipLoginAttemptRepository.save(attempt);
     }
+
     private boolean isIpBlocked(String ipAddress, UserEntity userEntity) {
         IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
         // Si no hay un registro existente en la BD para esta IP y este usuario, la IP
@@ -290,4 +303,26 @@ public class AuthService {
         return attempt.getIsIpBlocked();
     }
 
+    public static String getClientIp() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+        
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+        }
+        
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+
+        if (ipAddress != null && ipAddress.contains(",")) {
+            ipAddress = ipAddress.split(",")[0].trim();
+        }
+
+        return ipAddress;
+    }
 }

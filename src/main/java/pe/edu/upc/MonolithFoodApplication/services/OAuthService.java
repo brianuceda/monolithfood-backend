@@ -143,7 +143,7 @@ public class OAuthService {
     }
     
     @Transactional
-    public ResponseDTO setBasicOauth2Data(String username, String ipAddress) {
+    public ResponseDTO setBasicOauth2Data(String username) {
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent())
@@ -152,6 +152,7 @@ public class OAuthService {
         if (user.getIpAddress() != null)
             return new ResponseDTO("Ya tienes una IP registrada", HttpStatus.OK.value(), ResponseType.INFO);
         // Guarda la ip
+        String ipAddress = AuthService.getClientIp();
         user.setIpAddress(ipAddress);
         // Genera una nueva billetera para el usuario
         WalletDTO walletDTO = externalApisService.getWalletFromIp(ipAddress);

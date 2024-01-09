@@ -26,11 +26,11 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 public class JwtService {
     // ? Atributos
     // Variables de entorno
-    @Value("${jwt.secret.key}")
+    @Value("${JWT_SECRET_KEY}")
     private String SECRET_KEY;
 
-    @Value("${jwt.time.expiration}")
-    private String TIME_EXPIRATION;
+    @Value("${JWT_EXPIRATION_TIME}")
+    private String EXPIRATION_TIME;
     // Blacklist de Tokens
     private Set<String> memoryBackendBlacklistedTokens = new HashSet<>();
 
@@ -57,7 +57,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(TIME_EXPIRATION)))
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(EXPIRATION_TIME)))
                 .signWith(genTokenSign(), SignatureAlgorithm.HS256)
                 .compact();
     }

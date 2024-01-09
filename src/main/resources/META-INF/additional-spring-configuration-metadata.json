@@ -1,34 +1,32 @@
-{
-  "properties": [
-    {
-      "name": "jwt.secret.key",
-      "type": "java.lang.String",
-      "description": "A description for 'jwt.secret.key'"
-    },
-    {
-      "name": "jwt.time.expiration",
-      "type": "java.lang.String",
-      "description": "A description for 'jwt.time.expiration'"
-    },
-    {
-      "name": "app.security.max-attempts-login",
-      "type": "java.lang.String",
-      "description": "A description for 'app.security.max-attempts-login'"
-    },
-    {
-      "name": "app.security.ip-block-duration-hours",
-      "type": "java.lang.String",
-      "description": "A description for 'app.security.ip-block-duration-hours'"
-    },
-    {
-      "name": "app.security.reset-attempt-duration-minutes",
-      "type": "java.lang.String",
-      "description": "A description for 'app.security.reset-attempt-duration-minutes'"
-    },
-    {
-      "name": "app.production",
-      "type": "java.lang.String",
-      "description": "A description for 'app.production'"
-    }
-  ]
-}
+{"properties": [
+  {
+    "name": "JWT_SECRET_KEY",
+    "type": "java.lang.String",
+    "description": "A description for 'JWT_SECRET_KEY'"
+  },
+  {
+    "name": "JWT_EXPIRATION_TIME",
+    "type": "java.lang.String",
+    "description": "A description for 'JWT_EXPIRATION_TIME'"
+  },
+  {
+    "name": "app.production",
+    "type": "java.lang.String",
+    "description": "A description for 'app.production'"
+  },
+  {
+    "name": "app.security.max-attempts-login",
+    "type": "java.lang.String",
+    "description": "A description for 'app.security.max-attempts-login'"
+  },
+  {
+    "name": "app.security.ip-block-duration-hours",
+    "type": "java.lang.String",
+    "description": "A description for 'app.security.ip-block-duration-hours'"
+  },
+  {
+    "name": "app.security.reset-attempt-duration-minutes",
+    "type": "java.lang.String",
+    "description": "A description for 'app.security.reset-attempt-duration-minutes'"
+  }
+]}

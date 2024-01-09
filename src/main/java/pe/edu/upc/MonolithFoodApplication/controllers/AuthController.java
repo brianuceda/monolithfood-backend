@@ -69,12 +69,11 @@ public class AuthController {
     }
 
     @PostMapping("/set-basic-oauth2-data")
-    public ResponseEntity<?> setIpAndWallet(@RequestHeader("Authorization") String bearerToken,
-        @RequestParam String ipAddress)
+    public ResponseEntity<?> setIpAndWallet(@RequestHeader("Authorization") String bearerToken)
     {
         try { 
             String username = jwtService.getUsernameFromBearerToken(bearerToken);
-            ResponseDTO response = oAuthService.setBasicOauth2Data(username, ipAddress);
+            ResponseDTO response = oAuthService.setBasicOauth2Data(username);
             return validateResponse(response);
         } catch (Exception e) {
             return new ResponseEntity<>(new ResponseDTO("Ocurrió un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
