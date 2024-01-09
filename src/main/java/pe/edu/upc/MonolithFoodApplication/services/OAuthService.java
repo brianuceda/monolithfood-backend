@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.OAuth2PrincipalDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.external.WalletDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
@@ -28,7 +27,6 @@ public class OAuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthService authService;
-    private final ExternalApisService externalApisService;
     private static final Logger logger = LoggerFactory.getLogger(OAuthService.class);
     
     @Transactional
@@ -153,16 +151,18 @@ public class OAuthService {
             return new ResponseDTO("Ya tienes una IP registrada", HttpStatus.OK.value(), ResponseType.INFO);
         // Guarda la ip
         String ipAddress = AuthService.getClientIp();
+
         user.setIpAddress(ipAddress);
-        // Genera una nueva billetera para el usuario
-        WalletDTO walletDTO = externalApisService.getWalletFromIp(ipAddress);
+
+        // Genera una nueva billetera
         WalletEntity wallet = WalletEntity.builder()
             .balance(0.0)
-            .currency(walletDTO.getCurrency())
-            .currencySymbol(walletDTO.getCurrencySymbol())
-            .currencyName(walletDTO.getCurrencyName())
+            .currency("PEN")
+            .currencyName("Sol")
+            .currencySymbol("S/.")
             .build();
         user.setWallet(wallet);
+
         userRepository.save(user);
         return new ResponseDTO(null, 200, null);
     }

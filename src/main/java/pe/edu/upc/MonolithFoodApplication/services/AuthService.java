@@ -17,7 +17,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-// import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
@@ -32,7 +31,6 @@ import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
-import pe.edu.upc.MonolithFoodApplication.dtos.user.external.WalletDTO;
 import pe.edu.upc.MonolithFoodApplication.entities.IpLoginAttemptEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.RoleEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
@@ -51,7 +49,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final IpLoginAttemptRepository ipLoginAttemptRepository;
-    private final ExternalApisService externalApisService;
+    // private final ExternalApisService externalApisService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
@@ -82,19 +80,23 @@ public class AuthService {
                     return new ResponseDTO("Usuario autenticado via OAuth", 401, ResponseType.ERROR);
                 }
             }
+
             // Si el usuario y la contraseña son válidos, autenticar al usuario en el contexto de Spring Security y generar un token JWT para el usuario
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             UserEntity user = userRepository.findByUsername(request.getUsername()).get();
             UserConfigEntity userConfig = user.getUserConfig();
+
             // Reiniciar el contador de intentos fallidos de inicio de sesión
             IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, request.getUsername()).orElse(null);
             if (attempt != null) {
                 attempt.setAttemptsCount(1);
                 ipLoginAttemptRepository.save(attempt);
             }
+
             // Retornar el token generado junto con el mensaje de éxito y el código de estado
             String profileStage = jwtService.determineProfileStage(user);
             String generatedToken = jwtService.genToken(user, profileStage);
+
             return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, generatedToken, userConfig.getDarkMode());
         } catch (AuthenticationException e) {
             // Si la autenticación falla, registrar el intento fallido
@@ -113,17 +115,22 @@ public class AuthService {
                 return new ResponseDTO("Nombre de usuario no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
             if (userRepository.findByEmail(request.getEmail()).isPresent())
                 return new ResponseDTO("Email no disponible", HttpStatus.BAD_REQUEST.value(), ResponseType.ERROR);
+
             ResponseDTO respuestaValidacion = validarUsernameSeguro(request.getUsername());
             respuestaValidacion = validarContraseniaSegura(request.getPassword());
+
             // Si la contraseña no es segura, devolver la respuesta de validación
             if (respuestaValidacion != null)
                 return respuestaValidacion;
+
             // Formato del correo electrónico
             String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
             Pattern pattern = Pattern.compile(emailRegex);
             Matcher matcher = pattern.matcher(request.getEmail());
+
             if (!matcher.matches())
                 return new ResponseDTO("Email invalido", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
+                
             // Genera nueva configuración por defecto
             UserConfigEntity uc = UserConfigEntity.builder()
                 .notifications(false)
@@ -131,21 +138,17 @@ public class AuthService {
                 .lastFoodEntry(null)
                 .lastWeightUpdate(null)
                 .build();
-            // Genera una nueva billetera
-            WalletEntity wallet = WalletEntity.builder().balance(0.0).build();
 
             String ipAddress = getClientIp();
+            
+            // Genera una nueva billetera
+            WalletEntity wallet = WalletEntity.builder()
+                .balance(0.0)
+                .currency("PEN")
+                .currencyName("Sol")
+                .currencySymbol("S/.")
+                .build();
 
-            try {
-                WalletDTO walletDTO = externalApisService.getWalletFromIp(ipAddress);
-                wallet.setCurrency(walletDTO.getCurrency());
-                wallet.setCurrencySymbol(walletDTO.getCurrencySymbol());
-                wallet.setCurrencyName(walletDTO.getCurrencyName());
-            } catch (Exception e) {
-                wallet.setCurrency("No encontrado");
-                wallet.setCurrencySymbol("No encontrado");
-                wallet.setCurrencyName("No encontrado");
-            }
             // Crear el usuario en la BD
             UserEntity user = UserEntity.builder()
                 .username(request.getUsername())
