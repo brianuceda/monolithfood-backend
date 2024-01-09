@@ -71,6 +71,10 @@ public class UserPersonalInfoService {
         uc.setLastWeightUpdate(new Timestamp(System.currentTimeMillis()));
         ufi.setTargetWeightKg(request.getTargetWeightKg());
         ufi.setTargetDate(request.getTargetDate());
+
+        upi.setCity("Lima");
+        upi.setCountry("Perú");
+
         try {
             user.setUserConfig(uc);
             user.setUserPersonalInfo(upi);

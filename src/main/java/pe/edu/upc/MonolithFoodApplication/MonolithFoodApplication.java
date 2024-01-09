@@ -689,7 +689,7 @@ public class MonolithFoodApplication {
                     // Fecha de nacimiento aleatoria entre 1980 y 2010
                     personalInfo.setBorndate(Timestamp.valueOf(LocalDate.of(1980 + rand.nextInt(30), 1 + rand.nextInt(11), 1 + rand.nextInt(28)).atStartOfDay()));
                     personalInfo.setCity("Lima");
-                    personalInfo.setCountry("Peru");
+                    personalInfo.setCountry("Perú");
                     personalInfo.setHeightCm(150.0 + rand.nextInt(50));
                     personalInfo.setStartWeightKg(personalInfo.getWeightKg());
                     personalInfo.setWeightKg(50.0 + rand.nextInt(5001) / 100.0);
