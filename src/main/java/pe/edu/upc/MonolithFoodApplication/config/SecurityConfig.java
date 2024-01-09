@@ -28,7 +28,7 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired
     private AuthenticationProvider authProvider;
-    private static final String[] ALLOWED_ORIGINS = { "https://monolithfood.vercel.app" };
+    private static final String[] ALLOWED_ORIGINS = { "https://monolithfood.vercel.app", "http://localhost:4200" };
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

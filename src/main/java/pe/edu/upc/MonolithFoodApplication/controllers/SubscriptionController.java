@@ -16,7 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RequiredArgsConstructor
 @RequestMapping("/user/subscriptions")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
-@CrossOrigin(origins = { "https://monolithfood.vercel.app" }, allowedHeaders = "**")
+@CrossOrigin(origins = { "https://monolithfood.vercel.app", "http://localhost:4200" }, allowedHeaders = "**")
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final JwtService jwtService;

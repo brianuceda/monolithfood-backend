@@ -34,7 +34,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserService;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
-@CrossOrigin(origins = { "https://monolithfood.vercel.app" }, allowedHeaders = "**")
+@CrossOrigin(origins = { "https://monolithfood.vercel.app", "http://localhost:4200" }, allowedHeaders = "**")
 public class UserController {
     private final AuthService authService;
     private final UserService userService;
