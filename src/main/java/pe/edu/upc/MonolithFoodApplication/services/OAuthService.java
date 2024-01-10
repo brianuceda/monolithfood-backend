@@ -151,7 +151,7 @@ public class OAuthService {
 
             return response;
         } catch (Exception e) {
-            return new ResponseDTO("Ocurrió un error interno", 500, ResponseType.ERROR);
+            return new ResponseDTO("Ocurrió un error interno: " + e.getMessage() + " - " + e.getStackTrace().toString(), 500, ResponseType.ERROR);
         }
     }
 
