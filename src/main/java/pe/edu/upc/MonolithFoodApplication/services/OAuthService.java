@@ -170,8 +170,7 @@ public class OAuthService {
 
         String profileStage = "information";
         String token = jwtService.genToken(user, profileStage);
-        Boolean darkMode = user.getUserConfig().getDarkMode();
 
-        return new AuthResponseDTO("Registro exitoso", 200, ResponseType.SUCCESS, token, darkMode);
+        return new AuthResponseDTO("Registro exitoso", 200, ResponseType.SUCCESS, token, false);
     }
 }
