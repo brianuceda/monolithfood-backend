@@ -9,21 +9,21 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.LoginRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.RegisterRequestDTO;
 import pe.edu.upc.MonolithFoodApplication.dtos.general.ResponseDTO;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
 import pe.edu.upc.MonolithFoodApplication.services.AuthService;
-import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
 
+@Log
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -31,7 +31,6 @@ import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
 public class AuthController {
     private final AuthService authService;
     private final OAuthService oAuthService;
-    private final JwtService jwtService;
     private final String redirectOauth2Url = "https://monolithfood.vercel.app/oauth-callback";
 
     // * Brian (Auth)
@@ -62,29 +61,9 @@ public class AuthController {
                 return ResponseEntity.ok().build();
             } else {
                 // Manejar el caso en que la respuesta no sea una instancia de AuthResponseDTO
+                log.info("No se pudo obtener el token de acceso.");
                 return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }
-    }
-
-    @PostMapping("/set-basic-oauth2-data")
-    public ResponseEntity<?> setIpAndWallet(@RequestHeader("Authorization") String bearerToken)
-    {
-        try { 
-            String username = jwtService.getUsernameFromBearerToken(bearerToken);
-            ResponseDTO response = oAuthService.setBasicOauth2Data(username);
-            return validateResponse(response);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseDTO("Ocurrió un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
-        }
-    }
-
-    // * Responder a la petición con el código de estado y el mensaje correspondiente
-    private ResponseEntity<?> validateResponse(ResponseDTO response) {
-        try {
-            return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ResponseDTO("Ocurrió un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
         }
     }
 }

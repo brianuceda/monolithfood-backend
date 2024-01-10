@@ -786,6 +786,7 @@ public class MonolithFoodApplication {
                     wallet.setCurrencyName("Sol");
                     wallet.setCurrencySymbol("S/.");
                     wallets.add(wallet);
+                    user.setWallet(wallet);
                 }
                 walletRepository.saveAll(wallets);
             }
@@ -793,11 +794,10 @@ public class MonolithFoodApplication {
     }
 
     // Metodos auxiliares
-    // User
     public UserEntity getUserByName(List<UserEntity> users, String userName) {
         return users.stream().filter(user -> user.getUsername().equalsIgnoreCase(userName)).findFirst().orElse(null);
     }
-    // Objectives
+    
     public List<ObjectiveEntity> getRandomObjectives(List<ObjectiveEntity> objectives, int numberOfObjectives) {
         List<ObjectiveEntity> shuffledObjectives = new ArrayList<>(objectives);
         Collections.shuffle(shuffledObjectives);  // Mezclamos los objetivos
@@ -807,34 +807,37 @@ public class MonolithFoodApplication {
         // Tomar un subconjunto de los objetivos mezclados
         return shuffledObjectives.subList(0, numberOfObjectives);
     }
-    // ActivityLevel
+    
     public ActivityLevelEntity getActivityLevelByName(List<ActivityLevelEntity> activityLevels, String activityLevelName) {
         return activityLevels.stream().filter(activityLevel -> activityLevel.getName().equalsIgnoreCase(activityLevelName)).findFirst().orElse(null);
     }
-    // Category
+    
     public CategoryFoodEntity getCategoryByName(List<CategoryFoodEntity> categories, String name) {
         return categories.stream().filter(category -> category.getName().equals(name)).findFirst().orElse(null);
     }
-    // Composition
+    
     public NutrientEntity getNutrientByName(List<NutrientEntity> nutrients, String name) {
         return nutrients.stream().filter(nutrient -> nutrient.getName().equals(name)).findFirst().orElse(null);
     }
-    // Food
+    
     public FoodEntity getFoodByName(List<FoodEntity> foods, String name) {
         return foods.stream().filter(food -> food.getName().equals(name)).findFirst().orElse(null);
     }
-    // Recipe
+    
     public RecipeEntity getRecipeByName(List<RecipeEntity> recipes, String name) {
         return recipes.stream().filter(recipe -> recipe.getName().equals(name)).findFirst().orElse(null);
     }
+
     // Create map of specific type
     public <T> Map<String, T> generateNameMap(List<T> entities, Function<T, String> nameFunction) {
         return entities.stream().collect(Collectors.toMap(nameFunction, Function.identity()));
     }
+
     // Obtiene un elemento aleatorio de una lista
     public <T> T getRandomObject(List<T> list) {
         return list.get(new Random().nextInt(list.size())); 
     }
+    
     // Obtener unidad de medida aleatoria
     public UnitOfMeasurementEnum getRandomUnitOfMeasurement() {
         UnitOfMeasurementEnum[] values = UnitOfMeasurementEnum.values();

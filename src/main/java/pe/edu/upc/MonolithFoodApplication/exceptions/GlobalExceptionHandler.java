@@ -51,10 +51,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        // Crear un objeto de respuesta que contenga el mensaje y el tipo de respuesta
         ResponseDTO response = new ResponseDTO("Usuario no encontrado", 401, ResponseType.ERROR);
-        // Devolver una entidad de respuesta con el estado HTTP y el cuerpo del mensaje
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+    // * Custom
+
+    
 
 }

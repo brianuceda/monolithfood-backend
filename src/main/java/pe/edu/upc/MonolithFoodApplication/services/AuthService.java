@@ -70,8 +70,8 @@ public class AuthService {
         try {
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+            // Si el usuario está bloqueado, devolver un error
             if (userEntity != null) {
-                // Verificar si la IP está bloqueada
                 if (isIpBlocked(ipAddress, userEntity)) {
                     logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", ipAddress, request.getUsername());
                     return new ResponseDTO("Tu acceso fue bloqueado", 403, ResponseType.ERROR);
@@ -85,7 +85,7 @@ public class AuthService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             UserEntity user = userRepository.findByUsername(request.getUsername()).get();
             UserConfigEntity userConfig = user.getUserConfig();
-
+            
             // Reiniciar el contador de intentos fallidos de inicio de sesión
             IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, request.getUsername()).orElse(null);
             if (attempt != null) {

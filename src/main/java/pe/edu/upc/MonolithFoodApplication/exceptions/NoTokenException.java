@@ -10,15 +10,17 @@ public class NoTokenException extends RuntimeException {
     super(response.getMessage());
     this.response = response;
   }
+
   public NoTokenException(String response) {
     super(response);
     this.response.setStatusCode(401);
     this.response.setType(ResponseType.ERROR);
   }
+
   public NoTokenException() {
   }
+  
   public ResponseDTO getResponse() {
     return response;
   }
-
 }
