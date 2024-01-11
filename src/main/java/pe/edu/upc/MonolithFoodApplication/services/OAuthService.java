@@ -141,11 +141,13 @@ public class OAuthService {
                     .isOauthRegistered(oa2.getIsOauthRegistered())
                     .isAccountBlocked(false)
                     .ipAddress(AuthService.getClientIp())
+                    .userConfig(uc)
+                    .wallet(wallet)
                     .roles(authService.setRoleUser())
                     .build();
                 
-                    user.setUserConfig(uc);
-                    user.setWallet(wallet);
+                    // user.setUserConfig(uc);
+                    // user.setWallet(wallet);
                 
                 userRepository.save(user);
 
