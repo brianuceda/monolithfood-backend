@@ -63,7 +63,7 @@ public class UserEntity implements UserDetails {
     private List<IpLoginAttemptEntity> ipLoginAttempt;
 
     @ToString.Exclude
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private UserConfigEntity userConfig;
 
     @ToString.Exclude
@@ -71,7 +71,7 @@ public class UserEntity implements UserDetails {
     private UserPersonalInfoEntity userPersonalInfo;
 
     @ToString.Exclude
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private WalletEntity wallet;
 
     @ToString.Exclude

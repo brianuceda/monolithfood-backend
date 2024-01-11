@@ -151,7 +151,7 @@ public class OAuthService {
 
             return response;
         } catch (Exception e) {
-            return new ResponseDTO("Ocurrió un error interno: " + e.getMessage() + " - " + e.getStackTrace().toString(), 500, ResponseType.ERROR);
+            return new ResponseDTO("Ocurrió un error interno: " + e.getMessage(), 500, ResponseType.ERROR);
         }
     }
 
@@ -160,9 +160,9 @@ public class OAuthService {
 
         String profileStage = jwtService.determineProfileStage(user);
         String token = jwtService.genToken(user, profileStage);
-        Boolean darkMode = user.getUserConfig().getDarkMode();
+        // Boolean darkMode = user.getUserConfig().getDarkMode();
 
-        return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, token, darkMode);
+        return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, token, true);
     }
 
     private ResponseDTO oAuth2Register(UserEntity user) {
@@ -170,7 +170,8 @@ public class OAuthService {
 
         String profileStage = "information";
         String token = jwtService.genToken(user, profileStage);
+        // Boolean darkMode = user.getUserConfig().getDarkMode();
 
-        return new AuthResponseDTO("Registro exitoso", 200, ResponseType.SUCCESS, token, false);
+        return new AuthResponseDTO("Registro exitoso", 200, ResponseType.SUCCESS, token, true);
     }
 }
