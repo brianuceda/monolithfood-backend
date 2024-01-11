@@ -146,9 +146,6 @@ public class OAuthService {
                     .roles(authService.setRoleUser())
                     .build();
                 
-                    // user.setUserConfig(uc);
-                    // user.setWallet(wallet);
-                
                 userRepository.save(user);
 
                 response = oAuth2Register(user);
@@ -165,18 +162,18 @@ public class OAuthService {
     private ResponseDTO oAuth2Login(String oAuthProviderId) {
         UserEntity user = userRepository.findByOauthProviderId(oAuthProviderId).get();
 
-        // String profileStage = jwtService.determineProfileStage(user);
-        // String token = jwtService.genToken(user, profileStage);
-        // Boolean darkMode = user.getUserConfig().getDarkMode();
-            return new ResponseDTO("Ocurrió un error escrito: " + user.getUsername() + " - " + user.getUserConfig().getDarkMode(), 500, ResponseType.ERROR);
+        String profileStage = jwtService.determineProfileStage(user);
+        String token = jwtService.genToken(user, profileStage);
+        Boolean darkMode = user.getUserConfig().getDarkMode();
 
-        // return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, token, true);
+        return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, token, darkMode);
     }
 
     private ResponseDTO oAuth2Register(UserEntity user) {
         String profileStage = "information";
         String token = jwtService.genToken(user, profileStage);
+        Boolean darkMode = user.getUserConfig().getDarkMode();
 
-        return new AuthResponseDTO("Registro exitoso", 200, ResponseType.SUCCESS, token, true);
+        return new AuthResponseDTO("Registro exitoso", 200, ResponseType.SUCCESS, token, darkMode);
     }
 }
