@@ -145,8 +145,6 @@ public class OAuthService {
                     .wallet(wallet)
                     .roles(authService.setRoleUser())
                     .build();
-                
-                userRepository.save(user);
 
                 response = oAuth2Register(user);
             } else {
@@ -170,6 +168,8 @@ public class OAuthService {
     }
 
     private ResponseDTO oAuth2Register(UserEntity user) {
+        userRepository.save(user);
+        
         String profileStage = "information";
         String token = jwtService.genToken(user, profileStage);
         Boolean darkMode = user.getUserConfig().getDarkMode();
