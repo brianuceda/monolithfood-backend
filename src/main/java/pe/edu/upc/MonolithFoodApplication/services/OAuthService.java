@@ -15,12 +15,17 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
+import pe.edu.upc.MonolithFoodApplication.repositories.UserConfigRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
+import pe.edu.upc.MonolithFoodApplication.repositories.WalletRepository;
 
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
     private final UserRepository userRepository;
+    private final UserConfigRepository userConfigRepository;
+    private final WalletRepository walletRepository;
+
     private final JwtService jwtService;
     private final AuthService authService;
     
@@ -112,8 +117,9 @@ public class OAuthService {
             
             Optional<UserEntity> oAuthUser = userRepository.findByOauthProviderId(oa2.getOauthProviderId());
 
-            if (oAuthUser.isPresent())
+            if (oAuthUser.isPresent()) {
                 response = oAuth2Login(oAuthUser.get().getOauthProviderId());
+            }
             else if (!oAuthUser.isPresent()) {
                 UserConfigEntity uc = UserConfigEntity.builder()
                     .notifications(false)
@@ -121,6 +127,7 @@ public class OAuthService {
                     .lastFoodEntry(null)
                     .lastWeightUpdate(null)
                     .build();
+                userConfigRepository.save(uc);
 
                 WalletEntity wallet = WalletEntity.builder()
                     .balance(0.0)
@@ -128,6 +135,7 @@ public class OAuthService {
                     .currencyName("Sol")
                     .currencySymbol("S/.")
                     .build();
+                walletRepository.save(wallet);
                 
                 UserEntity user = UserEntity.builder()
                     .username(oa2.getUsername())
