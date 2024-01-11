@@ -15,17 +15,12 @@ import pe.edu.upc.MonolithFoodApplication.entities.UserConfigEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.UserEntity;
 import pe.edu.upc.MonolithFoodApplication.entities.WalletEntity;
 import pe.edu.upc.MonolithFoodApplication.enums.ResponseType;
-import pe.edu.upc.MonolithFoodApplication.repositories.UserConfigRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
-import pe.edu.upc.MonolithFoodApplication.repositories.WalletRepository;
 
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
     private final UserRepository userRepository;
-    private final UserConfigRepository userConfigRepository;
-    private final WalletRepository walletRepository;
-
     private final JwtService jwtService;
     private final AuthService authService;
     
@@ -127,7 +122,7 @@ public class OAuthService {
                     .lastFoodEntry(null)
                     .lastWeightUpdate(null)
                     .build();
-                userConfigRepository.save(uc);
+                
 
                 WalletEntity wallet = WalletEntity.builder()
                     .balance(0.0)
@@ -135,7 +130,6 @@ public class OAuthService {
                     .currencyName("Sol")
                     .currencySymbol("S/.")
                     .build();
-                walletRepository.save(wallet);
                 
                 UserEntity user = UserEntity.builder()
                     .username(oa2.getUsername())
@@ -147,10 +141,13 @@ public class OAuthService {
                     .isOauthRegistered(oa2.getIsOauthRegistered())
                     .isAccountBlocked(false)
                     .ipAddress(AuthService.getClientIp())
-                    .userConfig(uc)
-                    .wallet(wallet)
                     .roles(authService.setRoleUser())
                     .build();
+                
+                    user.setUserConfig(uc);
+                    user.setWallet(wallet);
+                
+                userRepository.save(user);
 
                 response = oAuth2Register(user);
             } else {
@@ -166,19 +163,17 @@ public class OAuthService {
     private ResponseDTO oAuth2Login(String oAuthProviderId) {
         UserEntity user = userRepository.findByOauthProviderId(oAuthProviderId).get();
 
-        String profileStage = jwtService.determineProfileStage(user);
-        String token = jwtService.genToken(user, profileStage);
+        // String profileStage = jwtService.determineProfileStage(user);
+        // String token = jwtService.genToken(user, profileStage);
         // Boolean darkMode = user.getUserConfig().getDarkMode();
+            return new ResponseDTO("Ocurrió un error escrito: " + user.getUsername() + " - " + user.getUserConfig().getDarkMode(), 500, ResponseType.ERROR);
 
-        return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, token, true);
+        // return new AuthResponseDTO("Inicio de sesión exitoso", 200, ResponseType.SUCCESS, token, true);
     }
 
     private ResponseDTO oAuth2Register(UserEntity user) {
-        userRepository.save(user);
-
         String profileStage = "information";
         String token = jwtService.genToken(user, profileStage);
-        // Boolean darkMode = user.getUserConfig().getDarkMode();
 
         return new AuthResponseDTO("Registro exitoso", 200, ResponseType.SUCCESS, token, true);
     }
