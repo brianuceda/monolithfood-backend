@@ -64,6 +64,7 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.WalletRepository;
 
 @SpringBootApplication
+@SuppressWarnings("all")
 public class MonolithFoodApplication {
 
     public static void main(String[] args) {

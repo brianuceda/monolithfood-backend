@@ -20,6 +20,7 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class FavoriteService {
     private final UserRepository userRepository;
     private final FoodRepository foodRepository;
