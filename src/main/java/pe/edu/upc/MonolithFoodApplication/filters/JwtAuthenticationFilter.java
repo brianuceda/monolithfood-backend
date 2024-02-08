@@ -33,6 +33,7 @@ import pe.edu.upc.MonolithFoodApplication.services.JwtService;
 
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;

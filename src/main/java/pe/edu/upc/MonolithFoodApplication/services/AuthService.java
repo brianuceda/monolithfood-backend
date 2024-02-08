@@ -22,7 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import pe.edu.upc.MonolithFoodApplication.dtos.auth.AuthResponseDTO;
@@ -43,6 +46,7 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -63,12 +67,13 @@ public class AuthService {
     // * Brian: Iniciar sesión
     @Transactional
     public ResponseDTO login(LoginRequestDTO request) {
+        String ipAddress = getClientIp();
         try {
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
             if (userEntity != null) {
                 // Verificar si la IP está bloqueada
-                if (isIpBlocked(request.getIpAddress(), userEntity)) {
-                    logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", request.getIpAddress(), request.getUsername());
+                if (isIpBlocked(ipAddress, userEntity)) {
+                    logger.warn("Acceso denegado para la IP {} hacia el usuario {}.", ipAddress, request.getUsername());
                     return new ResponseDTO("Tu acceso fue bloqueado", 403, ResponseType.ERROR);
                 }
                 if (userEntity.getIsOauthRegistered()) {
@@ -80,7 +85,7 @@ public class AuthService {
             UserEntity user = userRepository.findByUsername(request.getUsername()).get();
             UserConfigEntity userConfig = user.getUserConfig();
             // Reiniciar el contador de intentos fallidos de inicio de sesión
-            IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(request.getIpAddress(), request.getUsername()).orElse(null);
+            IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, request.getUsername()).orElse(null);
             if (attempt != null) {
                 attempt.setAttemptsCount(1);
                 ipLoginAttemptRepository.save(attempt);
@@ -93,13 +98,15 @@ public class AuthService {
             // Si la autenticación falla, registrar el intento fallido
             UserEntity userEntity = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
             if (userEntity != null)
-                registerANewFailedAttempt(request.getIpAddress(), userEntity);
+                registerANewFailedAttempt(ipAddress, userEntity);
             return new ResponseDTO("Datos incorrectos", 401, ResponseType.ERROR);
         }
     }
+
     // * Brian: Registrar un nuevo usuario
     @Transactional
     public ResponseDTO register(RegisterRequestDTO request) {
+        String ipAddress = getClientIp();
         try {
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
             if (userRepository.findByUsername(request.getUsername()).isPresent())
@@ -127,7 +134,7 @@ public class AuthService {
             // Genera una nueva billetera
             WalletEntity wallet = WalletEntity.builder().balance(0.0).build();
             try {
-                WalletDTO walletDTO = externalApisService.getWalletFromIp(request.getIpAddress());
+                WalletDTO walletDTO = externalApisService.getWalletFromIp(ipAddress);
                 wallet.setCurrency(walletDTO.getCurrency());
                 wallet.setCurrencySymbol(walletDTO.getCurrencySymbol());
                 wallet.setCurrencyName(walletDTO.getCurrencyName());
@@ -145,7 +152,7 @@ public class AuthService {
                 .profileImg("https://i.ibb.co/28FKMc7/monolithfood-img.png")
                 .isOauthRegistered(false)
                 .isAccountBlocked(false)
-                .ipAddress(request.getIpAddress())
+                .ipAddress(ipAddress)
                 .userConfig(uc)
                 .wallet(wallet)
                 .roles(setRoleUser())
@@ -170,6 +177,7 @@ public class AuthService {
                 "Ocurrió un error", HttpStatus.INTERNAL_SERVER_ERROR.value(), ResponseType.ERROR);
         }
     }
+
     // * Brian: Cerrar sesión (desactivar el token)
     public ResponseDTO logout(String realToken) {
         try {
@@ -185,12 +193,59 @@ public class AuthService {
     }
 
     // ? Funciones auxiliares
+    public static String getClientIp() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+        
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+        }
+        
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+
+        if (ipAddress != null && ipAddress.contains(",")) {
+            ipAddress = ipAddress.split(",")[0].trim();
+        }
+
+        return ipAddress;
+    }
+
+    private boolean isIpBlocked(String ipAddress, UserEntity userEntity) {
+        IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
+        // Si no hay un registro existente en la BD para esta IP y este usuario, la IP
+        // no está bloqueada
+        if (attempt == null)
+            return false;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        long oneDayMillis = this.IP_BLOCK_DURATION_HOURS * 60 * 60 * 1000;
+        // Si la IP está bloqueada y han pasado más de XX horas desde que se bloqueó
+        if (attempt.getIsIpBlocked() && (now.getTime() - attempt.getBlockedDate().getTime()) > oneDayMillis) {
+            // Desbloquear
+            logger.info("IP {} desbloqueada para el usuario {}.", attempt.getIpAddress(), attempt.getUser().getUsername());
+            attempt.setIsIpBlocked(false);
+            attempt.setBlockedDate(null);
+            attempt.setLastAttemptDate(now);
+            attempt.setAttemptsCount(0);
+            ipLoginAttemptRepository.save(attempt);
+            return false;
+        }
+        // Devolver si la IP está bloqueada o no
+        return attempt.getIsIpBlocked();
+    }
+
     public Set<RoleEntity> setRoleUser() {
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity USER = roleRepository.findByName(RoleEnum.USER).get();
         roles.add(USER);
         return roles;
     }
+
     private ResponseDTO validarUsernameSeguro(String username) {
         if (username.length() < 6) {
             return new ResponseDTO("El nombre de usuario debe tener al menos 6 caracteres", HttpStatus.BAD_REQUEST.value(), ResponseType.WARN);
@@ -267,27 +322,4 @@ public class AuthService {
         }
         ipLoginAttemptRepository.save(attempt);
     }
-    private boolean isIpBlocked(String ipAddress, UserEntity userEntity) {
-        IpLoginAttemptEntity attempt = ipLoginAttemptRepository.findByIpAddressAndUsername(ipAddress, userEntity.getUsername()).orElse(null);
-        // Si no hay un registro existente en la BD para esta IP y este usuario, la IP
-        // no está bloqueada
-        if (attempt == null)
-            return false;
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        long oneDayMillis = this.IP_BLOCK_DURATION_HOURS * 60 * 60 * 1000;
-        // Si la IP está bloqueada y han pasado más de XX horas desde que se bloqueó
-        if (attempt.getIsIpBlocked() && (now.getTime() - attempt.getBlockedDate().getTime()) > oneDayMillis) {
-            // Desbloquear
-            logger.info("IP {} desbloqueada para el usuario {}.", attempt.getIpAddress(), attempt.getUser().getUsername());
-            attempt.setIsIpBlocked(false);
-            attempt.setBlockedDate(null);
-            attempt.setLastAttemptDate(now);
-            attempt.setAttemptsCount(0);
-            ipLoginAttemptRepository.save(attempt);
-            return false;
-        }
-        // Devolver si la IP está bloqueada o no
-        return attempt.getIsIpBlocked();
-    }
-
 }

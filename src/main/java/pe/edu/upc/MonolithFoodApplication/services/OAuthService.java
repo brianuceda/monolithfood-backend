@@ -24,6 +24,7 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class OAuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
@@ -143,7 +144,8 @@ public class OAuthService {
     }
     
     @Transactional
-    public ResponseDTO setBasicOauth2Data(String username, String ipAddress) {
+    public ResponseDTO setBasicOauth2Data(String username) {
+        String ipAddress = AuthService.getClientIp();
         // Verifica que el usuario exista
         Optional<UserEntity> optUser = userRepository.findByUsername(username);
         if (!optUser.isPresent())

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,11 +40,13 @@ public class AuthController {
         ResponseDTO response = authService.login(request);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
         ResponseDTO response = authService.register(request);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+
     // * Brian (OAuth2)
     @GetMapping("/oauth2")
     public ResponseEntity<?> authOauth2(OAuth2AuthenticationToken authentication, HttpServletResponse response) throws IOException {
@@ -69,12 +70,10 @@ public class AuthController {
     }
 
     @PostMapping("/set-basic-oauth2-data")
-    public ResponseEntity<?> setIpAndWallet(@RequestHeader("Authorization") String bearerToken,
-        @RequestParam String ipAddress)
-    {
+    public ResponseEntity<?> setIpAndWallet(@RequestHeader("Authorization") String bearerToken) {
         try { 
             String username = jwtService.getUsernameFromBearerToken(bearerToken);
-            ResponseDTO response = oAuthService.setBasicOauth2Data(username, ipAddress);
+            ResponseDTO response = oAuthService.setBasicOauth2Data(username);
             return validateResponse(response);
         } catch (Exception e) {
             return new ResponseEntity<>(new ResponseDTO("Ocurrió un error", 500, ResponseType.ERROR), HttpStatus.valueOf(500));
