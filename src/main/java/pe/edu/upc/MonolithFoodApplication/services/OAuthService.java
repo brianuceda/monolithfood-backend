@@ -19,7 +19,6 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class OAuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;

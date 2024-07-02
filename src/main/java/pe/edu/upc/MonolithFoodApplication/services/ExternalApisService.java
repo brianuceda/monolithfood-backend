@@ -15,7 +15,6 @@ import pe.edu.upc.MonolithFoodApplication.services.impl.CurrencySymbolMapper;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class ExternalApisService {
 
     public LocationDTO getLocationFromIp(String ip) {

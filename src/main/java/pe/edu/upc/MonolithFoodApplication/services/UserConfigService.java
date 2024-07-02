@@ -21,7 +21,6 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class UserConfigService {
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(UserConfigService.class);

@@ -22,7 +22,6 @@ import pe.edu.upc.MonolithFoodApplication.filters.JwtAuthenticationFilter;
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-@SuppressWarnings("null")
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -51,7 +50,7 @@ public class SecurityConfig {
             // ? Permite o bloquea la conexión a los endpoints ? //
             .authorizeHttpRequests(authRequest -> {
                 authRequest.requestMatchers("/auth/**", "/oauth2/**").permitAll();
-                authRequest.requestMatchers("/favicon.ico", "/error").permitAll(); // OAuth2
+                authRequest.requestMatchers("/favicon.ico", "/error").permitAll();
                 authRequest.anyRequest().authenticated();
             })
             // ? Oauth2 Login

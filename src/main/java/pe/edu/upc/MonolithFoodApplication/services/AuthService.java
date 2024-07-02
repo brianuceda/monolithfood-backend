@@ -43,7 +43,6 @@ import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
