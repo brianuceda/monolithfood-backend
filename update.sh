@@ -1,4 +1,4 @@
 docker-compose down
-cd /home/briankirigaya/MonolithFoodApplication/
+cd /home/ubuntu/MonolithFoodApplication/
 git pull
 docker-compose up --build -d
