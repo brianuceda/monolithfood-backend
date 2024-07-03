@@ -18,7 +18,6 @@ import pe.edu.upc.MonolithFoodApplication.enums.UnitOfMeasurementEnum;
 import pe.edu.upc.MonolithFoodApplication.repositories.CategoryRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.FoodRepository;
 import pe.edu.upc.MonolithFoodApplication.repositories.UserRepository;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +31,6 @@ public class FoodService {
     private final UserRepository userRepository;
     
     // * Gabriela: Buscar todos los alimentos
-    @Cacheable(value = "foods", key = "'allFoods'")
     public ResponseDTO getAllFoods(String username) {
         List<FoodEntity> foodEntities = foodRepository.findAllByOrderByIdAsc();
         if (foodEntities.isEmpty()) {
