@@ -113,6 +113,26 @@ public class AuthService {
     @Transactional
     public ResponseDTO register(RegisterRequestDTO request) {
         try {
+            // Validaciones de longitud de los campos
+            if (request.getUsername().length() > 40) {
+                return new ResponseDTO("El nombre de usuario no debe exceder los 40 caracteres", 400, ResponseType.ERROR);
+            }
+            if (request.getEmail().length() > 150) {
+                return new ResponseDTO("El email no debe exceder los 150 caracteres", 400, ResponseType.ERROR);
+            }
+            if (request.getNames().length() > 128) {
+                return new ResponseDTO("El nombre completo no debe exceder los 128 caracteres", 400, ResponseType.ERROR);
+            }
+            if (request.getProfileImg().length() > 512) {
+                return new ResponseDTO("La URL de la imagen de perfil no debe exceder los 512 caracteres", 400, ResponseType.ERROR);
+            }
+            if (request.getOauthProviderId() != null && request.getOauthProviderId().length() > 64) {
+                System.out.println("El ID del proveedor de OAuth no debe exceder los 64 caracteres");
+            }
+            if (request.getIpAddress() != null && request.getIpAddress().length() > 32) {
+                System.out.println("La dirección IP no debe exceder los 32 caracteres");
+            }
+
             // Comprobar si el nombre de usuario o el correo electrónico ya está en uso
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
                 return new ResponseDTO("Nombre de usuario no disponible", 400, ResponseType.ERROR);
