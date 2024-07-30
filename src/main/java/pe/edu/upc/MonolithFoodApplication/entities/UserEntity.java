@@ -56,7 +56,7 @@ public class UserEntity implements UserDetails {
     @Builder.Default
     private Boolean isAccountBlocked = false;
 
-    @Column(nullable = true, length = 32)
+    @Column(nullable = true)
     private String ipAddress;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
