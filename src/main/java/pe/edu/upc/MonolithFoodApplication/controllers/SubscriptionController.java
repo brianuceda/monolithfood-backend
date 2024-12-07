@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user/subscriptions")
+@RequestMapping("/api/v1/mf/user/subscriptions")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
 @CrossOrigin(origins = { "https://monolithfood.vercel.app", "http://localhost:4200" }, allowedHeaders = "**")
 public class SubscriptionController {
