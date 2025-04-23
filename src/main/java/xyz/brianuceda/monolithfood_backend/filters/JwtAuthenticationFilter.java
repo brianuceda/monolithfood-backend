@@ -98,8 +98,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // Si la url es pública, retorna true
     private boolean isPublicUrl(String url) {
         return
+            url.startsWith("/api/v1/auth") ||
             url.startsWith("/auth") ||
             url.startsWith("/oauth") ||
+            url.startsWith("/api/v1/oauth2") ||
             url.startsWith("/login") ||
             url.startsWith("/logout") ||
             // Oauth2
