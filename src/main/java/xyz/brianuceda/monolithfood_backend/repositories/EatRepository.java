@@ -65,7 +65,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
 
     // asd
     @Query(
-        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosDetailedDTO(" +
+        "SELECT new xyz.brianuceda.monolithfood_backend.dtos.foodintake.MacrosDetailedDTO(" +
             "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedCalories, " +
             "u.userFitnessInfo.dailyCaloricIntake as dailyCaloricIntake, " +
             "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END) as consumedProteins, " +
@@ -89,7 +89,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
     );
 
     @Query(
-        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.foodintake.MacrosPerCategoryDTO(" +
+        "SELECT new xyz.brianuceda.monolithfood_backend.dtos.foodintake.MacrosPerCategoryDTO(" +
             "SUM(CASE WHEN n.name = 'Calorias' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END), " +
             "SUM(CASE WHEN n.name = 'Proteina' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END), " +
             "SUM(CASE WHEN n.name = 'Carbohidratos' THEN cf.nutrientQuantity * e.eatQuantity ELSE 0 END), " +
@@ -131,7 +131,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
     );
 
     @Query(
-        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.foodintake.DetailedIntakeDTO(" + 
+        "SELECT new xyz.brianuceda.monolithfood_backend.dtos.foodintake.DetailedIntakeDTO(" + 
             "e.id as id, " +
             "f.name as name, " + 
             "e.categoryIntake as categoryIntake, " + 
@@ -147,7 +147,7 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
         "WHERE u.username = :username " +
             "AND e.id = :id " +
         "GROUP BY "+
-            "e.id, f.name, c.name, e.categoryIntake, e.unitOfMeasurement, e.eatQuantity, e.date"
+            "e.id, f.name, c.name, e.categoryIntake, e.unitOfMeasurement, e.eatQuantity, e.date, f.id"
     )
     DetailedIntakeDTO findDetailedIntake(
         @Param("username") String username,
