@@ -18,11 +18,11 @@ services:
     command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
-    
+  
   springbootapp:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.monolithfood
     environment:
       MF_SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/${MF_POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}

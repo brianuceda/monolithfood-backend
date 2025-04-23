@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# My
+.env
+src/main/resources/logback.xml
+
 ### STS ###
 .apt_generated
 .classpath
@@ -31,3 +35,5 @@ build/
 
 ### VS Code ###
 .vscode/
+src/main/resources/application.yaml
+/logs/
