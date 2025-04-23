@@ -25,7 +25,7 @@ import pe.edu.upc.MonolithFoodApplication.services.OAuthService;
 
 @Log
 @RestController
-@RequestMapping("/api/v1/mf/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @CrossOrigin(origins = { "https://monolithfood.vercel.app", "http://localhost:4200" }, allowedHeaders = "**")
 public class AuthController {

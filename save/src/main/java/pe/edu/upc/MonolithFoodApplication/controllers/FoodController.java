@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/mf/user/foods")
+@RequestMapping("/api/v1/user/foods")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
 @CrossOrigin(origins = { "https://monolithfood.vercel.app", "http://localhost:4200" }, allowedHeaders = "**")
 public class FoodController {

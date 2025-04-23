@@ -19,7 +19,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserConfigService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/mf/user/config")
+@RequestMapping("/api/v1/user/config")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
 @CrossOrigin(origins = { "https://monolithfood.vercel.app", "http://localhost:4200" }, allowedHeaders = "**")
 public class UserConfigController {

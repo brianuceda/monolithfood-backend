@@ -49,16 +49,16 @@ public class SecurityConfig {
             }))
             // ? Permite o bloquea la conexión a los endpoints ? //
             .authorizeHttpRequests(authRequest -> {
-                authRequest.requestMatchers("/api/v1/mf/auth/**", "/api/v1/mf/oauth2/**").permitAll();
+                authRequest.requestMatchers("/api/v1/auth/**", "/api/v1/oauth2/**").permitAll();
                 authRequest.requestMatchers("/favicon.ico", "/error").permitAll();
                 authRequest.anyRequest().authenticated();
             })
             // ? Oauth2 Login
             .oauth2Login(oauth2 -> oauth2
                 .successHandler((request, response, authentication) -> 
-                    response.sendRedirect("/api/v1/mf/auth/oauth2"))
+                    response.sendRedirect("/api/v1/auth/oauth2"))
                 .failureHandler((request, response, exception) -> 
-                    response.sendRedirect("/api/v1/mf/auth/login"))
+                    response.sendRedirect("/api/v1/auth/login"))
             )
             // ? Authentication Provider: Es el que se encarga de validar las credenciales de los usuarios ? //
             .authenticationProvider(authProvider)

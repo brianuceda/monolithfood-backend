@@ -24,7 +24,7 @@ import pe.edu.upc.MonolithFoodApplication.services.UserFitnessInfoService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/mf/user/fitness")
+@RequestMapping("/api/v1/user/fitness")
 @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'VIP')")
 @CrossOrigin(origins = { "https://monolithfood.vercel.app", "http://localhost:4200" }, allowedHeaders = "**")
 public class UserFitnessInfoController {
