@@ -47,19 +47,20 @@ public interface EatRepository extends JpaRepository<EatEntity, Long> {
 
     // * (JPQL) Willy: Retorna el promedio de calorias consumidas en el ultimo dia
     @Query(
-        "SELECT " +  
-            "e.date As date, "+
-            "AVG(cf.nutrientQuantity) as averageCaloriesDay " +
-        "FROM EatEntity e " +
-        "JOIN e.user u " +
-        "JOIN e.food f " +
-        "JOIN f.compositions cf " +
-        "JOIN cf.nutrient n " +
+        value = "SELECT " +  
+            "e.date as date, "+
+            "AVG(cf.nutrient_quantity) as average_calories_day " +
+        "FROM eat e " +
+        "JOIN users u ON e.user_id = u.id " +
+        "JOIN food f ON e.food_id = f.id " +
+        "JOIN composition_food cf ON f.id = cf.food_id " +
+        "JOIN nutrient n ON cf.nutrient_id = n.id " +
         "WHERE n.name = 'Grasa' " +
         "AND u.username = :username " +
-        "AND e.date >= CURRENT_DATE - 7 " +  
-        "GROUP BY username, date " +
-        "ORDER BY date"
+        "AND e.date >= CURRENT_DATE - INTERVAL '7 days' " +  
+        "GROUP BY u.username, e.date " +
+        "ORDER BY e.date",
+        nativeQuery = true
     )
     List<Object[]> getAverageCalorieConsumptioDay(@Param("username") String username);
 
