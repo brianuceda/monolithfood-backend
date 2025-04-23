@@ -19,11 +19,11 @@ import lombok.Setter;
 @Setter
 public class CacheConfig {
   // Variables estaticas
-  @Value("${REDIS_HOST}")
+  @Value("${MONOLITHFOOD_REDIS_HOST}")
   private String redisHost;
-  @Value("${REDIS_PORT}")
+  @Value("${MONOLITHFOOD_REDIS_PORT}")
   private Integer redisPort;
-  @Value("${REDIS_PASSWORD}")
+  @Value("${MONOLITHFOOD_REDIS_PASSWORD}")
   private String redisPassword;
 
     @Bean

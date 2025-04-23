@@ -25,10 +25,10 @@ import xyz.brianuceda.monolithfood_backend.entities.UserEntity;
 @Service
 public class JwtUtils {
     // Variables de entorno
-    @Value("${JWT_SECRET_KEY}")
-    private String SECRET_KEY;
-    @Value("${JWT_EXPIRATION_TIME}")
-    private String EXPIRATION_TIME;
+    @Value("${MONOLITHFOOD_JWT_SECRET_KEY}")
+    private String secretKey;
+    @Value("${MONOLITHFOOD_JWT_EXP_TIME}")
+    private String expirationTime;
     // Blacklist de Tokens en memoria
     private Set<String> memoryBackendBlacklistedTokens = new HashSet<>();
 
@@ -54,13 +54,13 @@ public class JwtUtils {
                 .setClaims(extraClaims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(EXPIRATION_TIME)))
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(expirationTime)))
                 .signWith(genTokenSign(), SignatureAlgorithm.HS256)
                 .compact();
     }
     // Firmar el Token con una clave privada
     private Key genTokenSign() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
     // Validar la existencia del Token JWT
