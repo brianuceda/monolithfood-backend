@@ -1,0 +1,70 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgresdb:5432/monolithfooddb
+    username: postgres
+    password: 40se02j7
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maxLifetime: 150000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+
+  security:
+    oauth2:
+      client:
+        provider:
+          microsoft:
+            authorization-uri: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
+            token-uri: https://login.microsoftonline.com/common/oauth2/v2.0/token
+            user-info-uri: https://graph.microsoft.com/v1.0/me
+            user-name-attribute: id
+            jwk-set-uri: https://login.microsoftonline.com/common/discovery/v2.0/keys
+        registration:
+          github:
+            client-id: ${OAUTH2_GITHUB_CLIENT_ID}
+            client-secret: ${OAUTH2_GITHUB_CLIENT_SECRET}
+            scope:
+              - user:email
+              - public_profile
+          google:
+            client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
+          microsoft:
+            client-id: ${OAUTH2_MICROSOFT_CLIENT_ID}
+            client-secret: ${OAUTH2_MICROSOFT_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "https://monolithfood.monalek.xyz/login/oauth2/code/microsoft"
+            scope: User.Read
+            client-name: Microsoft
+
+REDIS_HOST: ${REDIS_HOST}
+REDIS_PORT: ${REDIS_PORT}
+REDIS_PASSWORD: ${REDIS_PASSWORD}
+DEFAULT_CACHE_TIME: 100000
+
+app:
+  production: true
+  security:
+    max-attempts-login: 5
+    ip-block-duration-hours: 24
+    reset-attempt-duration-minutes: 10
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+      springframework:
+        security: TRACE
+
+server:
+  port: 8080
