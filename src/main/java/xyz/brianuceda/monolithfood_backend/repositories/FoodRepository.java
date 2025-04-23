@@ -43,7 +43,7 @@ public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
         @Param("id") Long id);
 
     @Query(
-        "SELECT new pe.edu.upc.MonolithFoodApplication.dtos.searches.DetailedFoodDTO(" + 
+        "SELECT new xyz.brianuceda.monolithfood_backend.dtos.searches.DetailedFoodDTO(" + 
             "f.id as id, " +
             "f.name as name, " + 
             "c.name as categoryFood) " +
