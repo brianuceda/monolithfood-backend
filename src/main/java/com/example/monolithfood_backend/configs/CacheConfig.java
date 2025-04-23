@@ -1,4 +1,4 @@
-package pe.edu.upc.MonolithFoodApplication.config;
+package com.example.monolithfood_backend.configs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,9 +19,11 @@ import lombok.Setter;
 @Setter
 public class CacheConfig {
   // Variables estaticas
-  @Value("${REDIS_HOST}")
+  @Value("${MONOLITHFOOD_REDIS_HOST}")
   private String redisHost;
-  @Value("${REDIS_PASSWORD}")
+  @Value("${MONOLITHFOOD_REDIS_PORT}")
+  private Integer redisPort;
+  @Value("${MONOLITHFOOD_REDIS_PASSWORD}")
   private String redisPassword;
 
     @Bean
@@ -35,6 +37,7 @@ public class CacheConfig {
     public RedisConfiguration defaultRedisConfig() {
       RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
       config.setHostName(redisHost);
+      config.setPort(redisPort);
       config.setPassword(RedisPassword.of(redisPassword));
       return config;
     }
